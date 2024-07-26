@@ -8,11 +8,31 @@
 </head>
 <body>
 <!-- partial:index.partial.html -->
-<body onload="init()">
+<body class="mainTheme--bright mainTheme--dark" onload="init()">
 <header class="header">
   <p class="header_title"><strong>ButtonSoup</strong> | Light-weight theme builder</p>
+  <div class="toggle_comp">
+    
+  <label id="themeSwitch" class="switch">
+  <input type="checkbox" onChange="themeSwitch()" checked>
+    <span class="slider round" title="switch dark mode"></span>
+</label>
+  <div id="themeSwitch__label" class="utility_icon">
+   <svg width="100%" height="100%" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-84.9009,-277.014)">
+        <g id="icon_darkMode" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,318.951,275.288)">
+            <rect x="2.525" y="283.831" width="58.481" height="58.481" style="fill:none;"/>
+            <g transform="matrix(7.91981e-17,-1.2934,1.2934,7.91981e-17,-352.172,444.715)">
+                <path fill="currentColor" d="M114.583,306.723C111.887,309.658 108.018,311.499 103.723,311.499C95.586,311.499 88.979,304.892 88.979,296.754C88.979,289.393 94.386,283.284 101.441,282.186C99.03,284.811 97.557,288.312 97.557,292.155C97.557,300.292 104.164,306.899 112.301,306.899C113.077,306.899 113.839,306.839 114.583,306.723Z"/>
+            </g>
+        </g>
+    </g>
+</svg>
+  
+</div>
+  </div>
 </header>
-<section class="palettes_section">
+<section class="palettes_section ">
   
 
   <label class="heading_05">Set primary color:</label>
@@ -27,8 +47,15 @@
   <!--<li class="colorTicker">Tertiary</li>-->
 </ul>
 <div id="ctrl_hues">
-  <input class="color_thumb" id="colorPicker__primary" type="color" value="transparent" title="pick primary color">
-  
+  <div class="wrapper_color_picker">
+  <input class="color_thumb" id="colorPicker__primary" type="color" value="transparent" title="pick primary color"/>
+  <label class="color_picker__label bodyText--small">
+    Adjust primary color
+  </label>
+  </div>
+<div  class='wrapper_segCtrl'>
+
+  <label class="bodyText--small">Harmony:</label>
   <div class="segCtrl">
  <input type="radio" id="complementary" name="colorScheme"  value="complementary" checked >
   <label for="complementary" title="Make hue complementary" >
@@ -89,23 +116,17 @@
 
   <input type="radio" id="analogous" name="colorScheme" value="analogous">
   <label for="analogous" title="Make hue analogous"><div class='segCtrl_tab'>
-    <svg viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <g transform="matrix(1,0,0,1,-159.072,-283)">
-        <g id="icon_analogus" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,393.123,281.274)">
+    <svg fill="currentColor" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-345.47,-283)">
+        <g id="icon_analogus" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,579.521,281.274)">
             <rect x="2.525" y="283.831" width="58.481" height="58.481" style="fill:none;"/>
             <g transform="matrix(1,0,0,1,5.68434e-14,2.24169)">
                 <g transform="matrix(1.46255,0,0,1.46255,3.03649,-132.626)">
-                    <path  fill="currentColor"  d="M22.865,288.42C30.504,289.922 36.274,296.662 36.274,304.739C36.274,313.917 28.822,321.37 19.643,321.37C10.464,321.37 3.012,313.917 3.012,304.739C3.012,296.662 8.781,289.922 16.42,288.42C16.308,288.757 16.247,289.117 16.247,289.492C16.247,289.991 16.356,290.466 16.55,290.893C10.206,292.306 5.458,297.972 5.458,304.739C5.458,312.567 11.814,318.923 19.643,318.923C27.471,318.923 33.827,312.567 33.827,304.739C33.827,297.972 29.079,292.306 22.736,290.893C22.93,290.466 23.038,289.991 23.038,289.492C23.038,289.117 22.977,288.757 22.865,288.42Z" style="fill-opacity:0.3;"/>
+                    <path d="M22.865,288.42C30.504,289.922 36.274,296.662 36.274,304.739C36.274,313.917 28.822,321.37 19.643,321.37C10.464,321.37 3.012,313.917 3.012,304.739C3.012,296.662 8.781,289.922 16.42,288.42C16.308,288.757 16.247,289.117 16.247,289.492C16.247,289.991 16.356,290.466 16.55,290.893C10.206,292.306 5.458,297.972 5.458,304.739C5.458,312.567 11.814,318.923 19.643,318.923C27.471,318.923 33.827,312.567 33.827,304.739C33.827,297.972 29.079,292.306 22.736,290.893C22.93,290.466 23.038,289.991 23.038,289.492C23.038,289.117 22.977,288.757 22.865,288.42Z" style="fill-opacity:0.3;"/>
                 </g>
                 <g transform="matrix(1.46255,0,0,1.46255,3.03649,-132.626)">
-                    <path fill="currentColor"  d="M29.755,291.538C30.032,291.454 30.326,291.409 30.63,291.409C32.297,291.409 33.65,292.761 33.65,294.428C33.65,296.094 32.297,297.447 30.63,297.447C28.964,297.447 27.611,296.094 27.611,294.428C27.611,293.987 27.706,293.568 27.876,293.19C26.728,292.369 25.452,291.716 24.085,291.265C23.451,293.108 21.7,294.435 19.643,294.435C17.051,294.435 14.946,292.33 14.946,289.738C14.946,287.146 17.051,285.042 19.643,285.042C21.896,285.042 23.781,286.632 24.235,288.751C26.259,289.332 28.126,290.287 29.755,291.538ZM19.643,286.719C17.976,286.719 16.623,288.072 16.623,289.738C16.623,291.405 17.976,292.758 19.643,292.758C21.309,292.758 22.662,291.405 22.662,289.738C22.662,288.072 21.309,286.719 19.643,286.719ZM19.643,301.719C21.309,301.719 22.662,303.072 22.662,304.739C22.662,306.405 21.309,307.758 19.643,307.758C17.976,307.758 16.623,306.405 16.623,304.739C16.623,303.072 17.976,301.719 19.643,301.719Z"/>
+                    <path d="M22.233,303.188C22.505,303.641 22.662,304.172 22.662,304.739C22.662,306.405 21.309,307.758 19.643,307.758C17.976,307.758 16.623,306.405 16.623,304.739C16.623,303.333 17.586,302.15 18.888,301.814L18.888,294.374C16.654,294.013 14.946,292.073 14.946,289.738C14.946,287.146 17.051,285.042 19.643,285.042C21.896,285.042 23.781,286.632 24.235,288.751C26.259,289.332 28.126,290.287 29.755,291.538C30.032,291.454 30.326,291.409 30.63,291.409C32.297,291.409 33.65,292.761 33.65,294.428C33.65,296.094 32.297,297.447 30.63,297.447C29.889,297.447 29.209,297.179 28.684,296.735L22.233,303.188ZM20.397,294.374L20.397,301.814C20.668,301.884 20.923,301.99 21.159,302.127L27.801,295.483C27.678,295.154 27.611,294.799 27.611,294.428C27.611,293.987 27.706,293.568 27.876,293.19C26.728,292.369 25.452,291.716 24.085,291.265C23.53,292.878 22.12,294.095 20.397,294.374ZM19.643,286.719C17.976,286.719 16.623,288.072 16.623,289.738C16.623,291.405 17.976,292.758 19.643,292.758C21.309,292.758 22.662,291.405 22.662,289.738C22.662,288.072 21.309,286.719 19.643,286.719Z"/>
                 </g>
-            </g>
-            <g transform="matrix(0.731277,-4.50684e-33,-1.80274e-32,0.643164,14.5782,111.291)">
-                <rect x="21.993" y="291.012" width="3.019" height="27.245"/>
-            </g>
-            <g transform="matrix(-0.517188,-0.516994,0.4547,-0.454871,-87.6213,459.015)">
-                <rect x="21.993" y="291.012" width="3.019" height="27.245"/>
             </g>
         </g>
     </g>
@@ -113,7 +134,7 @@
 
     </div>
   </label>
-
+</div>
 </div>
 </div>
 
@@ -165,9 +186,46 @@
       </div>
     </div>
   </section>
-<section class="palettes_section">
+<!-- Color lightness levels-->
+<section class="palettes_section palette--primary">
+<h5 class="heading_05">Levels</h5>
+  <h6 class="heading_06">Primary spread</h6>
+<ul class="palette">
+<li class="colorTicker">L01</li>
+<li class="colorTicker">L02</li>
+<li class="colorTicker">L03</li>
+<li class="colorTicker">L04</li>
+<li class="colorTicker">L05</li>
+<li class="colorTicker">L06</li>
+<li class="colorTicker">L07</li>
+
+</ul>
+</section>
+<section class="palettes_section  palette--secondary">
   
-<h5 class="heading_05">Neutrals bright</h5>
+  <h6 class="heading_06">Secondary spread</h6>
+<ul class="palette">
+<li class="colorTicker">L01</li>
+<li class="colorTicker">L02</li>
+<li class="colorTicker">L03</li>
+<li class="colorTicker">L04</li>
+<li class="colorTicker">L05</li>
+<li class="colorTicker">L06</li>
+<li class="colorTicker">L07</li>
+
+</ul>
+</section>
+<!------------------------>
+<section class="palettes_section">
+<h5 class="heading_05">Neutrals</h5>
+  <div class="toggle_comp">
+  <label id="switchChroma" class="switch">
+  <input type="checkbox" onChange="update_Neutral_Saturation()" checked>
+    <span class="slider round"></span>
+</label>
+  <div id="chromaToggle__label" class="bodyText--small">Chroma on</div>
+  </div>
+  <h6 class="heading_06">Bright</h6>
 <ul class="palette palette--bright">
 <li class="colorTicker">L01</li>
 <li class="colorTicker">L02</li>
@@ -176,14 +234,12 @@
 <li class="colorTicker">L05</li>
 <li class="colorTicker">L06</li>
 <li class="colorTicker">L07</li>
-<li class="colorTicker">L08</li>
-<li class="colorTicker">L09</li>
-<li class="colorTicker">L10</li>
+
 </ul>
 </section>
 <section class="palettes_section">
-
-<h5 class="heading_05">Neutrals Dark</h5>
+  
+  <h6 class="heading_06">Dark</h6>
 <ul class="palette palette--dark">
 <li class="colorTicker">L01</li>
 <li class="colorTicker">L02</li>
@@ -192,11 +248,13 @@
 <li class="colorTicker">L05</li>
 <li class="colorTicker">L06</li>
 <li class="colorTicker">L07</li>
-<li class="colorTicker">L08</li>
-<li class="colorTicker">L09</li>
-<li class="colorTicker">L10</li>
+
 </ul>
 </section>
+  <footer class='footer'><p class="bodyText--small">
+    Made with love by
+    <a href='https://avinvadas.com' target='_blank'>Avin Vadas</a>&nbsp|&nbsp ButtonSoup is an open-source project. Check it out on <a href='https://github.com/avinvadas/buttonSoup' target='_blank'>Github</a>.  </p>
+  </footer>
 </body>
 <!-- partial -->
   <script  src="./script.js"></script>

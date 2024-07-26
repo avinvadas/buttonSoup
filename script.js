@@ -3,6 +3,7 @@ const root = document.documentElement;
 const colorInput = document.getElementById("colorInput");
 const colorPicker = document.getElementById("colorPicker__primary");
 var currentPrimaryColor = getComputedStyle(root).getPropertyValue('--color_primary-hex');
+  const neutral_saturation_level = getComputedStyle(root).getPropertyValue('--saturation-factor');
 
 
 /*-----Setting color ticker objects: Showing hexes, click to copy, etc-------*/
@@ -18,12 +19,12 @@ function presentColorValues(className){
 function setClickToCopy(domElement){
   domElement.addEventListener("click", function() {
   copyTextToClipboard(domElement.hex);
-  domElement.innerHTML = "Copied to clipboard";
+  domElement.innerHTML = '<span class="ticker__hex">Copied to clipboard</span>'+ icon_copy;
 
   // Display the indication for 2 seconds
   setTimeout(function() {
     // Revert back to displaying the hex value after 2 seconds
-    domElement.innerHTML = domElement.hex+ icon_copy;
+    domElement.innerHTML = '<span class="ticker__hex">'+domElement.hex+'</span>'+ icon_copy;
   }, 1250);
 });
 }
@@ -35,7 +36,7 @@ function setHex(domElement){
     const hexColor = extractRGBandConvertToHex(colorString);
     console.log(hexColor);
     domElement.hex = hexColor;
-    domElement.innerHTML = domElement.hex+ icon_copy;
+    domElement.innerHTML ='<span class="ticker__hex">'+ domElement.hex+'</span>'+ icon_copy;
   
 }
 /* Extract RGB Values and convert them to hex*/
@@ -115,26 +116,26 @@ function setSliders(){
 /*Map sliders and inputs to vars*/
 /*const hueSlider = document.getElementById("hueSlider");*/
 const saturationSlider = document.getElementById("saturationSlider");
+const saturationInput = document.getElementById("saturationInput");
 const lightnessSlider = document.getElementById("lightnessSlider");
+const lightnessInput = document.getElementById("lightnessInput");
 /*const hueInput = document.getElementById('hueInput');*/
-const saturationInput = document.getElementById('saturationInput');
-const lightnessInput = document.getElementById('lightnessInput');
 
 //sync each slider and numerical input with one another:
-/*syncInputs(hueSlider, hueInput);*/
+
 syncInputs(saturationSlider, saturationInput);
 syncInputs(lightnessSlider, lightnessInput);
 /*Sync sliders range and number inputs*/
-  
-// Add event listeners to detect changes in sliders and numerical inputs 
-  
 saturationSlider.addEventListener("input", updateSecondary);
 saturationInput.addEventListener("input", updateSecondary);
 lightnessSlider.addEventListener("input", updateSecondary);
 lightnessInput.addEventListener("input", updateSecondary);
-/*hueSlider.addEventListener("input", updateSecondary);
-hueInput.addEventListener("input", updateSecondary);*/
 
+saturationSlider.value = getComputedStyle(root).getPropertyValue('--ratio__sec_s');
+saturationInput.value =  saturationSlider.value; 
+lightnessSlider.value = getComputedStyle(root).getPropertyValue('--ratio__sec_l');
+lightnessInput.value = lightnessSlider.value;
+                                                         
 }
 function syncInputs(rangeInput, numberInput) {
     rangeInput.addEventListener('input', function() {
@@ -255,5 +256,28 @@ function generateSecondaryColor(colorScheme) {
 }
 
 
+function update_Neutral_Saturation() {
+    const chromaToggle = document.getElementById("switchChroma").querySelector('input[type="checkbox"]');
+  const chromaToggle__label = document.getElementById("chromaToggle__label");
+    const root = document.documentElement; // Define root if not done earlier
+
+    if (chromaToggle.checked) {
+        root.style.setProperty('--saturation-factor', neutral_saturation_level);
+      chromaToggle__label.innerHTML ="Chroma on";
+    } else {
+        root.style.setProperty('--saturation-factor', 0);
+      chromaToggle__label.innerHTML  ="Chroma off";
+    }
+    presentColorValues('colorTicker');
+    alignInputsToHex();
+    // Log with appropriate style and value retrieval
+    console.log('chroma changed to: ' + getComputedStyle(root).getPropertyValue('--saturation-factor') + ' | neutral saturation level is: ' + neutral_saturation_level);
+}
+
+function themeSwitch(){
+  var element = document.body;
+  element.classList.toggle("mainTheme--dark");
+
+}
 /* assets---------------------------------------------------------------------*/
-const icon_copy = '<span class="icon_copy"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"/></svg></span>';
+const icon_copy = '<span class="icon_copy"><svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg></span>';
