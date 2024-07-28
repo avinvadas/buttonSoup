@@ -3,11 +3,11 @@ const root = document.documentElement;
 const colorInput = document.getElementById("colorInput");
 const colorPicker = document.getElementById("colorPicker__primary");
 var currentPrimaryColor = getComputedStyle(root).getPropertyValue('--color_primary-hex');
-  const neutral_saturation_level = getComputedStyle(root).getPropertyValue('--saturation-factor');
+const neutral_saturation_level = getComputedStyle(root).getPropertyValue('--saturation-factor');
 
 
-/*-----Setting color ticker objects: Showing hexes, click to copy, etc-------*/
-/*show color values on a series of DOM elements*/
+/*-----------------------------------------------------------------------------*/
+/*Setting color ticker objects:  show color values on a series of DOM elements*/
 function presentColorValues(className){
   var sampElements = document.getElementsByClassName(className);
   for (var i = 0; i < sampElements.length; i++){
@@ -19,7 +19,7 @@ function presentColorValues(className){
 function setClickToCopy(domElement){
   domElement.addEventListener("click", function() {
   copyTextToClipboard(domElement.hex);
-  domElement.innerHTML = '<span class="ticker__hex">Copied to clipboard</span>'+ icon_copy;
+  domElement.innerHTML = '<span class="ticker__hex">Copied!</span>'+ icon_copy;
 
   // Display the indication for 2 seconds
   setTimeout(function() {
@@ -29,47 +29,60 @@ function setClickToCopy(domElement){
 });
 }
 /*set Hex for single DOM element*/
-function setHex(domElement){
+function setHex(domElement) {
     var style = window.getComputedStyle(domElement);
     var bgColorRGB = style.getPropertyValue('background-color');
-    const colorString = bgColorRGB;
-    const hexColor = extractRGBandConvertToHex(colorString);
-    console.log(hexColor);
+   
+    const hexColor = extractRGBandConvertToHex(bgColorRGB);
+    
+    // Set the hex value to the DOM element
     domElement.hex = hexColor;
-    domElement.innerHTML ='<span class="ticker__hex">'+ domElement.hex+'</span>'+ icon_copy;
-  
+    domElement.innerHTML = '<span class="ticker__hex">' + domElement.hex + '</span>' + icon_copy; 
 }
+
+
+
+
 /* Extract RGB Values and convert them to hex*/
 function extractRGBandConvertToHex(colorString) {
-  // Extract numerical values from the string
-  const rgbValues = colorString.match(/[+-]?\d+(?:\.\d+)?/g);
+    let r = 0, g = 0, b = 0; // Initialize RGB values
+    let isValidRGB = false; // To check if the RGB values are valid
 
-  // Convert the numerical values to the range 0-255 for R, G, and B
-  const r = Math.round(parseFloat(rgbValues[0]) * 255);
-  const g = Math.round(parseFloat(rgbValues[1]) * 255);
-  const b = Math.round(parseFloat(rgbValues[2]) * 255);
+    // Check for color format
+    const srgbMatch = colorString.match(/color\(srgb\s+([0-1]\.\d+|[01])\s+([0-1]\.\d+|[01])\s+([0-1]\.\d+|[01])\)/);
+    if (srgbMatch) {
+        r = Math.round(parseFloat(srgbMatch[1]) * 255);
+        g = Math.round(parseFloat(srgbMatch[2]) * 255);
+        b = Math.round(parseFloat(srgbMatch[3]) * 255);
+        isValidRGB = true;
+    } else {
+     // Use regex to extract RGB or RGBA values if not srgb
+        const rgbMatch = colorString.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d\.]+))?\)/);
+        if (rgbMatch) {
+            r = parseInt(rgbMatch[1], 10);
+            g = parseInt(rgbMatch[2], 10);
+            b = parseInt(rgbMatch[3], 10);
 
-  // Convert RGB values to a hexadecimal color representation
-  const hexColor = "#" + ((r << 16) + (g << 8) + b).toString(16).padStart(6, '0');
-  
-  return hexColor;
+            // Ensure R, G, and B are valid color values (0-255)
+            if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
+                isValidRGB = true; // Only mark as valid if within range
+            }
+        }
+    }
+
+    // If RGB values are not valid, log the warning and use a default color
+    if (!isValidRGB) {
+        console.warn('Invalid RGB/RGBA value provided: returning #000000');
+        return '#000000'; // Default to black
+    }
+
+    // Convert to hex
+    const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).padStart(6, '0')}`;
+
+    return hex;
 }
-/* RGB->HEX conversion | 
-from Css-Tricks: https://css-tricks.com/converting-color-spaces-in-javascript/  */
-function RGBToHex(r,g,b) {
-  r = r.toString(16);
-  g = g.toString(16);
-  b = b.toString(16);
 
-  if (r.length == 1)
-    r = "0" + r;
-  if (g.length == 1)
-    g = "0" + g;
-  if (b.length == 1)
-    b = "0" + b;
 
-  return "#" + r + g + b;
-}
 /*Copy hex to clipboard*/
 function copyTextToClipboard(text) {
   const dummyElement = document.createElement("textarea");
@@ -85,6 +98,7 @@ function copyTextToClipboard(text) {
 
 //INITIATING
 function init(){
+  document.documentElement.style.setProperty('--color_primary-hex', getRandomHexColor())
   presentColorValues('colorTicker');
   setInput();
   setColorPicker();
@@ -107,22 +121,16 @@ colorInput.addEventListener("input", function() {
   mainInput_copyToCB.addEventListener("click", function() {
   copyTextToClipboard(colorInput.value);
   });
-  
-  
-/**/
-  
+/**/ 
 }
 function setSliders(){
 /*Map sliders and inputs to vars*/
-/*const hueSlider = document.getElementById("hueSlider");*/
 const saturationSlider = document.getElementById("saturationSlider");
 const saturationInput = document.getElementById("saturationInput");
 const lightnessSlider = document.getElementById("lightnessSlider");
 const lightnessInput = document.getElementById("lightnessInput");
-/*const hueInput = document.getElementById('hueInput');*/
 
-//sync each slider and numerical input with one another:
-
+/*sync each slider and numerical input with one another:*/
 syncInputs(saturationSlider, saturationInput);
 syncInputs(lightnessSlider, lightnessInput);
 /*Sync sliders range and number inputs*/
@@ -151,22 +159,18 @@ function syncInputs(rangeInput, numberInput) {
 
 
 const updateSecondary = () => {
-  /*const h = hueSlider.value;*/
   const s = saturationSlider.value;
   const l = lightnessSlider.value;
   
   // Calculate secondary color based on primary color and slider values
-  /*document.documentElement.style.setProperty('--ratio__sec_h', h);*/
   document.documentElement.style.setProperty('--ratio__sec_s', s);
   document.documentElement.style.setProperty('--ratio__sec_l', l);
 
   presentColorValues('colorTicker');
   alignInputsToHex();
-  
 };
 
 function updateSecondary_Sliders(s, l){
- /* hueSlider.value = h;*/
   saturationSlider.value = s;
   lightnessSlider.value = l;
 }
@@ -187,7 +191,6 @@ function setColorPicker(){
 }
 
 function alignInputsToHex(){
-   console.log("alignInputstO hEX CALLED!")
     const currentPrimaryColor = getComputedStyle(root).getPropertyValue('--color_primary-hex').trim();
 
         colorInput.value = currentPrimaryColor;
@@ -198,7 +201,6 @@ function alignInputsToHex(){
 }
 
 /*Check input contrast for text*/
-
 function hexToRgb(hex) {
     let r = parseInt(hex.substring(0, 2), 16);
     let g = parseInt(hex.substring(2, 4), 16);
@@ -224,23 +226,23 @@ function getContrastColor(hex) {
 function checkInputContrast(){
 var hexColor = colorInput.value;
 var textColor = getContrastColor(hexColor);
-colorInput.style.color = textColor;  // Outputs #ffffff for lighter colors, #000000 for darker colors
+colorInput.style.color = textColor;  
   
 }
 
 /* Color theme selection modes*/
-
 const colorSchemeSelector = document.querySelectorAll('input[name="colorScheme"]');
 let selectedColorScheme;
 
 colorSchemeSelector.forEach((radio) => {
   radio.addEventListener('change', function () {
     selectedColorScheme = this.value;
-    // Call a function to generate the secondary color based on the selected color scheme
+    // Generate the secondary color based on the selected color scheme
     generateSecondaryColor(selectedColorScheme);
     updateSecondary();
-    console.log(selectedColorScheme)
+   
   });
+   
 });
 
 function generateSecondaryColor(colorScheme) {
@@ -253,6 +255,7 @@ function generateSecondaryColor(colorScheme) {
   }else if(selectedColorScheme == "analogous"){
     document.documentElement.style.setProperty('--hue-differentiator', 45);
   }
+  
 }
 
 
@@ -270,8 +273,6 @@ function update_Neutral_Saturation() {
     }
     presentColorValues('colorTicker');
     alignInputsToHex();
-    // Log with appropriate style and value retrieval
-    console.log('chroma changed to: ' + getComputedStyle(root).getPropertyValue('--saturation-factor') + ' | neutral saturation level is: ' + neutral_saturation_level);
 }
 
 function themeSwitch(){
@@ -279,5 +280,12 @@ function themeSwitch(){
   element.classList.toggle("mainTheme--dark");
 
 }
+
+function getRandomHexColor() {
+    // Generate a random hex color
+    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    return `#${randomColor.padStart(6, '0')}`; // Ensure that the hex is always 6 characters
+}
+
 /* assets---------------------------------------------------------------------*/
 const icon_copy = '<span class="icon_copy"><svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg></span>';

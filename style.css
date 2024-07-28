@@ -1,23 +1,172 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+/*Legacy support*/
+
+* {
+  margin:0;
+  padding:0;
+  /*Manipulate palettes generation settings here!*/
+  --color_primary-hex: #FF385C; /*<-- Seed color to change them all*/
+  --hue-differentiator: 180;/*Harmony hue degree for secondary color*/
+  --saturation-factor: 5; /*Saturation level for neutral chroma (when activated)*/
+  --base_lightness: 50; /*Lightness for primary and secondary color levels spread palettes*/
+  --base_lightness_black: 20;  /* Lightness for the brightest step dark theme */
+  --base_lightness_white: 100;  /* Lightness for the brightest step bright theme */
+
+  /*This is for buttonSoup UI*/
+  --module_ratio: 1.25; /*proportions ratio*/
+  /*-----------------------------------------*/ 
+/*TYPOGRAPHY*/
+/*typefaces:*/
+--typeface-heading: "Open Sans", sans-serif;
+--typeface-body: "Open Sans", sans-serif;
+--font-size-body: 1rem;
+
+  
+ /*weight from 300 to 800*/
+--font-weight-key: 300;
+  
+  /*font sizes*/
+  --font-size-small: calc(var(--font-size-body) / var(--module_ratio));
+  --font-size-h6: calc(var(--font-size-body)*var(--module_ratio));
+  --font-size-h5: calc(var(--font-size-h6) * var(--module_ratio));
+  --font-size-h4: calc(var(--font-size-h5) * var(--module_ratio));
+  --font-size-h3: calc(var(--font-size-h4) * var(--module_ratio));
+  --font-size-h2: calc(var(--font-size-h3) * var(--module_ratio));
+  --font-size-h1: calc(var(--font-size-h2) * var(--module_ratio));
+  
+
+  /*font weights--Variable Fonts only*/
+  --font-weight-h6: calc(var(--font-weight-key) * var(--module_ratio));
+  --font-weight-h5: calc(var(--font-weight-h6) * var(--module_ratio));
+  --font-weight-h4: calc(var(--font-weight-h5) * var(--module_ratio));
+  --font-weight-h3: calc(var(--font-weight-h4) * var(--module_ratio));
+  --font-weight-h2: calc(var(--font-weight-h3) * var(--module_ratio));
+  --font-weight-h1: calc(var(--font-weight-h2) * var(--module_ratio));
+  
+/*-----------------------------------------*/
+  
+  margin:0;
+  padding:0;
+  font-family: Arial, Sans-Serif;
+  font-weight:regular;
+  font-size:16px;
+
+}
 
 
+
+@supports not (color: hsl( from #000000 180 100 50)){
+
+  html{
+
+  --color_primary: hsl(from var(--color_primary-hex) h s l );
+  
+  /*Secondary color hsl*/
+  --ratio__sec_h: calc(h - var(--hue-differentiator) * 1deg);
+  --ratio__sec_s: 70; /*Saturation. Default 100*/
+  --ratio__sec_l: 60; /*Lightness. Default 50*/
+  --color_secondary: hsl(from var(--color_primary) 
+                     calc((var(--ratio__sec_h) ))
+                     calc((var(--ratio__sec_s) )*1%)
+                     calc((var(--ratio__sec_l))*1%));
+  --color_secondary_rgb: rgb(from var(--color_secondary) r g b);
+  /**/
+  
+  /*Primary and secondary level spreads*/
+    /* Brightness levels including primary color */
+    --color_primary_hsl_100: hsl(from var(--color_primary) h s calc((var(--base_lightness) + 45)*1%));
+    --color_primary_hsl_200: hsl(from var(--color_primary) h s calc((var(--base_lightness) + 35)*1%)); 
+    --color_primary_hsl_300: hsl(from var(--color_primary) h s calc((var(--base_lightness) + 25)*1%)); 
+    --color_primary_hsl_400: hsl(from var(--color_primary) h s calc((var(--base_lightness) + 15)*1%));  
+    --color_primary_hsl_500: hsl(from var(--color_primary) h s calc((var(--base_lightness) + 0)*1%));
+    --color_primary_hsl_600: hsl(from var(--color_primary) h s calc((var(--base_lightness) - 20)*1%)); 
+    --color_primary_hsl_700: hsl(from var(--color_primary) h s calc((var(--base_lightness) - 35)*1%)); 
+  
+    --color_secondary_hsl_100: hsl(from var(--color_secondary) h s calc((var(--base_lightness) + 45)*1%));
+    --color_secondary_hsl_200: hsl(from var(--color_secondary) h s calc((var(--base_lightness) + 35)*1%)); 
+    --color_secondary_hsl_300: hsl(from var(--color_secondary) h s calc((var(--base_lightness) + 25)*1%)); 
+    --color_secondary_hsl_400: hsl(from var(--color_secondary) h s calc((var(--base_lightness) + 15)*1%));  
+    --color_secondary_hsl_500: hsl(from var(--color_secondary) h s calc((var(--base_lightness) + 0)*1%));
+    --color_secondary_hsl_600: hsl(from var(--color_secondary) h s calc((var(--base_lightness) - 20)*1%)); 
+    --color_secondary_hsl_700: hsl(from var(--color_secondary) h s calc((var(--base_lightness) - 35)*1%)); 
+  
+  
+  /*Neutral core hsl*/
+    /* Neutral Dark Theme shades: */
+    --color_level_dark_hsl_100: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_black) + 30)*1%));
+    --color_level_dark_hsl_200: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_black) + 20)*1%));
+    --color_level_dark_hsl_300: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_black) + 10)*1%));
+    --color_level_dark_hsl_400: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_black) + 5)*1%));
+    --color_level_dark_hsl_500: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_black) + 2)*1%));
+    --color_level_dark_hsl_600: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_black) + 1)*1%));
+    --color_level_dark_hsl_700: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_black) + 0)*1%));
+
+    /* Neutral Bright Theme shades: */
+    --color_level_bright_hsl_100: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_white) - 30)*1%));
+    --color_level_bright_hsl_200: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_white) - 20)*1%));
+    --color_level_bright_hsl_300: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_white) - 10)*1%));
+    --color_level_bright_hsl_400: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_white) - 5)*1%));
+    --color_level_bright_hsl_500: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_white) - 2)*1%));
+    --color_level_bright_hsl_600: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_white) - 1)*1%));
+    --color_level_bright_hsl_700: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_white) - 0)*1%));
+  
+  
+  /*RGB Everything:*/
+  /*primary*/
+  --color_primary_100: rgb(from var(--color_primary_hsl_100) r g b);
+  --color_primary_200: rgb(from var(--color_primary_hsl_200) r g b);
+  --color_primary_300: rgb(from var(--color_primary_hsl_300) r g b);
+  --color_primary_400: rgb(from var(--color_primary_hsl_400) r g b);
+  --color_primary_500: rgb(from var(--color_primary_hsl_500) r g b);
+  --color_primary_600: rgb(from var(--color_primary_hsl_600) r g b);
+  --color_primary_700: rgb(from var(--color_primary_hsl_700) r g b);
+
+    /*secondary*/
+  --color_secondary_100: rgb(from var(--color_secondary_hsl_100) r g b);
+  --color_secondary_200: rgb(from var(--color_secondary_hsl_200) r g b);
+  --color_secondary_300: rgb(from var(--color_secondary_hsl_300) r g b);
+  --color_secondary_400: rgb(from var(--color_secondary_hsl_400) r g b);
+  --color_secondary_500: rgb(from var(--color_secondary_hsl_500) r g b);
+  --color_secondary_600: rgb(from var(--color_secondary_hsl_600) r g b);
+  --color_secondary_700: rgb(from var(--color_secondary_hsl_700) r g b);
+  
+  /*Neutral darks*/
+  --color_level_dark_100: rgb(from var(--color_level_dark_hsl_100) r g b);
+  --color_level_dark_200: rgb(from var(--color_level_dark_hsl_200) r g b);
+  --color_level_dark_300: rgb(from var(--color_level_dark_hsl_300) r g b);
+  --color_level_dark_400: rgb(from var(--color_level_dark_hsl_400) r g b);
+  --color_level_dark_500: rgb(from var(--color_level_dark_hsl_500) r g b);
+  --color_level_dark_600: rgb(from var(--color_level_dark_hsl_600) r g b);
+  --color_level_dark_700: rgb(from var(--color_level_dark_hsl_700) r g b);
+  
+  /*Neutral brights*/
+  --color_level_bright_100: rgb(from var(--color_level_bright_hsl_100) r g b);
+  --color_level_bright_200: rgb(from var(--color_level_bright_hsl_200) r g b);
+  --color_level_bright_300: rgb(from var(--color_level_bright_hsl_300) r g b);
+  --color_level_bright_400: rgb(from var(--color_level_bright_hsl_400) r g b);
+  --color_level_bright_500: rgb(from var(--color_level_bright_hsl_500) r g b);
+  --color_level_bright_600: rgb(from var(--color_level_bright_hsl_600) r g b);
+  --color_level_bright_700: rgb(from var(--color_level_bright_hsl_700) r g b);
+
+
+  }
+
+}
+
+
+/*Modern browsers*/
+@supports (color: hsl( from #000000 180 100 50)){
 html{
-/*Seeds*/
-  --module_ratio: 1.25; 
-/*<-- Seed size differences module*/
-  --color_ratio:1.1;
-/*<-- Seed color to change them all*/
-  --color_primary-hex: #FF385C; 
 
-  --color_primary: hsl(from var(--color_primary-hex) h s l);
+  --color_primary: hsl(from var(--color_primary-hex) h  s l );
   /*Secondary color hsl*/
   --ratio__sec_h: calc(h - var(--hue-differentiator));
   --ratio__sec_s: 70; /*Saturation. Default 100*/
   --ratio__sec_l: 60; /*Lightness. Default 50*/
   --color_secondary: hsl(from var(--color_primary) 
                      var(--ratio__sec_h) 
-                     var(--ratio__sec_s) 
-                       var(--ratio__sec_l));
+                     var(--ratio__sec_s)
+                     var(--ratio__sec_l));
   --color_secondary_rgb: rgb(from var(--color_secondary) r g b);
   /**/
   --ratio__ter_h: calc( h - 120);
@@ -28,17 +177,6 @@ html{
                      var(--ratio__ter_s) 
                      var(--ratio__ter_l));
   --color_tertiary_rgb: rgb(from var(--color_tertiary) r g b);
-  
-  
-  /*Primary and secondary level spreads*/
-  --base_lightness: 50;
-  
-  /*Neutral core hsl factors*/
-  --hue-differentiator: 180;/*hue degree*/
-  --saturation-factor: 5; /*Saturation level*/
-  --base_lightness_black: 20;  /* Lightness for the brightest dark theme */
-  --base_lightness_white: 100;  /* Lightness for white */
-  
 
     /* Brightness levels including primary color */
     --color_primary_hsl_100: hsl(from var(--color_primary) h s calc(var(--base_lightness) + 45));
@@ -118,51 +256,9 @@ html{
   --color_level_bright_700: rgb(from var(--color_level_bright_hsl_700) r g b);
 
 
-
-/*-----------------------------------------*/ 
-/*TYPOGRAPHY*/
-/*typefaces:*/
---typeface-heading: "Open Sans", sans-serif;
---typeface-body: "Open Sans", sans-serif;
---font-size-body: 1rem;
-
-  
- /*weight from 300 to 800*/
---font-weight-key: 300;
-  
-  /*font sizes*/
-  --font-size-small: calc(var(--font-size-body) / var(--module_ratio));
-  --font-size-h6: calc(var(--font-size-body)*var(--module_ratio));
-  --font-size-h5: calc(var(--font-size-h6) * var(--module_ratio));
-  --font-size-h4: calc(var(--font-size-h5) * var(--module_ratio));
-  --font-size-h3: calc(var(--font-size-h4) * var(--module_ratio));
-  --font-size-h2: calc(var(--font-size-h3) * var(--module_ratio));
-  --font-size-h1: calc(var(--font-size-h2) * var(--module_ratio));
-  
-
-  /*font weights--Variable Fonts only*/
-  --font-weight-h6: calc(var(--font-weight-key) * var(--module_ratio));
-  --font-weight-h5: calc(var(--font-weight-h6) * var(--module_ratio));
-  --font-weight-h4: calc(var(--font-weight-h5) * var(--module_ratio));
-  --font-weight-h3: calc(var(--font-weight-h4) * var(--module_ratio));
-  --font-weight-h2: calc(var(--font-weight-h3) * var(--module_ratio));
-  --font-weight-h1: calc(var(--font-weight-h2) * var(--module_ratio));
-  
-/*-----------------------------------------*/
-  
-  margin:0;
-  padding:0;
-  font-family: Arial, Sans-Serif;
-  font-weight:regular;
-  font-size:16px;
-  
+  }
 }
-* {
-  margin:0;
-  padding:0;
 
-  
-}
 .mainTheme--bright{
   --font_color: black;
   --bg_color: smokewhite;
@@ -181,6 +277,11 @@ body{
   width:100vw;
   display:flex;
   flex-direction:column;
+  margin:0;
+  padding:0;
+  font-family: Arial, Sans-Serif;
+  font-weight:regular;
+  font-size:16px;
 }
 .header{
   display:flex;
@@ -298,7 +399,7 @@ outline-offset: -1rem ;
 #ctrl_hues{
   display:flex;
   flex-direction:row;
-  justify-content:center;
+  align-items:center;
   justify-content:space-between;
   
 }
@@ -333,7 +434,7 @@ outline-offset: -1rem ;
 .segCtrl{
   display:inline-flex;
   gap:0.5rem;
-  align-items:center;
+  align-items:start;
   flex-direction:row;
   
 }
@@ -344,6 +445,7 @@ outline-offset: -1rem ;
   cursor:pointer;
   padding-bottom:0.25rem;
 }
+
 .utility_icon{
     width:1.5rem;
   height:1.5rem;
@@ -442,12 +544,14 @@ input[type="range"]::-moz-range-track {
 /*Hiding default radio buttons*/
 input[type="radio"] {
   display: none; /* Hide the default radio buttons */
+  
 }
 
-input[type="radio"]:checked+label {
+ input[type="radio"]:checked+label {
   
   color:black;
   border-bottom: 2px solid var(--font_color);
+  
 }
 /*sliders*/
 .input_slider{
