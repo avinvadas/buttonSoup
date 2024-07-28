@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ButtonSoup is a lightweight tool for making color themes. 
 It can be experimented in it's current state on https://buttonsoup.xyz
 
