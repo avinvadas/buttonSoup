@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ButtonSoup is a lightweight tool for making color themes. 
 It can be experimented in it's current state on https://buttonsoup.xyz
 
@@ -9,3 +10,4 @@ More on relative color functions and how they work in CSS can be read here: http
 
 This is an open-source project, opened for personal and commercial use.
 For any problem or question, just drop me a line at avin@avinvadas.com
+
