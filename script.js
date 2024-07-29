@@ -87,13 +87,25 @@ function extractRGBandConvertToHex(colorString) {
 
 /*Copy hex to clipboard*/
 function copyTextToClipboard(text) {
-  const dummyElement = document.createElement("textarea");
-  document.body.appendChild(dummyElement);
-  dummyElement.value = text;
-  dummyElement.select();
-  document.execCommand("copy");
-  document.body.removeChild(dummyElement);
+  // Use the Clipboard API for better usability, especially on mobile
+  if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+          console.log('Text copied to clipboard:', text);
+      }).catch(err => {
+          console.error('Could not copy text: ', err);
+      });
+  } else {
+      // Fallback for older browsers
+      const dummyElement = document.createElement("textarea");
+      document.body.appendChild(dummyElement);
+      dummyElement.value = text;
+      dummyElement.select();
+      document.execCommand("copy");
+      document.body.removeChild(dummyElement);
+      console.log('Text copied to clipboard (fallback):', text);
+  }
 }
+
 
 /*-------------------------------------------------------*/
 
