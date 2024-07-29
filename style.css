@@ -299,11 +299,20 @@ html{
   --layout_border: rgba(0, 0, 0, 0.15);
   --font_color--clickable: #007FDA;
 }
+.mainTheme--bright .excludedFromColorTheme{
+  color: initial;
+  background: initial;
+}
+
 .mainTheme--dark{
   --font_color: white;
   --bg_color: #1e1e1e;
   --layout_border: rgba(255, 255, 255, 0.15);
   --font_color--clickable: #119BFF;
+}
+.mainTheme--dark .excludedFromColorTheme{
+  color: initial;
+  background: initial;
 }
 body{
   color: var(--font_color);
