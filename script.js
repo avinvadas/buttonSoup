@@ -1,13 +1,15 @@
 /*global vars*/
 const root = document.documentElement;
+const colorInput_wrapper = document.getElementsByClassName('wrapper__primary_color')[0];
 const colorInput = document.getElementById("colorInput");
+const colorInput_copyToCB = document.getElementById("mainInput_copyToCB");
 const colorPicker = document.getElementById("colorPicker__primary");
 var currentPrimaryColor = getComputedStyle(root).getPropertyValue('--color_primary-hex');
-const neutral_saturation_level = getComputedStyle(root).getPropertyValue('--saturation-factor');
+  const neutral_saturation_level = getComputedStyle(root).getPropertyValue('--saturation-factor');
 
 
-/*-----------------------------------------------------------------------------*/
-/*Setting color ticker objects:  show color values on a series of DOM elements*/
+/*-----Setting color ticker objects: Showing hexes, click to copy, etc-------*/
+/*show color values on a series of DOM elements*/
 function presentColorValues(className){
   var sampElements = document.getElementsByClassName(className);
   for (var i = 0; i < sampElements.length; i++){
@@ -48,7 +50,7 @@ function extractRGBandConvertToHex(colorString) {
     let r = 0, g = 0, b = 0; // Initialize RGB values
     let isValidRGB = false; // To check if the RGB values are valid
 
-    // Check for color format
+    // Check for color(srgb ...) format
     const srgbMatch = colorString.match(/color\(srgb\s+([0-1]\.\d+|[01])\s+([0-1]\.\d+|[01])\s+([0-1]\.\d+|[01])\)/);
     if (srgbMatch) {
         r = Math.round(parseFloat(srgbMatch[1]) * 255);
@@ -56,7 +58,7 @@ function extractRGBandConvertToHex(colorString) {
         b = Math.round(parseFloat(srgbMatch[3]) * 255);
         isValidRGB = true;
     } else {
-     // Use regex to extract RGB or RGBA values if not srgb
+        // Use regex to extract RGB or RGBA values if not srgb
         const rgbMatch = colorString.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d\.]+))?\)/);
         if (rgbMatch) {
             r = parseInt(rgbMatch[1], 10);
@@ -104,6 +106,7 @@ function init(){
   setColorPicker();
   setSliders();
   alignInputsToHex();
+  checkInputContrast();
 }
 
 /*Color manipulation inputs*/
@@ -121,16 +124,22 @@ colorInput.addEventListener("input", function() {
   mainInput_copyToCB.addEventListener("click", function() {
   copyTextToClipboard(colorInput.value);
   });
-/**/ 
+  
+  
+/**/
+  
 }
 function setSliders(){
 /*Map sliders and inputs to vars*/
+/*const hueSlider = document.getElementById("hueSlider");*/
 const saturationSlider = document.getElementById("saturationSlider");
 const saturationInput = document.getElementById("saturationInput");
 const lightnessSlider = document.getElementById("lightnessSlider");
 const lightnessInput = document.getElementById("lightnessInput");
+/*const hueInput = document.getElementById('hueInput');*/
 
-/*sync each slider and numerical input with one another:*/
+//sync each slider and numerical input with one another:
+
 syncInputs(saturationSlider, saturationInput);
 syncInputs(lightnessSlider, lightnessInput);
 /*Sync sliders range and number inputs*/
@@ -159,10 +168,12 @@ function syncInputs(rangeInput, numberInput) {
 
 
 const updateSecondary = () => {
+  /*const h = hueSlider.value;*/
   const s = saturationSlider.value;
   const l = lightnessSlider.value;
   
   // Calculate secondary color based on primary color and slider values
+  /*document.documentElement.style.setProperty('--ratio__sec_h', h);*/
   document.documentElement.style.setProperty('--ratio__sec_s', s);
   document.documentElement.style.setProperty('--ratio__sec_l', l);
 
@@ -171,6 +182,7 @@ const updateSecondary = () => {
 };
 
 function updateSecondary_Sliders(s, l){
+ /* hueSlider.value = h;*/
   saturationSlider.value = s;
   lightnessSlider.value = l;
 }
@@ -201,6 +213,7 @@ function alignInputsToHex(){
 }
 
 /*Check input contrast for text*/
+
 function hexToRgb(hex) {
     let r = parseInt(hex.substring(0, 2), 16);
     let g = parseInt(hex.substring(2, 4), 16);
@@ -226,18 +239,21 @@ function getContrastColor(hex) {
 function checkInputContrast(){
 var hexColor = colorInput.value;
 var textColor = getContrastColor(hexColor);
-colorInput.style.color = textColor;  
-  
+colorInput_wrapper.style.color = textColor; 
+colorInput.style.color = textColor;
+colorInput_copyToCB.style.color = textColor; 
+
 }
 
 /* Color theme selection modes*/
+
 const colorSchemeSelector = document.querySelectorAll('input[name="colorScheme"]');
 let selectedColorScheme;
 
 colorSchemeSelector.forEach((radio) => {
   radio.addEventListener('change', function () {
     selectedColorScheme = this.value;
-    // Generate the secondary color based on the selected color scheme
+    // Call a function to generate the secondary color based on the selected color scheme
     generateSecondaryColor(selectedColorScheme);
     updateSecondary();
    

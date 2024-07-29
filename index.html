@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>CodePen - WIP--Relative color palette</title>
-  <link rel="stylesheet" href="./style.css">
+  <meta name="viewport" content="initial-scale = 1.0,maximum-scale = 1.0" />
+<title>ButtonSoup:: Light-weight theme builder</title>
+<link rel="stylesheet" href="./style.css">
 
 </head>
 <body>
 <!-- partial:index.partial.html -->
 <body class="mainTheme--bright mainTheme--dark" onload="init()">
 <header class="header">
-  <p class="header_title"><strong>ButtonSoup</strong> | Light-weight theme builder</p>
+  <p class="header_title"><span><strong>ButtonSoup</strong></span><span class="bodyText--small">Light-weight theme builder</span></p>
   <div class="toggle_comp">
     
   <label id="themeSwitch" class="switch">
@@ -35,7 +37,7 @@
 <section class="palettes_section ">
   
 
-  <label class="heading_05">Set primary color:</label>
+  <label class="heading_05">Core palette:</label>
   <ul class="palette palette_brand">
   <li class="wrapper__primary_color"> 
     <div class="button_copy" id="mainInput_copyToCB" >
@@ -49,8 +51,8 @@
 <div id="ctrl_hues">
   <div class="wrapper_color_picker">
   <input class="color_thumb" id="colorPicker__primary" type="color" value="transparent" title="pick primary color"/>
-  <label class="color_picker__label bodyText--small">
-    Adjust primary hue
+  <label class="bodyText--small">
+    Primary hue
   </label>
   </div>
 <div  class='wrapper_segCtrl'>
@@ -253,7 +255,7 @@
 </section>
   <footer class='footer'><p class="bodyText--small">
     Made with love by
-    <a href='https://avinvadas.com' target='_blank'>Avin Vadas</a>&nbsp|&nbsp ButtonSoup is an open-source project. Check it out on <a href='https://github.com/avinvadas/buttonSoup' target='_blank'>Github</a>.  </p>
+    <a href='https://avinvadas.com' target='_blank'>Avin Vadas</a>. ButtonSoup is an open-source project, Check it out on <a href='https://github.com/avinvadas/buttonSoup' target='_blank'>Github</a>.  </p>
   </footer>
 </body>
 <!-- partial -->
