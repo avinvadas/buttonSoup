@@ -21,7 +21,7 @@ function presentColorValues(className){
 function setClickToCopy(domElement){
   domElement.addEventListener("click", function() {
   copyTextToClipboard(domElement.hex);
-  domElement.innerHTML = '<span class="ticker__hex">Copied!</span>'+ icon_copy;
+  domElement.innerHTML = '<span class="ticker__hex">✓ Copied!</span>'+ icon_copy;
 
   // Display the indication for 2 seconds
   setTimeout(function() {
@@ -85,26 +85,56 @@ function extractRGBandConvertToHex(colorString) {
 }
 
 
-/*Copy hex to clipboard*/
+/*Copy to clipboard: Single hex: */
 function copyTextToClipboard(text) {
-  // Use the Clipboard API for better usability, especially on mobile
-  if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(() => {
-          console.log('Text copied to clipboard:', text);
-      }).catch(err => {
-          console.error('Could not copy text: ', err);
-      });
-  } else {
-      // Fallback for older browsers
-      const dummyElement = document.createElement("textarea");
-      document.body.appendChild(dummyElement);
-      dummyElement.value = text;
-      dummyElement.select();
-      document.execCommand("copy");
-      document.body.removeChild(dummyElement);
-      console.log('Text copied to clipboard (fallback):', text);
-  }
+    // Use the Clipboard API for better usability, especially on mobile
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+            console.log('Text copied to clipboard:', text);
+        }).catch(err => {
+            console.error('Could not copy text: ', err);
+        });
+    } else {
+        // Fallback for older browsers
+        const dummyElement = document.createElement("textarea");
+        document.body.appendChild(dummyElement);
+        dummyElement.value = text;
+        dummyElement.select();
+        document.execCommand("copy");
+        document.body.removeChild(dummyElement);
+        
+    }
 }
+/*Copy to Clipboard: entire palette: */
+function copyPaletteToClipboard(palette) {
+    // Construct the selector directly without changing 'palette---primary'
+    const paletteSelector = `.palette--${palette}`;
+    const paletteElement = document.querySelector(paletteSelector);
+
+    console.log('Palette Selector:', paletteSelector);
+    console.log('Palette Element:', paletteElement);
+
+    if (!paletteElement) {
+        console.error('Palette not found:', palette);
+        return; // Exit early if the palette is not found
+    }
+
+    const colorTickers = paletteElement.getElementsByClassName("colorTicker");
+    const colors = {};
+
+    Array.from(colorTickers).forEach((ticker, index) => {
+        const style = window.getComputedStyle(ticker);
+        const bgColor = style.getPropertyValue('background-color');
+        const hexColor = extractRGBandConvertToHex(bgColor);
+        colors[`Color${index + 1}`] = hexColor;
+    });
+
+    const colorsJson = JSON.stringify(colors, null, 2);
+    console.log(colorsJson);
+    copyTextToClipboard(colorsJson);
+}
+
+
 
 
 /*-------------------------------------------------------*/

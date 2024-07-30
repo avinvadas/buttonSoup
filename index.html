@@ -2,9 +2,7 @@
 <html lang="en" >
 <head>
   <meta charset="UTF-8">
-  <title>CodePen - WIP--Relative color palette</title>
-  <meta name="viewport" content="initial-scale = 1.0,maximum-scale = 1.0" />
-<!--Clarity tracking code-->-->
+  <!--Clarity tracking code-->-->
 <script type="text/javascript">
   (function(c,l,a,r,i,t,y){
       c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -13,6 +11,7 @@
   })(window, document, "clarity", "script", "neyh744rkj");
 </script>
 <!---->
+  <meta name="viewport" content="initial-scale = 1.0,maximum-scale = 1.0" />
 <title>ButtonSoup:: Light-weight theme builder</title>
 <link rel="stylesheet" href="./style.css">
 
@@ -46,7 +45,7 @@
 <section class="palettes_section ">
   
 
-  <label class="heading_05">Type primary color:</label>
+  <label class="heading_05">Type primary color hex:</label>
   <ul class="palette palette_brand">
   <li class="wrapper__primary_color excludedFromColorTheme"> 
     <div class="button_copy" id="mainInput_copyToCB" >
@@ -61,7 +60,7 @@
   <div class="wrapper_color_picker">
   <input class="color_thumb" id="colorPicker__primary" type="color" value="transparent" title="pick primary color"/>
   <label class="bodyText--small">
-    Primary hue
+    Primary color
   </label>
   </div>
 <div  class='wrapper_segCtrl'>
@@ -188,47 +187,101 @@
 </div>
         </label>
         <input class="sliderInp" type="range" id="lightnessSlider" min="0" max="100" value="50" />
-        <input class="numberInp" type="number" id="lightnessInput" min="0" max="100" step="1"> <!-- Add input field for Lightness -->
-       <!-- <span class="icon_reset">
-            <button class="button button--reset" id='butReset'>
-                <span class="icon_reset"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M463.5 224l8.5 0c13.3 0 24-10.7 24-24l0-128c0-9.7-5.8-18.5-14.8-22.2s-19.3-1.7-26.2 5.2L413.4 96.6c-87.6-86.5-228.7-86.2-315.8 1c-87.5 87.5-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3c62.2-62.2 162.7-62.5 225.3-1L327 183c-6.9 6.9-8.9 17.2-5.2 26.2s12.5 14.8 22.2 14.8l119.5 0z"/></svg></span> Reset  
-            </button>
-        </span>-->
+        <input class="numberInp" type="number" id="lightnessInput" min="0" max="100" step="1"> 
       </div>
     </div>
   </section>
 <!-- Color lightness levels-->
-<section class="palettes_section palette--primary">
-<h5 class="heading_05">Levels</h5>
-  <h6 class="heading_06">Primary spread</h6>
-<ul class="palette">
-<li class="colorTicker">L01</li>
-<li class="colorTicker">L02</li>
-<li class="colorTicker">L03</li>
-<li class="colorTicker">L04</li>
-<li class="colorTicker">L05</li>
-<li class="colorTicker">L06</li>
-<li class="colorTicker">L07</li>
+<section class="palettes_section">
+<h5 class="heading_05">Level spreads</h5>
+  <div class='palette_heading'>
+  <h6 class="heading_06">Primary</h6>
+   <button onclick="copyPaletteToClipboard('primary')" class="button--copyPalette">
+     <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
+     Copy JSON
+    </button>
+  </div>
+
+<ul class="palette palette--primary">
+<li class="colorTicker">Color 01</li>
+<li class="colorTicker">Color 02</li>
+<li class="colorTicker">Color 03</li>
+<li class="colorTicker">Color 04</li>
+<li class="colorTicker">Color 05</li>
+<li class="colorTicker">Color 06</li>
+<li class="colorTicker">Color 07</li>
 
 </ul>
 </section>
-<section class="palettes_section  palette--secondary">
+<section class="palettes_section">
   
-  <h6 class="heading_06">Secondary spread</h6>
-<ul class="palette">
-<li class="colorTicker">L01</li>
-<li class="colorTicker">L02</li>
-<li class="colorTicker">L03</li>
-<li class="colorTicker">L04</li>
-<li class="colorTicker">L05</li>
-<li class="colorTicker">L06</li>
-<li class="colorTicker">L07</li>
+  <div class='palette_heading'>
+  <h6 class="heading_06">Secondary</h6>
+   <button onclick="copyPaletteToClipboard('secondary')" class="button--copyPalette">
+     <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
+     Copy JSON
+    </button>
+  </div>
+<ul class="palette palette--secondary">
+<li class="colorTicker">Color 01</li>
+<li class="colorTicker">Color 02</li>
+<li class="colorTicker">Color 03</li>
+<li class="colorTicker">Color 04</li>
+<li class="colorTicker">Color 05</li>
+<li class="colorTicker">Color 06</li>
+<li class="colorTicker">Color 07</li>
 
 </ul>
 </section>
+<section class="palettes_section palettes_accent">
+<h5 class="heading_05">Accents</h5>
+<div class='palette_heading'>
+  <h6 class="heading_06">Accent01</h6>
+   <button onclick="copyPaletteToClipboard('accents01')" class="button--copyPalette">
+     <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
+     Copy JSON
+    </button>
+  </div>
+<ul class="palette palette--accents01">
+<li class="colorTicker">Color 01</li>
+<li class="colorTicker">Color 02</li>
+<li class="colorTicker">Color 03</li>
+<li class="colorTicker">Color 04</li>
+<li class="colorTicker">Color 05</li>
+</ul>
+ <div class='palette_heading'>
+  <h6 class="heading_06">Accent02</h6>
+   <button onclick="copyPaletteToClipboard('accents02')" class="button--copyPalette">
+     <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
+     Copy JSON
+    </button>
+  </div>
+<ul class="palette palette--accents02">
+<li class="colorTicker">Color 01</li>
+<li class="colorTicker">Color 02</li>
+<li class="colorTicker">Color 03</li>
+<li class="colorTicker">Color 04</li>
+<li class="colorTicker">Color 05</li>
+</ul>
+ <div class='palette_heading'>
+  <h6 class="heading_06">Accent03</h6>
+   <button onclick="copyPaletteToClipboard('accents03')" class="button--copyPalette">
+     <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
+     Copy JSON
+    </button>
+  </div>
+<ul class="palette palette--accents03">
+<li class="colorTicker">Color 01</li>
+<li class="colorTicker">Color 02</li>
+<li class="colorTicker">Color 03</li>
+<li class="colorTicker">Color 04</li>
+<li class="colorTicker">Color 05</li>
+</ul>
+</section>
+  
 <!------------------------>
 <section class="palettes_section">
-<h5 class="heading_05">Neutrals</h5>
+<h5 class="heading_05">Neutral spreads</h5>
   <div class="toggle_comp">
   <label id="switchChroma" class="switch">
   <input type="checkbox" onChange="update_Neutral_Saturation()" checked>
@@ -236,35 +289,48 @@
 </label>
   <div id="chromaToggle__label" class="bodyText--small">Chroma on</div>
   </div>
-  <h6 class="heading_06">Bright</h6>
+  <div class='palette_heading'>
+  <h6 class="heading_06">Brights</h6>
+   <button onclick="copyPaletteToClipboard('bright')" class="button--copyPalette">
+     <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
+     Copy JSON
+    </button>
+  </div>
 <ul class="palette palette--bright">
-<li class="colorTicker">L01</li>
-<li class="colorTicker">L02</li>
-<li class="colorTicker">L03</li>
-<li class="colorTicker">L04</li>
-<li class="colorTicker">L05</li>
-<li class="colorTicker">L06</li>
-<li class="colorTicker">L07</li>
+<li class="colorTicker">Color 01</li>
+<li class="colorTicker">Color 02</li>
+<li class="colorTicker">Color 03</li>
+<li class="colorTicker">Color 04</li>
+<li class="colorTicker">Color 05</li>
+<li class="colorTicker">Color 06</li>
+<li class="colorTicker">Color 07</li>
 
 </ul>
 </section>
 <section class="palettes_section">
   
-  <h6 class="heading_06">Dark</h6>
+   <div class='palette_heading'>
+  <h6 class="heading_06">Darks</h6>
+   <button onclick="copyPaletteToClipboard('dark')" class="button--copyPalette">
+     <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
+      Copy JSON
+    </button>
+    
+  </div>
 <ul class="palette palette--dark">
-<li class="colorTicker">L01</li>
-<li class="colorTicker">L02</li>
-<li class="colorTicker">L03</li>
-<li class="colorTicker">L04</li>
-<li class="colorTicker">L05</li>
-<li class="colorTicker">L06</li>
-<li class="colorTicker">L07</li>
+<li class="colorTicker">Color 01</li>
+<li class="colorTicker">Color 02</li>
+<li class="colorTicker">Color 03</li>
+<li class="colorTicker">Color 04</li>
+<li class="colorTicker">Color 05</li>
+<li class="colorTicker">Color 06</li>
+<li class="colorTicker">Color 07</li>
 
 </ul>
 </section>
   <footer class='footer'><p class="bodyText--small">
-    Made with love by
-    <a href='https://avinvadas.com' target='_blank'>Avin Vadas</a>. ButtonSoup is an open-source project, Check it out on <a href='https://github.com/avinvadas/buttonSoup' target='_blank'>Github</a>.  </p>
+    Created by
+    <a href='https://bio.site/avinvadas' target='_blank'>Avin Vadas</a> | ButtonSoup is open-source, Check it out on <a href='https://github.com/avinvadas/buttonSoup' target='_blank'>Github</a>.</p>
   </footer>
 </body>
 <!-- partial -->

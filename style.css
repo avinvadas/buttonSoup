@@ -13,6 +13,34 @@
   --base_lightness_white: 100;  /* Lightness for white */
   --module_ratio: 1.25; /*proportions ratio*/
   
+  /*-----------------------------------------*/ 
+/*TYPOGRAPHY*/
+/*typefaces:*/
+--typeface-heading: "Open Sans", sans-serif;
+--typeface-body: "Open Sans", sans-serif;
+--font-size-body: 1rem;
+
+  
+ /*weight from 300 to 800*/
+--font-weight-key: 200;
+  
+  /*font sizes*/
+  --font-size-small: calc(var(--font-size-body) / var(--module_ratio));
+  --font-size-h6: calc(var(--font-size-body)*var(--module_ratio));
+  --font-size-h5: calc(var(--font-size-h6) * var(--module_ratio));
+  --font-size-h4: calc(var(--font-size-h5) * var(--module_ratio));
+  --font-size-h3: calc(var(--font-size-h4) * var(--module_ratio));
+  --font-size-h2: calc(var(--font-size-h3) * var(--module_ratio));
+  --font-size-h1: calc(var(--font-size-h2) * var(--module_ratio));
+  
+  /*font weights--Variable Fonts only*/
+  --font-weight-h6: calc(var(--font-weight-key) * var(--module_ratio));
+  --font-weight-h5: calc(var(--font-weight-h6) * var(--module_ratio));
+  --font-weight-h4: calc(var(--font-weight-h5) * var(--module_ratio));
+  --font-weight-h3: calc(var(--font-weight-h4) * var(--module_ratio));
+  --font-weight-h2: calc(var(--font-weight-h3) * var(--module_ratio));
+  --font-weight-h1: calc(var(--font-weight-h2) * var(--module_ratio));
+  
 }
 
 
@@ -58,7 +86,29 @@
     --color_secondary_hsl_600: hsl(from var(--color_secondary) h s calc((var(--base_lightness) - 20)*1%)); 
     --color_secondary_hsl_700: hsl(from var(--color_secondary) h s calc((var(--base_lightness) - 35)*1%)); 
   
+
+    
+   /*Accent palettes*/
+  --color_accent01_hsl_A:  var(--color_primary);
+  --color_accent01_hsl_B:  hsl(from var(--color_primary) h s calc(l * 0.5));
+  --color_accent01_hsl_C: hsl(from var(--color_primary) h s calc(l *0.2));
+  --color_accent01_hsl_D:  hsl(from var(--color_secondary) h s  calc(l * 0.5));
+  --color_accent01_hsl_E:  var(--color_secondary);
   
+  --color_accent02_hsl_A: hsl(from var(--color_secondary) calc(h * (var(--hue-differentiator)*0.33)) calc(s * 0.5) calc(l * 0.1));
+  --color_accent02_hsl_B: var(--color_secondary); 
+  --color_accent02_hsl_C: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.15)) calc(s * 0.33) calc(l * 1.66));  
+  --color_accent02_hsl_D: var(--color_primary); 
+  --color_accent02_hsl_E: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.33)) calc(s * 0.5) calc(l * 0.33)); 
+ 
+  
+  --color_accent03_hsl_A: var(--color_secondary);
+  --color_accent03_hsl_B: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.25)) s calc(l * 0.85));
+  --color_accent03_hsl_C: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.5)) s calc(l * 0.6));  
+  --color_accent03_hsl_D: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.75)) s calc(l * 0.35));
+  --color_accent03_hsl_E: var(--color_primary); 
+  
+    
   /*Neutral core hsl*/
 
     
@@ -100,6 +150,25 @@
   --color_secondary_600: rgb(from var(--color_secondary_hsl_600) r g b);
   --color_secondary_700: rgb(from var(--color_secondary_hsl_700) r g b);
   
+  /*Accent01*/
+  --color_accent_01_A: rgb(from var(--color_accent01_hsl_A) r g b);
+  --color_accent_01_B: rgb(from var(--color_accent01_hsl_B) r g b);
+  --color_accent_01_C: rgb(from var(--color_accent01_hsl_C) r g b);
+  --color_accent_01_D: rgb(from var(--color_accent01_hsl_D) r g b);
+  --color_accent_01_E: rgb(from var(--color_accent01_hsl_E) r g b);
+   /*Accent02*/
+  --color_accent_02_A: rgb(from var(--color_accent02_hsl_A) r g b);
+  --color_accent_02_B: rgb(from var(--color_accent02_hsl_B) r g b);
+  --color_accent_02_C: rgb(from var(--color_accent02_hsl_C) r g b);
+  --color_accent_02_D: rgb(from var(--color_accent02_hsl_D) r g b);
+  --color_accent_02_E: rgb(from var(--color_accent02_hsl_E) r g b);
+  /*Accent03*/
+  --color_accent_03_A: rgb(from var(--color_accent03_hsl_A) r g b);
+  --color_accent_03_B: rgb(from var(--color_accent03_hsl_B) r g b);
+  --color_accent_03_C: rgb(from var(--color_accent03_hsl_C) r g b);
+  --color_accent_03_D: rgb(from var(--color_accent03_hsl_D) r g b);
+  --color_accent_03_E: rgb(from var(--color_accent03_hsl_E) r g b);
+  
   /*Neutral darks*/
   --color_level_dark_100: rgb(from var(--color_level_dark_hsl_100) r g b);
   --color_level_dark_200: rgb(from var(--color_level_dark_hsl_200) r g b);
@@ -121,33 +190,7 @@
 
 
 /*-----------------------------------------*/ 
-/*TYPOGRAPHY*/
-/*typefaces:*/
---typeface-heading: "Open Sans", sans-serif;
---typeface-body: "Open Sans", sans-serif;
---font-size-body: 1rem;
 
-  
- /*weight from 300 to 800*/
---font-weight-key: 300;
-  
-  /*font sizes*/
-  --font-size-small: calc(var(--font-size-body) / var(--module_ratio));
-  --font-size-h6: calc(var(--font-size-body)*var(--module_ratio));
-  --font-size-h5: calc(var(--font-size-h6) * var(--module_ratio));
-  --font-size-h4: calc(var(--font-size-h5) * var(--module_ratio));
-  --font-size-h3: calc(var(--font-size-h4) * var(--module_ratio));
-  --font-size-h2: calc(var(--font-size-h3) * var(--module_ratio));
-  --font-size-h1: calc(var(--font-size-h2) * var(--module_ratio));
-  
-
-  /*font weights--Variable Fonts only*/
-  --font-weight-h6: calc(var(--font-weight-key) * var(--module_ratio));
-  --font-weight-h5: calc(var(--font-weight-h6) * var(--module_ratio));
-  --font-weight-h4: calc(var(--font-weight-h5) * var(--module_ratio));
-  --font-weight-h3: calc(var(--font-weight-h4) * var(--module_ratio));
-  --font-weight-h2: calc(var(--font-weight-h3) * var(--module_ratio));
-  --font-weight-h1: calc(var(--font-weight-h2) * var(--module_ratio));
   
 /*-----------------------------------------*/
   
@@ -201,10 +244,27 @@ html{
     --color_secondary_hsl_600: hsl(from var(--color_secondary) h s calc(var(--base_lightness) - 20)); 
     --color_secondary_hsl_700: hsl(from var(--color_secondary) h s calc(var(--base_lightness) - 35));
   
+  /*Accent palettes*/
+  --color_accent01_hsl_A:  var(--color_primary);
+  --color_accent01_hsl_B:  hsl(from var(--color_primary) h s calc(l * 0.5));
+  --color_accent01_hsl_C: hsl(from var(--color_primary) h s calc(l *0.2));
+  --color_accent01_hsl_D:  hsl(from var(--color_secondary) h s  calc(l * 0.5));
+  --color_accent01_hsl_E:  var(--color_secondary);
   
-  /*Neutral core hsl*/
+   --color_accent02_hsl_A: hsl(from var(--color_secondary) calc(h * (var(--hue-differentiator)*0.33)) calc(s * 0.5) calc(l * 0.1));
+  --color_accent02_hsl_B: var(--color_secondary); 
+  --color_accent02_hsl_C: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.15)) calc(s * 0.33) calc(l * 1.66));  
+  --color_accent02_hsl_D: var(--color_primary); 
+  --color_accent02_hsl_E: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.33)) calc(s * 0.5) calc(l * 0.33)); 
 
-    
+  --color_accent03_hsl_A: var(--color_secondary);
+  --color_accent03_hsl_B: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.25)) s calc(l * 0.85));
+  --color_accent03_hsl_C: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.5)) s calc(l * 0.6));  
+  --color_accent03_hsl_D: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.75)) s calc(l * 0.35));
+  --color_accent03_hsl_E: var(--color_primary); 
+  
+ 
+  /*Neutral core hsl*/
     /* Neutral Dark Theme shades: */
     --color_level_dark_hsl_100: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_black) + 30));
     --color_level_dark_hsl_200: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_black) + 20));
@@ -243,6 +303,25 @@ html{
   --color_secondary_600: rgb(from var(--color_secondary_hsl_600) r g b);
   --color_secondary_700: rgb(from var(--color_secondary_hsl_700) r g b);
   
+  /*Accent01*/
+  --color_accent_01_A: rgb(from var(--color_accent01_hsl_A) r g b);
+  --color_accent_01_B: rgb(from var(--color_accent01_hsl_B) r g b);
+  --color_accent_01_C: rgb(from var(--color_accent01_hsl_C) r g b);
+  --color_accent_01_D: rgb(from var(--color_accent01_hsl_D) r g b);
+  --color_accent_01_E: rgb(from var(--color_accent01_hsl_E) r g b);
+   /*Accent02*/
+  --color_accent_02_A: rgb(from var(--color_accent02_hsl_A) r g b);
+  --color_accent_02_B: rgb(from var(--color_accent02_hsl_B) r g b);
+  --color_accent_02_C: rgb(from var(--color_accent02_hsl_C) r g b);
+  --color_accent_02_D: rgb(from var(--color_accent02_hsl_D) r g b);
+  --color_accent_02_E: rgb(from var(--color_accent02_hsl_E) r g b);
+  /*Accent03*/
+  --color_accent_03_A: rgb(from var(--color_accent03_hsl_A) r g b);
+  --color_accent_03_B: rgb(from var(--color_accent03_hsl_B) r g b);
+  --color_accent_03_C: rgb(from var(--color_accent03_hsl_C) r g b);
+  --color_accent_03_D: rgb(from var(--color_accent03_hsl_D) r g b);
+  --color_accent_03_E: rgb(from var(--color_accent03_hsl_E) r g b);
+  
   /*Neutral darks*/
   --color_level_dark_100: rgb(from var(--color_level_dark_hsl_100) r g b);
   --color_level_dark_200: rgb(from var(--color_level_dark_hsl_200) r g b);
@@ -260,37 +339,7 @@ html{
   --color_level_bright_500: rgb(from var(--color_level_bright_hsl_500) r g b);
   --color_level_bright_600: rgb(from var(--color_level_bright_hsl_600) r g b);
   --color_level_bright_700: rgb(from var(--color_level_bright_hsl_700) r g b);
-
-
-
-/*-----------------------------------------*/ 
-/*TYPOGRAPHY*/
-/*typefaces:*/
---typeface-heading: "Open Sans", sans-serif;
---typeface-body: "Open Sans", sans-serif;
---font-size-body: 1rem;
-
-  
- /*weight from 300 to 800*/
---font-weight-key: 300;
-  
-  /*font sizes*/
-  --font-size-small: calc(var(--font-size-body) / var(--module_ratio));
-  --font-size-h6: calc(var(--font-size-body)*var(--module_ratio));
-  --font-size-h5: calc(var(--font-size-h6) * var(--module_ratio));
-  --font-size-h4: calc(var(--font-size-h5) * var(--module_ratio));
-  --font-size-h3: calc(var(--font-size-h4) * var(--module_ratio));
-  --font-size-h2: calc(var(--font-size-h3) * var(--module_ratio));
-  --font-size-h1: calc(var(--font-size-h2) * var(--module_ratio));
-  
-  /*font weights--Variable Fonts only*/
-  --font-weight-h6: calc(var(--font-weight-key) * var(--module_ratio));
-  --font-weight-h5: calc(var(--font-weight-h6) * var(--module_ratio));
-  --font-weight-h4: calc(var(--font-weight-h5) * var(--module_ratio));
-  --font-weight-h3: calc(var(--font-weight-h4) * var(--module_ratio));
-  --font-weight-h2: calc(var(--font-weight-h3) * var(--module_ratio));
-  --font-weight-h1: calc(var(--font-weight-h2) * var(--module_ratio));
-  }
+}
 }
 
 .mainTheme--bright{
@@ -442,9 +491,49 @@ outline-offset: -1rem ;
   }
 .button_copy:hover{
     opacity:0.5;
-  color:inherit;
+    color:inherit;
   }
-
+.palette_heading{
+  display:flex;
+  flex-direction:row;
+  justify-content:flex-start;
+  align-items:bottom;
+}
+.button--copyPalette{
+  color: var(--font_color);
+  font-size:var(--font-size-small);
+  opacity:0.75;
+  border:none;
+  padding:0.5rem;
+  cursor:pointer;
+  display:flex;
+  flex-direction:raw;
+  align-items:center;
+  gap:0.25rem;
+  width:auto;
+  margin-left:0.25rem;
+  border-radius:0.25rem;
+  background:transparent;
+}
+.button--copyPalette svg{
+  width:1rem;
+  height:1rem;
+}
+.button--copyPalette:hover{
+  color: var(--font_color);
+  background:transparent;
+  opacity:1;
+}
+.button--copyPalette:active{
+  color: var(--font_color);
+  background:rgb(from var(--font_color) r g b / 0.25);
+  
+  
+}
+.button--copyPalette:active::after{
+  content: ' ✓ ';
+  
+}
 #ctrl_hues{
   display:flex;
   flex-direction:row;
@@ -699,10 +788,7 @@ input[type="radio"] {
   border-radius:1rem;
   
 }
-h5{
-  font-size:1rem;
-  font-weight:300;
-}
+
 .palette{
   width:100%;
   height:auto;
@@ -724,7 +810,7 @@ h5{
  */
   display:grid;
   grid-template-rows:auto 2rem;
-  grid-template-columns:auto 2rem;
+  grid-template-columns:auto 1.75rem;
   cursor:pointer;
   min-width: 5rem;
   min-height:12rem;
@@ -737,16 +823,24 @@ h5{
   place-items:end;
   
 }
+.palettes_accent .palette{
+  margin-bottom:1rem;
+}
+.palettes_accent .colorTicker{
+  min-height:8rem;
+}
 
 .ticker__hex{
  grid-row:2 /span 1;
  grid-column:1 /span 1;
- 
+ opacity:0.66;
  vertical-align:center;
-  font-size: var(--p-small);
+  font-size: var(--font-size-small);
   text-align:bottom;
-  margin:auto;
+  
   margin-right:0;
+  margin-bottom:0.33rem;
+  
 }
 .icon_copy{
   grid-row:2 /span 1;
@@ -755,6 +849,8 @@ h5{
   height:0.85rem;
   margin:auto;
   
+  margin-left:0.25rem;
+  opacity:0.66;
   
 }
 /*palettes spreading*/
@@ -802,6 +898,59 @@ h5{
 .palette--secondary li:nth-child(7) {
  background-color:var(--color_secondary_700);
 }
+
+
+/*Accent01 colors*/
+.palette--accents01 li:nth-child(1){
+  background-color:var(--color_accent_01_A);
+}
+.palette--accents01 li:nth-child(2){
+  background-color:var(--color_accent_01_B);
+}
+.palette--accents01 li:nth-child(3){
+  background-color:var(--color_accent_01_C);
+}
+.palette--accents01 li:nth-child(4){
+  background-color:var(--color_accent_01_D);
+}
+.palette--accents01 li:nth-child(5){
+  background-color:var(--color_accent_01_E);
+}
+
+/*Accent02 colors*/
+.palette--accents02 li:nth-child(1){
+  background-color:var(--color_accent_02_A);
+}
+.palette--accents02 li:nth-child(2){
+  background-color:var(--color_accent_02_B);
+}
+.palette--accents02 li:nth-child(3){
+  background-color:var(--color_accent_02_C);
+}
+.palette--accents02 li:nth-child(4){
+  background-color:var(--color_accent_02_D);
+}
+.palette--accents02 li:nth-child(5){
+  background-color:var(--color_accent_02_E);
+}
+
+/*Accent03 colors*/
+.palette--accents03 li:nth-child(1){
+  background-color:var(--color_accent_03_A);
+}
+.palette--accents03 li:nth-child(2){
+  background-color:var(--color_accent_03_B);
+}
+.palette--accents03 li:nth-child(3){
+  background-color:var(--color_accent_03_C);
+}
+.palette--accents03 li:nth-child(4){
+  background-color:var(--color_accent_03_D);
+}
+.palette--accents03 li:nth-child(5){
+  background-color:var(--color_accent_03_E);
+}
+
 .palette--dark{
   color:rgba(255,255,255,0.66);
 }
