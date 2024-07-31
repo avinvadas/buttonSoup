@@ -1,29 +1,45 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Display:ital,wght@0,100..900;1,100..900&family=Oswald:wght@200..700&family=Signika+Negative:wght@300..700&display=swap');
+
 /*Legacy support*/
 
 * {
   margin:0;
   padding:0;
-  
-  --color_primary-hex: #FF385C; /*<-- Seed color to change them all*/
-  --hue-differentiator: 180;/*hue degree*/
-  --saturation-factor: 5; /*Saturation level*/
+    
+  /*PRIMARY COLOR:*/
+  /*Start with defining your primary color as seed for the rest of the system: */
+  --color_primary-hex: #FF385C; 
+
+  /*SECONDARY COLOR: */
+  /*Set System's harmony type by setting hue degree (0 to 360) of the secondary color in relation to the primary one: */
+  --hue-differentiator: 180;
+
+  /*COLOR LEVELS BREAKDOWN*/
+   /*Set System's medial point when spreading each of the colors (primary and secondary) into levels: */
   --base_lightness: 50;
-  --base_lightness_black: 20;  /* Lightness for the brightest dark theme */
-  --base_lightness_white: 100;  /* Lightness for white */
-  --module_ratio: 1.5; /*proportions ratio*/
   
+  /*NEUTRAL LEVELS (GRAYSCALES, BRIGHT AND DARK PALETTES)*/
+  /* Lightness edge dark theme: */
+  --base_lightness_black: 20; 
+  /* Lightness edge for bright theme: */
+  --base_lightness_white: 100; 
+ /*Chroma level. 0 for absolute grayscale*/
+  --saturation-factor: 5;
+
+
   /*-----------------------------------------*/ 
 /*TYPOGRAPHY*/
 /*typefaces:*/
 --typeface-heading: "Open Sans", sans-serif;
 --typeface-body: "Open Sans", sans-serif;
+--typeface-number: "Oswald", sans-serif;
 --font-size-body: 1rem;
 
   
  /*weight from 300 to 800*/
 --font-weight-key: 200;
-  
+--module_ratio: 1.33; /*proportions ratio*/
   /*font sizes*/
   --font-size-small: calc(var(--font-size-body) / var(--module_ratio));
   --font-size-h6: calc(var(--font-size-body));
@@ -345,7 +361,7 @@ html{
   --font_color: white;
   --bg_color: #1e1e1e;
   --layout_border: rgba(255, 255, 255, 0.15);
-  --font_color--clickable: #119BFF;
+  --font_color--clickable: #52d6fc;
 }
 .mainTheme--dark .excludedFromColorTheme{
   color: initial;
@@ -441,6 +457,11 @@ a{
   
 }
 .input_field--emphasized{
+  font-family: var(--typeface-number);
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  
   grid-column: 1/ span 2;
   grid-row: 1/ span 2;
   text-transform:uppercase;
@@ -451,9 +472,10 @@ a{
   flex:1;
   border:none;
   font-size: clamp(3rem, 8vmax, 8rem);
-  font-weight: var(--font-weight-h2);
+  /*font-weight: var(--font-weight-h2);*/
   padding-left:1.5rem;
   background-color: var(--color_primary);
+  box-shadow:inset 0 0 1rem 0 rgba(0,0,0,0.33);
   z-index:0;
 }
 
@@ -482,14 +504,15 @@ outline-offset: -1rem ;
 .palette_heading{
   display:flex;
   flex-direction:row;
-  justify-content:flex-start;
+  justify-content:space-between;
   align-items:last baseline;
 }
 .button--copyPalette{
   color: var(--font_color);
+  font-family: var(--typeface-body);
   font-size:var(--font-size-small);
   font-weight:200;
-  opacity:0.75;
+  opacity:0.85;
   border:none;
   padding:0.5rem;
   cursor:pointer;
@@ -498,8 +521,9 @@ outline-offset: -1rem ;
   align-items:center;
   gap:0.25rem;
   width:auto;
-  margin-left:0.25rem;
+  margin-left:0.5rem;
   border-radius:0.25rem;
+  border: 1px solid var(--font_color);
   background:transparent;
 }
 .button--copyPalette svg{
@@ -517,10 +541,7 @@ outline-offset: -1rem ;
   
   
 }
-.button--copyPalette:active::after{
-  content: ' ✓ ';
-  
-}
+
 #ctrl_hues{
   display:flex;
   flex-direction:row;
@@ -759,7 +780,6 @@ input[type="radio"] {
 }
 .palette_brand li:nth-child(2){
   background-color: var(--color_secondary_rgb); 
-  
   flex: 0.6;
 }
 
@@ -803,11 +823,13 @@ input[type="radio"] {
   min-height:12rem;
   height:100%;
   flex:1;
-  font-size:var(--font-size-small);
-  font-weight: var(--font-weight-key);
+  font-family: var(--typeface-number);
+  font-size:var(--font-size-body);
+  font-weight: 300;
   text-align:right;
   grid-auto-flow: row;
   place-items:end;
+  padding-bottom:0.25rem;
   
 }
 .palettes_accent .palette{
@@ -826,7 +848,7 @@ input[type="radio"] {
   text-align:bottom;
   
   margin-right:0;
-  margin-bottom:0.33rem;
+  margin-bottom:0.15rem;
   
 }
 .icon_copy{
@@ -989,12 +1011,6 @@ input[type="radio"] {
 .palette--bright li:nth-child(7) {
  background-color:var(--color_level_bright_700);
 }
-
-
-
-
-
-
 
 .button{
   display:flex;
@@ -1159,6 +1175,7 @@ input:checked + .slider:before {
   .palette_brand{
     /*flex-direction:column;*/
     height:50vmin;
+    padding-bottom:0.25rem;
   }
   .palette_brand colorTicker{
     height:inherit;
@@ -1189,7 +1206,10 @@ input:checked + .slider:before {
  height:auto;
 }
 .input_field--emphasized{
-  font-size: 6vw;
+  font-size: 10vw;
+  text-align:center;
+  margin:auto;
+  padding-left:0;
  
 }
  .ctrl_hues{

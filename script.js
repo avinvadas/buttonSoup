@@ -44,7 +44,6 @@ function setHex(domElement) {
 
 
 
-
 /* Extract RGB Values and convert them to hex*/
 function extractRGBandConvertToHex(colorString) {
     let r = 0, g = 0, b = 0; // Initialize RGB values
@@ -107,32 +106,44 @@ function copyTextToClipboard(text) {
 }
 /*Copy to Clipboard: entire palette: */
 function copyPaletteToClipboard(palette) {
-    // Construct the selector directly without changing 'palette---primary'
-    const paletteSelector = `.palette--${palette}`;
-    const paletteElement = document.querySelector(paletteSelector);
+  // Construct the selector directly without changing 'palette---primary'
+  const paletteSelector = `.palette--${palette}`;
+  const paletteElement = document.querySelector(paletteSelector);
 
-    console.log('Palette Selector:', paletteSelector);
-    console.log('Palette Element:', paletteElement);
+  console.log('Palette Selector:', paletteSelector);
+  console.log('Palette Element:', paletteElement);
 
-    if (!paletteElement) {
-        console.error('Palette not found:', palette);
-        return; // Exit early if the palette is not found
-    }
+  if (!paletteElement) {
+      console.error('Palette not found:', palette);
+      return; // Exit early if the palette is not found
+  }
 
-    const colorTickers = paletteElement.getElementsByClassName("colorTicker");
-    const colors = {};
+  const colorTickers = paletteElement.getElementsByClassName("colorTicker");
+  const colors = {};
 
-    Array.from(colorTickers).forEach((ticker, index) => {
-        const style = window.getComputedStyle(ticker);
-        const bgColor = style.getPropertyValue('background-color');
-        const hexColor = extractRGBandConvertToHex(bgColor);
-        colors[`Color${index + 1}`] = hexColor;
-    });
+  Array.from(colorTickers).forEach((ticker, index) => {
+      const style = window.getComputedStyle(ticker);
+      const bgColor = style.getPropertyValue('background-color');
+      const hexColor = extractRGBandConvertToHex(bgColor);
+      colors[`Color${index + 1}`] = hexColor;
+  });
 
-    const colorsJson = JSON.stringify(colors, null, 2);
-    console.log(colorsJson);
-    copyTextToClipboard(colorsJson);
+  const colorsJson = JSON.stringify(colors, null, 2);
+  console.log(colorsJson);
+  copyTextToClipboard(colorsJson);
+
+  // Change the button label to "Copied to Clipboard!"
+  const button = document.querySelector(`button[onclick="copyPaletteToClipboard('${palette}')"]`);
+  const originalLabel = button.innerHTML;
+  button.innerHTML = "<svg title='icon copy' viewBox='0 0 448 512'><path fill='currentColor' d='M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z'></path></svg>"
+     + "Copied to Clipboard!";
+
+  // Change back the button label after 2 seconds
+  setTimeout(() => {
+      button.innerHTML = originalLabel;
+  }, 2000);
 }
+
 
 
 
@@ -165,8 +176,18 @@ colorInput.addEventListener("input", function() {
   const mainInput_copyToCB = document.getElementById('mainInput_copyToCB');
   mainInput_copyToCB.addEventListener("click", function() {
   copyTextToClipboard(colorInput.value);
+  copyFeedback_mainInput()
   });
-  
+  function copyFeedback_mainInput(){
+    // Show feedback message
+    const originalContent = colorInput.value; // Store the existing content
+    colorInput.value = '✓ Copied!';
+
+    // Set a timeout to revert back to original content
+    setTimeout(function() {
+      colorInput.value = originalContent; // Restore original content
+    }, 1250);
+  }
   
 /**/
   
