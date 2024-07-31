@@ -69,8 +69,10 @@
   
   /*Secondary color hsl*/
   --ratio__sec_h: calc(h - var(--hue-differentiator) * 1deg);
-  --ratio__sec_s: 70; /*Saturation. Default 100*/
-  --ratio__sec_l: 60; /*Lightness. Default 50*/
+  --input__sec_s: 70; /*stream from inputs*/
+  --input__sec_l: 60; /*stream from inputs*/
+  --ratio__sec_s: var(--input__sec_s); /*Saturation. Default 100*/
+  --ratio__sec_l: var(--input__sec_l); /*Lightness. Default 50*/
   --color_secondary: hsl(from var(--color_primary) 
                      calc((var(--ratio__sec_h) ))
                      calc((var(--ratio__sec_s) )*1%)
@@ -214,8 +216,10 @@ html{
   --color_primary: hsl(from var(--color_primary-hex) h  s l );
   /*Secondary color hsl*/
   --ratio__sec_h: calc(h - var(--hue-differentiator));
-  --ratio__sec_s: 70; /*Saturation. Default 100*/
-  --ratio__sec_l: 60; /*Lightness. Default 50*/
+  --input__sec_s: 70; /*stream from inputs*/
+  --input__sec_l: 60; /*stream from inputs*/
+  --ratio__sec_s: var(--input__sec_s); /*Saturation. Default 100*/
+  --ratio__sec_l: var(--input__sec_l); /*Lightness. Default 50*/
   --color_secondary: hsl(from var(--color_primary) 
                      var(--ratio__sec_h) 
                      var(--ratio__sec_s)
@@ -593,7 +597,6 @@ outline-offset: -1rem ;
   color:var(--font_color);
   cursor:pointer;
   padding-bottom:0.25rem;
-  
 }
 
 .utility_icon{
@@ -701,6 +704,7 @@ input[type="radio"] {
   
   color:black;
   border-bottom: 2px solid var(--font_color);
+ 
   
 }
 /*sliders*/
@@ -1263,6 +1267,7 @@ input:checked + .slider:before {
   color:var(--font_color);
   cursor:pointer;
   padding-bottom:0.25rem;
+  
 }
   input[type="range"]::-webkit-slider-thumb{
    height: 1rem;

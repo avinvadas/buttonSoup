@@ -1,0 +1,298 @@
+* {
+
+/*The color vars you wish to use in order to style your are the list under 'RGB Everything:'.
+Please note that this file includes redundant calculations, in order to provide fallback for browsers not yet fully supporting relative color (Safari, etc.) */ 
+  
+/*CSS VARS TO MANIPULATE*/
+  /*PRIMARY COLOR:*/
+  /*Start with defining your primary color as seed for the rest of the system: */
+  --color_primary-hex: #FF0000; 
+  /*SECONDARY COLOR: */
+  /*Set System's harmony type by setting hue degree (0 to 360) of the secondary color in relation to the primary one: */
+  --hue-differentiator: 180;
+  /*COLOR LEVELS BREAKDOWN*/
+   /*Set System's medial point when spreading each of the colors (primary and secondary) into levels: */
+  --base_lightness: 50;
+  /*NEUTRAL LEVELS (GRAYSCALES, BRIGHT AND DARK PALETTES)*/
+  /* Lightness edge dark theme: */
+  --base_lightness_black: 20; 
+  /* Lightness edge for bright theme: */
+  --base_lightness_white: 100; 
+ /*Chroma level. 0 for absolute grayscale*/
+  --saturation-factor: 5;
+ }
+
+
+/*Legacy support*/
+@supports not (color: hsl( from #000000 180 100 50)){
+
+  html{
+
+  --color_primary: hsl(from var(--color_primary-hex) h s l );
+  
+  /*Secondary color hsl*/
+  --ratio__sec_h: calc(h - var(--hue-differentiator) * 1deg);
+  --ratio__sec_s: 70; /*Saturation. Default 100*/
+  --ratio__sec_l: 60; /*Lightness. Default 50*/
+  --color_secondary: hsl(from var(--color_primary) 
+                     calc((var(--ratio__sec_h) ))
+                     calc((var(--ratio__sec_s) )*1%)
+                     calc((var(--ratio__sec_l))*1%));
+  --color_secondary_rgb: rgb(from var(--color_secondary) r g b);
+  
+  /*Primary and secondary level spreads*/
+
+    /* Brightness levels including primary color */
+    --color_primary_hsl_100: hsl(from var(--color_primary) h s calc((var(--base_lightness) + 45)*1%));
+    --color_primary_hsl_200: hsl(from var(--color_primary) h s calc((var(--base_lightness) + 35)*1%)); 
+    --color_primary_hsl_300: hsl(from var(--color_primary) h s calc((var(--base_lightness) + 25)*1%)); 
+    --color_primary_hsl_400: hsl(from var(--color_primary) h s calc((var(--base_lightness) + 15)*1%));  
+    --color_primary_hsl_500: hsl(from var(--color_primary) h s calc((var(--base_lightness) + 0)*1%));
+    --color_primary_hsl_600: hsl(from var(--color_primary) h s calc((var(--base_lightness) - 20)*1%)); 
+    --color_primary_hsl_700: hsl(from var(--color_primary) h s calc((var(--base_lightness) - 35)*1%)); 
+  
+    --color_secondary_hsl_100: hsl(from var(--color_secondary) h s calc((var(--base_lightness) + 45)*1%));
+    --color_secondary_hsl_200: hsl(from var(--color_secondary) h s calc((var(--base_lightness) + 35)*1%)); 
+    --color_secondary_hsl_300: hsl(from var(--color_secondary) h s calc((var(--base_lightness) + 25)*1%)); 
+    --color_secondary_hsl_400: hsl(from var(--color_secondary) h s calc((var(--base_lightness) + 15)*1%));  
+    --color_secondary_hsl_500: hsl(from var(--color_secondary) h s calc((var(--base_lightness) + 0)*1%));
+    --color_secondary_hsl_600: hsl(from var(--color_secondary) h s calc((var(--base_lightness) - 20)*1%)); 
+    --color_secondary_hsl_700: hsl(from var(--color_secondary) h s calc((var(--base_lightness) - 35)*1%)); 
+
+   /*Accent palettes*/
+  --color_accent01_hsl_A:  var(--color_primary);
+  --color_accent01_hsl_B:  hsl(from var(--color_primary) h s calc(l * 0.5));
+  --color_accent01_hsl_C: hsl(from var(--color_primary) h s calc(l *0.2));
+  --color_accent01_hsl_D:  hsl(from var(--color_secondary) h s  calc(l * 0.5));
+  --color_accent01_hsl_E:  var(--color_secondary);
+  
+  --color_accent02_hsl_A: hsl(from var(--color_secondary) calc(h * (var(--hue-differentiator)*0.33)) calc(s * 0.5) calc(l * 0.1));
+  --color_accent02_hsl_B: var(--color_secondary); 
+  --color_accent02_hsl_C: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.15)) calc(s * 0.33) calc(l * 1.66));  
+  --color_accent02_hsl_D: var(--color_primary); 
+  --color_accent02_hsl_E: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.33)) calc(s * 0.5) calc(l * 0.33)); 
+ 
+  
+  --color_accent03_hsl_A: var(--color_secondary);
+  --color_accent03_hsl_B: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.25)) s calc(l * 0.85));
+  --color_accent03_hsl_C: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.5)) s calc(l * 0.6));  
+  --color_accent03_hsl_D: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.75)) s calc(l * 0.35));
+  --color_accent03_hsl_E: var(--color_primary); 
+ 
+  /*Neutral core hsl*/
+
+    /* Neutral Dark Theme shades: */
+    --color_level_dark_hsl_100: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_black) + 30)*1%));
+    --color_level_dark_hsl_200: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_black) + 20)*1%));
+    --color_level_dark_hsl_300: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_black) + 10)*1%));
+    --color_level_dark_hsl_400: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_black) + 5)*1%));
+    --color_level_dark_hsl_500: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_black) + 2)*1%));
+    --color_level_dark_hsl_600: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_black) + 1)*1%));
+    --color_level_dark_hsl_700: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_black) + 0)*1%));
+
+    /* Neutral Bright Theme shades: */
+    --color_level_bright_hsl_100: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_white) - 30)*1%));
+    --color_level_bright_hsl_200: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_white) - 20)*1%));
+    --color_level_bright_hsl_300: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_white) - 10)*1%));
+    --color_level_bright_hsl_400: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_white) - 5)*1%));
+    --color_level_bright_hsl_500: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_white) - 2)*1%));
+    --color_level_bright_hsl_600: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_white) - 1)*1%));
+    --color_level_bright_hsl_700: hsl(from var(--color_primary) var(--hue-differentiator) calc(var(--saturation-factor)*1%) calc((var(--base_lightness_white) - 0)*1%));
+
+  /*RGB Everything:*/
+  /*primary*/
+  --color_primary_100: rgb(from var(--color_primary_hsl_100) r g b);
+  --color_primary_200: rgb(from var(--color_primary_hsl_200) r g b);
+  --color_primary_300: rgb(from var(--color_primary_hsl_300) r g b);
+  --color_primary_400: rgb(from var(--color_primary_hsl_400) r g b);
+  --color_primary_500: rgb(from var(--color_primary_hsl_500) r g b);
+  --color_primary_600: rgb(from var(--color_primary_hsl_600) r g b);
+  --color_primary_700: rgb(from var(--color_primary_hsl_700) r g b);
+
+    /*secondary*/
+  --color_secondary_100: rgb(from var(--color_secondary_hsl_100) r g b);
+  --color_secondary_200: rgb(from var(--color_secondary_hsl_200) r g b);
+  --color_secondary_300: rgb(from var(--color_secondary_hsl_300) r g b);
+  --color_secondary_400: rgb(from var(--color_secondary_hsl_400) r g b);
+  --color_secondary_500: rgb(from var(--color_secondary_hsl_500) r g b);
+  --color_secondary_600: rgb(from var(--color_secondary_hsl_600) r g b);
+  --color_secondary_700: rgb(from var(--color_secondary_hsl_700) r g b);
+  
+  /*Accent01*/
+  --color_accent_01_A: rgb(from var(--color_accent01_hsl_A) r g b);
+  --color_accent_01_B: rgb(from var(--color_accent01_hsl_B) r g b);
+  --color_accent_01_C: rgb(from var(--color_accent01_hsl_C) r g b);
+  --color_accent_01_D: rgb(from var(--color_accent01_hsl_D) r g b);
+  --color_accent_01_E: rgb(from var(--color_accent01_hsl_E) r g b);
+   /*Accent02*/
+  --color_accent_02_A: rgb(from var(--color_accent02_hsl_A) r g b);
+  --color_accent_02_B: rgb(from var(--color_accent02_hsl_B) r g b);
+  --color_accent_02_C: rgb(from var(--color_accent02_hsl_C) r g b);
+  --color_accent_02_D: rgb(from var(--color_accent02_hsl_D) r g b);
+  --color_accent_02_E: rgb(from var(--color_accent02_hsl_E) r g b);
+  /*Accent03*/
+  --color_accent_03_A: rgb(from var(--color_accent03_hsl_A) r g b);
+  --color_accent_03_B: rgb(from var(--color_accent03_hsl_B) r g b);
+  --color_accent_03_C: rgb(from var(--color_accent03_hsl_C) r g b);
+  --color_accent_03_D: rgb(from var(--color_accent03_hsl_D) r g b);
+  --color_accent_03_E: rgb(from var(--color_accent03_hsl_E) r g b);
+  
+  /*Neutral darks*/
+  --color_level_dark_100: rgb(from var(--color_level_dark_hsl_100) r g b);
+  --color_level_dark_200: rgb(from var(--color_level_dark_hsl_200) r g b);
+  --color_level_dark_300: rgb(from var(--color_level_dark_hsl_300) r g b);
+  --color_level_dark_400: rgb(from var(--color_level_dark_hsl_400) r g b);
+  --color_level_dark_500: rgb(from var(--color_level_dark_hsl_500) r g b);
+  --color_level_dark_600: rgb(from var(--color_level_dark_hsl_600) r g b);
+  --color_level_dark_700: rgb(from var(--color_level_dark_hsl_700) r g b);
+  
+  /*Neutral brights*/
+  --color_level_bright_100: rgb(from var(--color_level_bright_hsl_100) r g b);
+  --color_level_bright_200: rgb(from var(--color_level_bright_hsl_200) r g b);
+  --color_level_bright_300: rgb(from var(--color_level_bright_hsl_300) r g b);
+  --color_level_bright_400: rgb(from var(--color_level_bright_hsl_400) r g b);
+  --color_level_bright_500: rgb(from var(--color_level_bright_hsl_500) r g b);
+  --color_level_bright_600: rgb(from var(--color_level_bright_hsl_600) r g b);
+  --color_level_bright_700: rgb(from var(--color_level_bright_hsl_700) r g b);
+
+  }
+}
+
+/*Support for Modern browsers*/
+@supports (color: hsl( from #000000 180 100 50)){
+html{
+
+  --color_primary: hsl(from var(--color_primary-hex) h  s l );
+  /*Secondary color hsl*/
+  --ratio__sec_h: calc(h - var(--hue-differentiator));
+  --ratio__sec_s: 70; /*Saturation. Default 100*/
+  --ratio__sec_l: 60; /*Lightness. Default 50*/
+  --color_secondary: hsl(from var(--color_primary) 
+                     var(--ratio__sec_h) 
+                     var(--ratio__sec_s)
+                     var(--ratio__sec_l));
+  --color_secondary_rgb: rgb(from var(--color_secondary) r g b);
+  /**/
+  --ratio__ter_h: calc( h - 120);
+  --ratio__ter_s: 100; /*Saturation. Default 100*/
+  --ratio__ter_l: 50; /*Lightness. Default 50*/
+  --color_tertiary: hsl(from var(--color_primary) 
+                     var(--ratio__ter_h) 
+                     var(--ratio__ter_s) 
+                     var(--ratio__ter_l));
+  --color_tertiary_rgb: rgb(from var(--color_tertiary) r g b);
+
+    /* Brightness levels including primary color */
+    --color_primary_hsl_100: hsl(from var(--color_primary) h s calc(var(--base_lightness) + 45));
+    --color_primary_hsl_200: hsl(from var(--color_primary) h s calc(var(--base_lightness) + 35)); 
+    --color_primary_hsl_300: hsl(from var(--color_primary) h s calc(var(--base_lightness) + 25)); 
+    --color_primary_hsl_400: hsl(from var(--color_primary) h s calc(var(--base_lightness) + 15));  
+    --color_primary_hsl_500: hsl(from var(--color_primary) h s calc(var(--base_lightness) + 0));
+    --color_primary_hsl_600: hsl(from var(--color_primary) h s calc(var(--base_lightness) - 20)); 
+    --color_primary_hsl_700: hsl(from var(--color_primary) h s calc(var(--base_lightness) - 35)); 
+  
+    --color_secondary_hsl_100: hsl(from var(--color_secondary) h s calc(var(--base_lightness) + 45));
+    --color_secondary_hsl_200: hsl(from var(--color_secondary) h s calc(var(--base_lightness) + 35)); 
+    --color_secondary_hsl_300: hsl(from var(--color_secondary) h s calc(var(--base_lightness) + 25)); 
+    --color_secondary_hsl_400: hsl(from var(--color_secondary) h s calc(var(--base_lightness) + 15));  
+    --color_secondary_hsl_500: hsl(from var(--color_secondary) h s calc(var(--base_lightness) + 0));
+    --color_secondary_hsl_600: hsl(from var(--color_secondary) h s calc(var(--base_lightness) - 20)); 
+    --color_secondary_hsl_700: hsl(from var(--color_secondary) h s calc(var(--base_lightness) - 35));
+  
+  /*Accent palettes*/
+  --color_accent01_hsl_A:  var(--color_primary);
+  --color_accent01_hsl_B:  hsl(from var(--color_primary) h s calc(l * 0.5));
+  --color_accent01_hsl_C: hsl(from var(--color_primary) h s calc(l *0.2));
+  --color_accent01_hsl_D:  hsl(from var(--color_secondary) h s  calc(l * 0.5));
+  --color_accent01_hsl_E:  var(--color_secondary);
+  
+   --color_accent02_hsl_A: hsl(from var(--color_secondary) calc(h * (var(--hue-differentiator)*0.33)) calc(s * 0.5) calc(l * 0.1));
+  --color_accent02_hsl_B: var(--color_secondary); 
+  --color_accent02_hsl_C: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.15)) calc(s * 0.33) calc(l * 1.66));  
+  --color_accent02_hsl_D: var(--color_primary); 
+  --color_accent02_hsl_E: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.33)) calc(s * 0.5) calc(l * 0.33)); 
+
+  --color_accent03_hsl_A: var(--color_secondary);
+  --color_accent03_hsl_B: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.25)) s calc(l * 0.85));
+  --color_accent03_hsl_C: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.5)) s calc(l * 0.6));  
+  --color_accent03_hsl_D: hsl(from var(--color_primary) calc(h * (var(--hue-differentiator)*0.75)) s calc(l * 0.35));
+  --color_accent03_hsl_E: var(--color_primary); 
+  
+ 
+  /*Neutral core hsl*/
+    /* Neutral Dark Theme shades: */
+    --color_level_dark_hsl_100: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_black) + 30));
+    --color_level_dark_hsl_200: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_black) + 20));
+    --color_level_dark_hsl_300: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_black) + 10));
+    --color_level_dark_hsl_400: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_black) + 5));
+    --color_level_dark_hsl_500: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_black) + 2));
+    --color_level_dark_hsl_600: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_black) + 1));
+    --color_level_dark_hsl_700: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_black) + 0));
+
+    /* Neutral Bright Theme shades: */
+    --color_level_bright_hsl_100: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_white) - 30));
+    --color_level_bright_hsl_200: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_white) - 20));
+    --color_level_bright_hsl_300: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_white) - 10));
+    --color_level_bright_hsl_400: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_white) - 5));
+    --color_level_bright_hsl_500: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_white) - 2));
+    --color_level_bright_hsl_600: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_white) - 1));
+    --color_level_bright_hsl_700: hsl(from var(--color_primary) var(--hue-differentiator) var(--saturation-factor) calc(var(--base_lightness_white) - 0));
+  
+  
+  /*RGB Everything:*/
+  /*primary*/
+  --color_primary_100: rgb(from var(--color_primary_hsl_100) r g b);
+  --color_primary_200: rgb(from var(--color_primary_hsl_200) r g b);
+  --color_primary_300: rgb(from var(--color_primary_hsl_300) r g b);
+  --color_primary_400: rgb(from var(--color_primary_hsl_400) r g b);
+  --color_primary_500: rgb(from var(--color_primary_hsl_500) r g b);
+  --color_primary_600: rgb(from var(--color_primary_hsl_600) r g b);
+  --color_primary_700: rgb(from var(--color_primary_hsl_700) r g b);
+
+    /*secondary*/
+  --color_secondary_100: rgb(from var(--color_secondary_hsl_100) r g b);
+  --color_secondary_200: rgb(from var(--color_secondary_hsl_200) r g b);
+  --color_secondary_300: rgb(from var(--color_secondary_hsl_300) r g b);
+  --color_secondary_400: rgb(from var(--color_secondary_hsl_400) r g b);
+  --color_secondary_500: rgb(from var(--color_secondary_hsl_500) r g b);
+  --color_secondary_600: rgb(from var(--color_secondary_hsl_600) r g b);
+  --color_secondary_700: rgb(from var(--color_secondary_hsl_700) r g b);
+  
+  /*Accent01*/
+  --color_accent_01_A: rgb(from var(--color_accent01_hsl_A) r g b);
+  --color_accent_01_B: rgb(from var(--color_accent01_hsl_B) r g b);
+  --color_accent_01_C: rgb(from var(--color_accent01_hsl_C) r g b);
+  --color_accent_01_D: rgb(from var(--color_accent01_hsl_D) r g b);
+  --color_accent_01_E: rgb(from var(--color_accent01_hsl_E) r g b);
+   /*Accent02*/
+  --color_accent_02_A: rgb(from var(--color_accent02_hsl_A) r g b);
+  --color_accent_02_B: rgb(from var(--color_accent02_hsl_B) r g b);
+  --color_accent_02_C: rgb(from var(--color_accent02_hsl_C) r g b);
+  --color_accent_02_D: rgb(from var(--color_accent02_hsl_D) r g b);
+  --color_accent_02_E: rgb(from var(--color_accent02_hsl_E) r g b);
+  /*Accent03*/
+  --color_accent_03_A: rgb(from var(--color_accent03_hsl_A) r g b);
+  --color_accent_03_B: rgb(from var(--color_accent03_hsl_B) r g b);
+  --color_accent_03_C: rgb(from var(--color_accent03_hsl_C) r g b);
+  --color_accent_03_D: rgb(from var(--color_accent03_hsl_D) r g b);
+  --color_accent_03_E: rgb(from var(--color_accent03_hsl_E) r g b);
+  
+  /*Neutral darks*/
+  --color_level_dark_100: rgb(from var(--color_level_dark_hsl_100) r g b);
+  --color_level_dark_200: rgb(from var(--color_level_dark_hsl_200) r g b);
+  --color_level_dark_300: rgb(from var(--color_level_dark_hsl_300) r g b);
+  --color_level_dark_400: rgb(from var(--color_level_dark_hsl_400) r g b);
+  --color_level_dark_500: rgb(from var(--color_level_dark_hsl_500) r g b);
+  --color_level_dark_600: rgb(from var(--color_level_dark_hsl_600) r g b);
+  --color_level_dark_700: rgb(from var(--color_level_dark_hsl_700) r g b);
+  
+  /*Neutral brights*/
+  --color_level_bright_100: rgb(from var(--color_level_bright_hsl_100) r g b);
+  --color_level_bright_200: rgb(from var(--color_level_bright_hsl_200) r g b);
+  --color_level_bright_300: rgb(from var(--color_level_bright_hsl_300) r g b);
+  --color_level_bright_400: rgb(from var(--color_level_bright_hsl_400) r g b);
+  --color_level_bright_500: rgb(from var(--color_level_bright_hsl_500) r g b);
+  --color_level_bright_600: rgb(from var(--color_level_bright_hsl_600) r g b);
+  --color_level_bright_700: rgb(from var(--color_level_bright_hsl_700) r g b);
+}
+}

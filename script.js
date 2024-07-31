@@ -4,8 +4,12 @@ const colorInput_wrapper = document.getElementsByClassName('wrapper__primary_col
 const colorInput = document.getElementById("colorInput");
 const colorInput_copyToCB = document.getElementById("mainInput_copyToCB");
 const colorPicker = document.getElementById("colorPicker__primary");
+const saturationSlider = document.getElementById("saturationSlider");
+const saturationInput = document.getElementById("saturationInput");
+const lightnessSlider = document.getElementById("lightnessSlider");
+const lightnessInput = document.getElementById("lightnessInput");
 var currentPrimaryColor = getComputedStyle(root).getPropertyValue('--color_primary-hex');
-  const neutral_saturation_level = getComputedStyle(root).getPropertyValue('--saturation-factor');
+const neutral_saturation_level = getComputedStyle(root).getPropertyValue('--saturation-factor');
 
 
 /*-----Setting color ticker objects: Showing hexes, click to copy, etc-------*/
@@ -165,12 +169,15 @@ function init(){
 /*Color manipulation inputs*/
 function setInput(){
 colorInput.addEventListener("input", function() {
+  colorPicker.value = colorInput.value ;
   const hexColor = colorInput.value;
-
-  // Update CSS variables to reflect the new primary color
   document.documentElement.style.setProperty('--color_primary-hex', hexColor);
+  document.documentElement.style.setProperty('--input__sec_s', hexToHSL(hexColor, 's')); 
+  document.documentElement.style.setProperty('--input__sec_l', hexToHSL(hexColor, 'l')); 
   presentColorValues('colorTicker');
+  checkInputContrast();
   alignInputsToHex();
+  updateSecondary_Sliders();
 });
    /*Set click to copy*/
   const mainInput_copyToCB = document.getElementById('mainInput_copyToCB');
@@ -188,10 +195,25 @@ colorInput.addEventListener("input", function() {
       colorInput.value = originalContent; // Restore original content
     }, 1250);
   }
-  
-/**/
-  
 }
+
+
+function setColorPicker(){
+  // Update color input value when color picker changes
+    colorPicker.addEventListener("input", function () {
+    colorInput.value = colorPicker.value;
+    const hexColor = colorInput.value;
+    // Update CSS variables to reflect the new primary color
+    document.documentElement.style.setProperty('--color_primary-hex', hexColor);
+    document.documentElement.style.setProperty('--input__sec_s', hexToHSL(hexColor, 's')); 
+    document.documentElement.style.setProperty('--input__sec_l', hexToHSL(hexColor, 'l')); 
+    presentColorValues('colorTicker');
+    checkInputContrast();
+    alignInputsToHex();
+    updateSecondary();
+    updateSecondary_Sliders();
+  });
+  }
 function setSliders(){
 /*Map sliders and inputs to vars*/
 /*const hueSlider = document.getElementById("hueSlider");*/
@@ -199,10 +221,7 @@ const saturationSlider = document.getElementById("saturationSlider");
 const saturationInput = document.getElementById("saturationInput");
 const lightnessSlider = document.getElementById("lightnessSlider");
 const lightnessInput = document.getElementById("lightnessInput");
-/*const hueInput = document.getElementById('hueInput');*/
-
 //sync each slider and numerical input with one another:
-
 syncInputs(saturationSlider, saturationInput);
 syncInputs(lightnessSlider, lightnessInput);
 /*Sync sliders range and number inputs*/
@@ -231,7 +250,6 @@ function syncInputs(rangeInput, numberInput) {
 
 
 const updateSecondary = () => {
-  /*const h = hueSlider.value;*/
   const s = saturationSlider.value;
   const l = lightnessSlider.value;
   
@@ -244,26 +262,15 @@ const updateSecondary = () => {
   alignInputsToHex();
 };
 
-function updateSecondary_Sliders(s, l){
- /* hueSlider.value = h;*/
-  saturationSlider.value = s;
-  lightnessSlider.value = l;
-}
+function updateSecondary_Sliders(){  
+  saturationSlider.value = getComputedStyle(root).getPropertyValue('--input__sec_s'); 
+  saturationInput.value =  getComputedStyle(root).getPropertyValue('--input__sec_s');
+  lightnessSlider.value = getComputedStyle(root).getPropertyValue('--input__sec_l'); 
+  lightnessInput.value = getComputedStyle(root).getPropertyValue('--input__sec_l'); 
+  
+  }
 
 
-function setColorPicker(){
-// Update color input value when color picker changes
-  colorPicker.addEventListener("input", function () {
-  colorInput.value = colorPicker.value;
-  const hexColor = colorInput.value;
-  // Update CSS variables to reflect the new primary color
-  document.documentElement.style.setProperty('--color_primary-hex', hexColor);
-  presentColorValues('colorTicker');
-  checkInputContrast();
-    alignInputsToHex()
-    
-});
-}
 
 function alignInputsToHex(){
     const currentPrimaryColor = getComputedStyle(root).getPropertyValue('--color_primary-hex').trim();
@@ -364,6 +371,62 @@ function getRandomHexColor() {
     // Generate a random hex color
     const randomColor = Math.floor(Math.random() * 16777215).toString(16);
     return `#${randomColor.padStart(6, '0')}`; // Ensure that the hex is always 6 characters
+}
+
+
+function hexToHSL(hex, component) {
+  let r = 0, g = 0, b = 0;
+
+  // Remove the '#' and parse RGB
+  if (hex.length === 4) { // #RGB format
+      r = parseInt(hex[1] + hex[1], 16);
+      g = parseInt(hex[2] + hex[2], 16);
+      b = parseInt(hex[3] + hex[3], 16);
+  } else if (hex.length === 7) { // #RRGGBB format
+      r = parseInt(hex[1] + hex[2], 16);
+      g = parseInt(hex[3] + hex[4], 16);
+      b = parseInt(hex[5] + hex[6], 16);
+  }
+
+  // Convert RGB to [0, 1] range
+  r /= 255;
+  g /= 255;
+  b /= 255;
+
+  // Get max and min RGB values
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h, s, l = (max + min) / 2;
+
+  if (max === min) {
+      h = s = 0; // achromatic
+  } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6; // Normalize to [0, 1]
+  }
+
+  // Convert h, s, l to appropriate scales
+  h = Math.round(h * 360); // Hue [0, 360]
+  s = Math.round(s * 100); // Saturation [0, 100]
+  l = Math.round(l * 100); // Lightness [0, 100]
+
+  // Return desired component
+  switch (component) {
+      case 'h':
+          return h;
+      case 's':
+          return s;
+      case 'l':
+          return l;
+      default:
+          throw new Error('Invalid component requested. Use "h", "s", or "l".');
+  }
 }
 
 /* assets---------------------------------------------------------------------*/
