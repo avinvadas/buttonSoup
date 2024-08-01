@@ -10,11 +10,13 @@
       y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
   })(window, document, "clarity", "script", "neyh744rkj");
 </script>
+
 <!---->
   <meta name="viewport" content="initial-scale = 1.0,maximum-scale = 1.0" />
 <title>ButtonSoup:: Light-weight theme builder</title>
 <link rel="stylesheet" href="./style.css">
-
+<link id="favicon" rel="icon" type="image/svg+xml" href="favicon-bright.svg"> 
+    <link rel="alternate icon" href="favicon-bright.png">
 </head>
 <body>
 <body class="mainTheme--bright mainTheme--dark" onload="init()">
@@ -334,5 +336,26 @@
 <!-- partial -->
   <script  src="./script.js"></script>
 
+<!--Favicon-->>
+<script>
+  // Function to update the favicon based on the user's color scheme preference
+  function updateFavicon() {
+      const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const favicon = document.getElementById('favicon');
+
+      // Set the favicon based on the current color scheme
+      if (darkModeMediaQuery.matches) {
+          favicon.href = 'favicon-dark.svg'; // Use dark mode favicon
+      } else {
+          favicon.href = 'favicon-light.svg'; // Use light mode favicon
+      }
+  }
+
+  // Initial check
+  updateFavicon();
+
+  // Listen for changes in the user's color scheme preference
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateFavicon);
+</script>
 </body>
 </html>

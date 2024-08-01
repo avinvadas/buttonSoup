@@ -25,7 +25,7 @@ function presentColorValues(className){
 function setClickToCopy(domElement){
   domElement.addEventListener("click", function() {
   copyTextToClipboard(domElement.hex);
-  domElement.innerHTML = '<span class="ticker__hex">✓ Copied!</span>'+ icon_copy;
+  domElement.innerHTML = '<span class="ticker__hex">✓ Copied</span>'+ icon_copy;
 
   // Display the indication for 2 seconds
   setTimeout(function() {
@@ -188,7 +188,7 @@ colorInput.addEventListener("input", function() {
   function copyFeedback_mainInput(){
     // Show feedback message
     const originalContent = colorInput.value; // Store the existing content
-    colorInput.value = '✓ Copied!';
+    colorInput.value = '✓ Copied';
 
     // Set a timeout to revert back to original content
     setTimeout(function() {
