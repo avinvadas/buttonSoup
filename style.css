@@ -9,7 +9,7 @@
     
   /*PRIMARY COLOR:*/
   /*Start with defining your primary color as seed for the rest of the system: */
-  --color_primary-hex: #FF385C; 
+  --color_primary-hex: #ccd2e4; 
 
   /*SECONDARY COLOR: */
   /*Set System's harmony type by setting hue degree (0 to 360) of the secondary color in relation to the primary one: */
@@ -352,7 +352,7 @@ html{
 
 .mainTheme--bright{
   --font_color: black;
-  --bg_color: smokewhite;
+  --bg_color: #f5f5f5;
   --layout_border: rgba(0, 0, 0, 0.15);
   --font_color--clickable: #007FDA;
 }
@@ -490,7 +490,10 @@ outline: 1rem solid var(--layout_border);
 outline-offset: -1rem ;
 
 }
-
+.input_field--emphasized::-webkit-input-placeholder {
+  color: rgb(from var(--font_color) r g b / 0.5);
+  background: transparent;
+}
 .button_copy{
     width:1rem;
     height:1rem;
