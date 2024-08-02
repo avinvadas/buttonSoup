@@ -354,6 +354,7 @@ html{
   --font_color: black;
   --bg_color: #f5f5f5;
   --layout_border: rgba(0, 0, 0, 0.15);
+  --layout_skeleton:rgba(0, 0, 0, 0.15);
   --font_color--clickable: #007FDA;
 }
 .mainTheme--bright .excludedFromColorTheme{
@@ -365,6 +366,7 @@ html{
   --font_color: white;
   --bg_color: #1e1e1e;
   --layout_border: rgba(255, 255, 255, 0.15);
+  --layout_skeleton:rgba(255, 255, 255, 0.15);
   --font_color--clickable: #52d6fc;
 }
 .mainTheme--dark .excludedFromColorTheme{
@@ -813,7 +815,7 @@ input[type="radio"] {
   list-style:none;
   border-radius:1rem;
   overflow:hidden;
-  
+  background:var(--layout_skeleton);
 }
 
 .colorTicker{

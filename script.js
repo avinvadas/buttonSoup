@@ -26,6 +26,7 @@ function setClickToCopy(domElement) {
   domElement.addEventListener("click", function () {
     copyTextToClipboard(domElement.hex);
     domElement.innerHTML = '<span class="ticker__hex">✓ Copied</span>' + icon_copy;
+    domElement.style.color = getContrastColor(domElement.hex);
 
     // Display the indication for 2 seconds
     setTimeout(function () {
@@ -130,7 +131,6 @@ function copyPaletteToClipboard(palette) {
   });
 
   const colorsJson = JSON.stringify(colors, null, 2);
-  console.log(colorsJson);
   copyTextToClipboard(colorsJson);
 
   // Change the button label to "Copied to Clipboard!"
