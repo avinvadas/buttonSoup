@@ -87,7 +87,8 @@ function extractRGBandConvertToHex(colorString) {
 }
 
 
-/*Copy to clipboard: Single hex: */
+/*Copy to clipboard mechanisms*/ 
+/*Copy Single hex: */
 function copyTextToClipboard(text) {
   // Use the Clipboard API for better usability, especially on mobile
   if (navigator.clipboard) {
@@ -106,7 +107,8 @@ function copyTextToClipboard(text) {
     document.body.removeChild(dummyElement);
   }
 }
-/*Copy to Clipboard: entire palette: */
+
+/*Copy entire palette: */
 function copyPaletteToClipboard(palette) {
   // Construct the selector directly without changing 'palette---primary'
   const paletteSelector = `.palette--${palette}`;
@@ -410,66 +412,82 @@ function hexToHSL(hex, component) {
   }
 }
 /*Check for hex validation*/ 
-function isValidHex(hex) {
-  const hexPattern = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/;
-  return hexPattern.test(hex);
-}
 
 function isValidHex(hex) {
-  // Regular expression for a valid hex color #xxxxxx or #xxx
   const hexPattern = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/;
   return hexPattern.test(hex);
 }
 
 function setInputAutoFocus(input) {
   const inputField = document.getElementById(input);
-  const otherInputs = document.querySelectorAll('input[type="text"]');
+  const saturationInput = document.getElementById('saturationInput');
+  const lightnessInput = document.getElementById('lightnessInput');
 
-  let focusSet = false;
+  // Variable to track if focus should be given to colorInput based on valid key press
+  let autoFocusEnabled = true;
+
+  // Flag to track if the last focus event was from a keyboard event
+  let focusTriggeredByKeyboard = false;
+
+  // Adding event listeners for focus/blur on other inputs
+  saturationInput.addEventListener('focus', () => {
+      autoFocusEnabled = false; // Disable auto-focus when saturation input is focused
+  });
+
+  saturationInput.addEventListener('blur', () => {
+      autoFocusEnabled = true; // Enable auto-focus when leaving saturation input
+  });
+
+  lightnessInput.addEventListener('focus', () => {
+      autoFocusEnabled = false; // Disable auto-focus when lightness input is focused
+  });
+
+  lightnessInput.addEventListener('blur', () => {
+      autoFocusEnabled = true; // Enable auto-focus when leaving lightness input
+  });
 
   // Add an event listener for keydown events
   document.addEventListener('keydown', function(event) {
-      // Check if the focused element is an input field that's not the main input
-      const isFocusingOtherInput = [...otherInputs].some(otherInput => otherInput === document.activeElement);
-      
-      // Define the allowed keys (both uppercase and lowercase)
+      // Define the allowed keys for hex input
       const allowedKeys = ['A', 'B', 'C', 'D', 'E', 'F', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '#'];
 
-      // Check if the pressed key is one of the allowed keys and not focused on another input
-      if (!isFocusingOtherInput && allowedKeys.includes(event.key.toUpperCase()) && !focusSet) {
-          inputField.focus();
-          inputField.value = ''; // Clear the input field since focus is set by keyboard
-          focusSet = true; // Indicate that the input has been focused
+      // Check if the active element is the main input field
+      const isFocusingOtherInput = (document.activeElement !== inputField);
+
+      // Mark focusTriggeredByKeyboard as true if allowed key is pressed
+      if (allowedKeys.includes(event.key.toUpperCase()) && isFocusingOtherInput) {
+          focusTriggeredByKeyboard = true; // Set the flag
+      }
+
+      // Trigger focus on inputField if allowed keys are pressed and autoFocus is enabled
+      if (autoFocusEnabled && allowedKeys.includes(event.key.toUpperCase()) && isFocusingOtherInput) {
+          inputField.focus();      // Focus on the main input
+          inputField.value = '';   // Clear the input field
       }
   });
 
-  // Add an event listener for input on the input field
+  // Listen for input changes and validate hex color
   inputField.addEventListener('input', function() {
       const hexValue = this.value.trim();
 
       // Validate the input value
       if (!isValidHex(hexValue)) {
-          // You can provide feedback by changing the border color or displaying a message
-          this.style.borderColor = 'red'; // Set visual feedback for invalid input
+          this.style.borderColor = 'red'; // Indicate invalid input
       } else {
-          this.style.borderColor = ''; // Reset border color if valid
+          this.style.borderColor = ''; // Reset border if valid
       }
   });
 
-  // Handle focus event
+  // Clear input on focus, but conditionally based on where focus came from
   inputField.addEventListener('focus', function() {
-      if (focusSet) {
-          inputField.value = ''; // If focused by allowed typing, clear the input
+      if (focusTriggeredByKeyboard) {
+          this.value = ''; // Clear when the field is focused with keyboard
       }
-  });
-
-  // Reset focusSet flag on blur
-  inputField.addEventListener('blur', function() {
-      focusSet = false; // Allow refocusing if necessary
+      focusTriggeredByKeyboard = false; // Reset the flag
   });
 }
 
-// Call setInputAutoFocus with the ID of the main input
+// Call this function with the ID of the input you want to auto-focus
 setInputAutoFocus('colorInput');
 
 
@@ -478,7 +496,7 @@ function validateInputHex() {
   const hexValue = colorInput.value.trim();
   const label = document.getElementById('mainInput__label');
   
-  // Validate the input value
+  // Validate the input hex value
   if (!isValidHex(hexValue)) {         
       label.innerHTML = `<span>Type primary color hex: </span></span><span class="text--error" >| (Is your hex valid?)</span>`;
   } else {
@@ -519,6 +537,46 @@ function changeColorScheme(scheme) {
   updateSecondary();
   console.log('--hue-differentiator: '+getComputedStyle(root).getPropertyValue('--hue-differentiator'))
 }
+
+
+/*Toggle accessibility*/ 
+function setupToggleSwitch(checkboxId, callbackFunction) {
+  const checkbox = document.getElementById(checkboxId);
+  const slider = checkbox.nextElementSibling; // This assumes the slider (span) is always immediately after the checkbox
+  slider.setAttribute('tabindex', '0');
+
+  // Handle click event on the slider
+  slider.addEventListener('click', function() {
+      checkbox.checked = !checkbox.checked; // Toggle checkbox state
+      if (callbackFunction) {
+          callbackFunction(); // Call the provided function for state handling
+      }
+  });
+
+  // Allow toggling with the keyboard using Enter or Space key
+  slider.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault(); // Prevent default scrolling behavior
+          checkbox.checked = !checkbox.checked; // Toggle the checkbox state
+
+          // Trigger click to handle associated functions
+          this.click(); // Simulate a click
+          if (callbackFunction) {
+              callbackFunction(); // Call the function handling the state change
+          }
+      }
+  });
+}
+
+
+
+// Wait for the DOM to be fully loaded before initializing
+document.addEventListener('DOMContentLoaded', function() {
+  setupToggleSwitch('themeCheckbox', themeSwitch); // For the first toggle
+  setupToggleSwitch('switchChromaCheckbox', update_Neutral_Saturation); // For the second toggle
+});
+
+
 
 
 /* assets---------------------------------------------------------------------*/

@@ -23,24 +23,22 @@
 <header class="header">
   <p class="header_title"><span><strong>ButtonSoup</strong></span><span class="bodyText--small">Light-weight theme builder</span></p>
   <div class="toggle_comp">
-    
-  <label id="themeSwitch" class="switch">
-  <input  type="checkbox" onChange="themeSwitch()" checked>
-    <span class="slider round" title="switch dark mode"></span>
-</label>
-  <div id="themeSwitch__label" class="utility_icon">
-   <svg width="100%" height="100%" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <g transform="matrix(1,0,0,1,-84.9009,-277.014)">
-        <g id="icon_darkMode" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,318.951,275.288)">
+    <label id="themeSwitch" class="switch">
+      <input type="checkbox" id="themeCheckbox" onChange="themeSwitch()" checked style="display: none;"> <!-- Hide default checkbox -->
+      <span class="slider round" title="Switch dark mode" tabindex="0"></span> <!-- Make the slider focusable -->
+    </label>
+    <div id="themeSwitch__label" class="utility_icon">
+      <svg width="100%" height="100%" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <g transform="matrix(1,0,0,1,-84.9009,-277.014)">
+          <g id="icon_darkMode" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,318.951,275.288)">
             <rect x="2.525" y="283.831" width="58.481" height="58.481" style="fill:none;"/>
             <g transform="matrix(7.91981e-17,-1.2934,1.2934,7.91981e-17,-352.172,444.715)">
-                <path fill="currentColor" d="M114.583,306.723C111.887,309.658 108.018,311.499 103.723,311.499C95.586,311.499 88.979,304.892 88.979,296.754C88.979,289.393 94.386,283.284 101.441,282.186C99.03,284.811 97.557,288.312 97.557,292.155C97.557,300.292 104.164,306.899 112.301,306.899C113.077,306.899 113.839,306.839 114.583,306.723Z"/>
+              <path fill="currentColor" d="M114.583,306.723C111.887,309.658 108.018,311.499 103.723,311.499C95.586,311.499 88.979,304.892 88.979,296.754C88.979,289.393 94.386,283.284 101.441,282.186C99.03,284.811 97.557,288.312 97.557,292.155C97.557,300.292 104.164,306.899 112.301,306.899C113.077,306.899 113.839,306.839 114.583,306.723Z"/>
             </g>
+          </g>
         </g>
-    </g>
-</svg>
-  
-</div>
+      </svg>
+    </div>
   </div>
 </header>
 <section class="palettes_section ">
@@ -284,8 +282,8 @@
 <h5 class="heading_05">Neutral spreads</h5>
   <div class="toggle_comp">
   <label id="switchChroma" class="switch">
-  <input type="checkbox" onChange="update_Neutral_Saturation()" checked>
-    <span class="slider round"></span>
+  <input type="checkbox" id="switchChromaCheckbox" onChange="update_Neutral_Saturation()" checked>
+  <span class="slider round" tabindex="0"></span>
 </label>
   <div id="chromaToggle__label" class="bodyText--small">Chroma on</div>
   </div>
