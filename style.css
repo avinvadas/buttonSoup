@@ -356,6 +356,7 @@ html{
   --layout_border: rgba(0, 0, 0, 0.15);
   --layout_skeleton:rgba(0, 0, 0, 0.15);
   --font_color--clickable: #007FDA;
+  --utilityColor_error: #d73c3c;
 }
 .mainTheme--bright .excludedFromColorTheme{
   color: initial;
@@ -368,6 +369,7 @@ html{
   --layout_border: rgba(255, 255, 255, 0.15);
   --layout_skeleton:rgba(255, 255, 255, 0.15);
   --font_color--clickable: #52d6fc;
+  --utilityColor_error: #ff6d6d;
 }
 .mainTheme--dark .excludedFromColorTheme{
   color: initial;
@@ -447,6 +449,13 @@ a{
   font-family: var(--typeface-heading);
   font-size: var(--font-size-h1);
   font-weight: var(--font-weight-h1);
+}
+
+.text--error{
+  font-family: var(--typeface-body);
+  font-size: var(--font-size-body);
+  font-weight:var(--font-weight-h6);
+  color: var(--utilityColor_error);
 }
 .wrapper__primary_color{
   display:grid;
@@ -541,9 +550,15 @@ outline-offset: -1rem ;
 }
 .button--copyPalette:hover{
   color: var(--font_color);
-  background:transparent;
+  background: transparent;
   opacity:1;
 }
+.button--copyPalette:focus{
+  color: var(--font_color);
+  background: var(--layout_border);
+  opacity:1;
+}
+
 .button--copyPalette:active{
   color: var(--font_color);
   background:rgb(from var(--font_color) r g b / 0.25);

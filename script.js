@@ -173,6 +173,8 @@ function setInput() {
     checkInputContrast();
     alignInputsToHex();
     updateSecondary_Sliders();
+    validateInputHex();
+    
   });
   /*Set click to copy*/
   const mainInput_copyToCB = document.getElementById('mainInput_copyToCB');
@@ -206,6 +208,7 @@ function setColorPicker() {
     alignInputsToHex();
     updateSecondary();
     updateSecondary_Sliders();
+    validateInputHex(input);
   });
 }
 
@@ -314,13 +317,13 @@ colorSchemeSelector.forEach((radio) => {
 });
 
 function generateSecondaryColor(colorScheme) {
-  if (selectedColorScheme == "complementary") {
+  if (colorScheme == "complementary") {
     document.documentElement.style.setProperty('--hue-differentiator', 180);
-  } else if (selectedColorScheme == "triad") {
+  } else if (colorScheme == "triad") {
     document.documentElement.style.setProperty('--hue-differentiator', 120);
-  } else if (selectedColorScheme == "quad") {
+  } else if (colorScheme == "quad") {
     document.documentElement.style.setProperty('--hue-differentiator', 90);
-  } else if (selectedColorScheme == "analogous") {
+  } else if (colorScheme == "analogous") {
     document.documentElement.style.setProperty('--hue-differentiator', 45);
   }
 }
@@ -406,79 +409,117 @@ function hexToHSL(hex, component) {
       throw new Error('Invalid component requested. Use "h", "s", or "l".');
   }
 }
-function setInputAutoFocus(input) {
-  // Select the input field you want to focus
-  const inputField = document.getElementById(input);
-  const otherInputs = document.querySelectorAll('input[type="text"]'); // Select all other inputs
+/*Check for hex validation*/ 
+function isValidHex(hex) {
+  const hexPattern = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/;
+  return hexPattern.test(hex);
+}
 
-  // Variable to track if focus has been set
+function isValidHex(hex) {
+  // Regular expression for a valid hex color #xxxxxx or #xxx
+  const hexPattern = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/;
+  return hexPattern.test(hex);
+}
+
+function setInputAutoFocus(input) {
+  const inputField = document.getElementById(input);
+  const otherInputs = document.querySelectorAll('input[type="text"]');
+
   let focusSet = false;
 
-  // Add an event listener to the document for keydown events
+  // Add an event listener for keydown events
   document.addEventListener('keydown', function(event) {
       // Check if the focused element is an input field that's not the main input
-      const isFocusingOtherInput = [...otherInputs].some(input => input !== inputField && input === document.activeElement);
-
+      const isFocusingOtherInput = [...otherInputs].some(otherInput => otherInput === document.activeElement);
+      
       // Define the allowed keys (both uppercase and lowercase)
       const allowedKeys = ['A', 'B', 'C', 'D', 'E', 'F', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '#'];
 
-      // Check if the pressed key is one of the allowed keys and that we are not currently focusing on another input
+      // Check if the pressed key is one of the allowed keys and not focused on another input
       if (!isFocusingOtherInput && allowedKeys.includes(event.key.toUpperCase()) && !focusSet) {
           inputField.focus();
           inputField.value = ''; // Clear the input field since focus is set by keyboard
-          focusSet = true; // Set the flag to prevent repeated calls
+          focusSet = true; // Indicate that the input has been focused
       }
   });
 
-  // Add an event listener for focus on the input field
+  // Add an event listener for input on the input field
+  inputField.addEventListener('input', function() {
+      const hexValue = this.value.trim();
+
+      // Validate the input value
+      if (!isValidHex(hexValue)) {
+          // You can provide feedback by changing the border color or displaying a message
+          this.style.borderColor = 'red'; // Set visual feedback for invalid input
+      } else {
+          this.style.borderColor = ''; // Reset border color if valid
+      }
+  });
+
+  // Handle focus event
   inputField.addEventListener('focus', function() {
-      // Clear the input field only if the focus was set by typing, as indicated by the focusSet flag
       if (focusSet) {
-          inputField.value = ''; // Clear the input field
+          inputField.value = ''; // If focused by allowed typing, clear the input
       }
   });
 
-  // Reset the focusSet flag when the input field loses focus
+  // Reset focusSet flag on blur
   inputField.addEventListener('blur', function() {
-      focusSet = false; // Resetting focusSet allows refocusing
+      focusSet = false; // Allow refocusing if necessary
   });
 }
 
+// Call setInputAutoFocus with the ID of the main input
+setInputAutoFocus('colorInput');
 
-/*
-function setInputAutoFocus(input) {
-  // Select the input field you want to focus
-  const inputField = document.getElementById(input);
-  const otherInputs = document.querySelectorAll('input[type="text"]'); // Select all other inputs
+
+
+function validateInputHex() {
+  const hexValue = colorInput.value.trim();
+  const label = document.getElementById('mainInput__label');
   
-  // Variable to track if focus has been set
-  let focusSet = false;
+  // Validate the input value
+  if (!isValidHex(hexValue)) {         
+      label.innerHTML = `<span>Type primary color hex: </span></span><span class="text--error" >| (Is your hex valid?)</span>`;
+  } else {
+      label.innerHTML = `<span>Type primary color hex:</span>`;
+  }
+}
 
-  // Add an event listener to the document for keydown events
-  document.addEventListener('keydown', function(event) {
-      // Check if the focused element is an input field that's not the main input
-      const isFocusingOtherInput = [...otherInputs].some(input => input !== inputField && input === document.activeElement);
 
-      // Define the allowed keys (both uppercase and lowercase)
-      const allowedKeys = ['A', 'B', 'C', 'D', 'E', 'F', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '#'];
-      
-      // Check if the pressed key is one of the allowed keys and that we are not currently focusing on another input
-      if (!isFocusingOtherInput && allowedKeys.includes(event.key.toUpperCase()) && !focusSet) {
-          inputField.focus();
-          focusSet = true; // Set the flag to prevent repeated calls
+/*Segmented control accessibility*/ 
+document.querySelectorAll('.segCtrl label').forEach(label => {
+  label.addEventListener('click', function () {
+      const inputId = this.getAttribute('for');
+      const radioInput = document.getElementById(inputId);
+      radioInput.checked = true;
+      changeColorScheme(radioInput.value); // Call your function to handle color changes here
+  });
+
+  // Allow the labels to be focused via keyboard
+  label.addEventListener('keydown', function (event) {
+      // Check for Enter key
+      if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault(); // Prevent default behavior (like scrolling)
+          this.click(); // Simulate click to check the radio button
+
+          // Get the 'for' attribute to find the associated radio input
+          const inputId = this.getAttribute('for');
+          const radioInput = document.getElementById(inputId);
+          console.log('inputID:'+ inputId)
+          changeColorScheme(radioInput.value); // Trigger the color change
       }
   });
+});
 
-  // Add an event listener for focus on the input field to clear the value
-  inputField.addEventListener('focus', function() {
-      inputField.value = ''; // Clear the input field
-  });
-
-  // Reset the focusSet flag when the input field loses focus
-  inputField.addEventListener('blur', function() {
-      focusSet = false; // Resetting focusSet allows refocusing
-  });
+// Function to change the secondary color based on the selected scheme
+function changeColorScheme(scheme) {
+  console.log('scheme: '+scheme)
+  generateSecondaryColor(scheme);
+  updateSecondary();
+  console.log('--hue-differentiator: '+getComputedStyle(root).getPropertyValue('--hue-differentiator'))
 }
-*/
+
+
 /* assets---------------------------------------------------------------------*/
 const icon_copy = '<span class="icon_copy"><svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg></span>';
