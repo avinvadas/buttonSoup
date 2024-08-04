@@ -412,6 +412,10 @@ function hexToHSL(hex, component) {
   }
 }
 /*Check for hex validation*/ 
+function isValidHex(hex) {
+  const hexPattern = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/;
+  return hexPattern.test(hex);
+}
 
 function isValidHex(hex) {
   const hexPattern = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/;
@@ -425,9 +429,6 @@ function setInputAutoFocus(input) {
 
   // Variable to track if focus should be given to colorInput based on valid key press
   let autoFocusEnabled = true;
-
-  // Flag to track if the last focus event was from a keyboard event
-  let focusTriggeredByKeyboard = false;
 
   // Adding event listeners for focus/blur on other inputs
   saturationInput.addEventListener('focus', () => {
@@ -454,11 +455,6 @@ function setInputAutoFocus(input) {
       // Check if the active element is the main input field
       const isFocusingOtherInput = (document.activeElement !== inputField);
 
-      // Mark focusTriggeredByKeyboard as true if allowed key is pressed
-      if (allowedKeys.includes(event.key.toUpperCase()) && isFocusingOtherInput) {
-          focusTriggeredByKeyboard = true; // Set the flag
-      }
-
       // Trigger focus on inputField if allowed keys are pressed and autoFocus is enabled
       if (autoFocusEnabled && allowedKeys.includes(event.key.toUpperCase()) && isFocusingOtherInput) {
           inputField.focus();      // Focus on the main input
@@ -477,26 +473,23 @@ function setInputAutoFocus(input) {
           this.style.borderColor = ''; // Reset border if valid
       }
   });
-
-  // Clear input on focus, but conditionally based on where focus came from
+/*
+  // Clear input on focus
   inputField.addEventListener('focus', function() {
-      if (focusTriggeredByKeyboard) {
-          this.value = ''; // Clear when the field is focused with keyboard
-      }
-      focusTriggeredByKeyboard = false; // Reset the flag
+      this.value = ''; // Clear when the field is focused
   });
+  */
 }
 
 // Call this function with the ID of the input you want to auto-focus
 setInputAutoFocus('colorInput');
 
 
-
 function validateInputHex() {
   const hexValue = colorInput.value.trim();
   const label = document.getElementById('mainInput__label');
   
-  // Validate the input hex value
+  // Validate the input value
   if (!isValidHex(hexValue)) {         
       label.innerHTML = `<span>Type primary color hex: </span></span><span class="text--error" >| (Is your hex valid?)</span>`;
   } else {
@@ -539,45 +532,62 @@ function changeColorScheme(scheme) {
 }
 
 
-/*Toggle accessibility*/ 
+
+/* Toggle accessibility */
 function setupToggleSwitch(checkboxId, callbackFunction) {
   const checkbox = document.getElementById(checkboxId);
-  const slider = checkbox.nextElementSibling; // This assumes the slider (span) is always immediately after the checkbox
+  const slider = checkbox.nextElementSibling; // Get the slider after checkbox
+
+  // Make the slider focusable
   slider.setAttribute('tabindex', '0');
 
-  // Handle click event on the slider
-  slider.addEventListener('click', function() {
+  // Function to toggle checkbox state and execute callback
+  function toggleCheckbox() {
       checkbox.checked = !checkbox.checked; // Toggle checkbox state
+      updateSliderVisualState(); // Update the visual state
       if (callbackFunction) {
-          callbackFunction(); // Call the provided function for state handling
+          callbackFunction(); // Call the provided function for state change
       }
+  }
+
+  // Update the visual state of the slider based on checkbox
+  function updateSliderVisualState() {
+      if (checkbox.checked) {
+          slider.classList.add('active'); // Add active class for visuals
+      } else {
+          slider.classList.remove('active'); // Remove active class
+      }
+  }
+
+  // Initialize the visual state on setup
+  updateSliderVisualState();
+
+  // Add event listener for slider click (mouse event)
+  slider.addEventListener('click', function() {
+      toggleCheckbox(); // Call the toggle function
   });
 
-  // Allow toggling with the keyboard using Enter or Space key
+  // Allow keyboard navigation with Enter or Space keys
   slider.addEventListener('keydown', function(event) {
       if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault(); // Prevent default scrolling behavior
-          checkbox.checked = !checkbox.checked; // Toggle the checkbox state
-
-          // Trigger click to handle associated functions
-          this.click(); // Simulate a click
-          if (callbackFunction) {
-              callbackFunction(); // Call the function handling the state change
-          }
+          event.preventDefault(); // Prevent default behavior
+          toggleCheckbox(); // Call the toggle function
       }
   });
+  slider.addEventListener('click', function() {
+    
+    toggleCheckbox(); // Call the toggle function
+});
+
+  // Trigger the visual update if the checkbox state changes
+  checkbox.addEventListener('change', updateSliderVisualState);
 }
 
-
-
-// Wait for the DOM to be fully loaded before initializing
+// Initialize both switches on DOM load
 document.addEventListener('DOMContentLoaded', function() {
   setupToggleSwitch('themeCheckbox', themeSwitch); // For the first toggle
   setupToggleSwitch('switchChromaCheckbox', update_Neutral_Saturation); // For the second toggle
 });
-
-
-
 
 /* assets---------------------------------------------------------------------*/
 const icon_copy = '<span class="icon_copy"><svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg></span>';
