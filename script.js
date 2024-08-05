@@ -473,15 +473,9 @@ function setInputAutoFocus(input) {
           this.style.borderColor = ''; // Reset border if valid
       }
   });
-/*
-  // Clear input on focus
-  inputField.addEventListener('focus', function() {
-      this.value = ''; // Clear when the field is focused
-  });
-  */
+
 }
 
-// Call this function with the ID of the input you want to auto-focus
 setInputAutoFocus('colorInput');
 
 
@@ -491,7 +485,7 @@ function validateInputHex() {
   
   // Validate the input value
   if (!isValidHex(hexValue)) {         
-      label.innerHTML = `<span>Type primary color hex: </span></span><span class="text--error" >| (Is your hex valid?)</span>`;
+      label.innerHTML = `<span>Type primary color hex: </span></span><span class="text--error" >Fail to read hex</span>`;
   } else {
       label.innerHTML = `<span>Type primary color hex:</span>`;
   }
@@ -544,9 +538,9 @@ function setupToggleSwitch(checkboxId, callbackFunction) {
   // Function to toggle checkbox state and execute callback
   function toggleCheckbox() {
       checkbox.checked = !checkbox.checked; // Toggle checkbox state
-      updateSliderVisualState(); // Update the visual state
+      updateSliderVisualState(); 
       if (callbackFunction) {
-          callbackFunction(); // Call the provided function for state change
+          callbackFunction(); 
       }
   }
 
