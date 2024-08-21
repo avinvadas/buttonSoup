@@ -8,7 +8,8 @@ const saturationSlider = document.getElementById("saturationSlider");
 const saturationInput = document.getElementById("saturationInput");
 const lightnessSlider = document.getElementById("lightnessSlider");
 const lightnessInput = document.getElementById("lightnessInput");
-var currentPrimaryColor = getComputedStyle(root).getPropertyValue('--color_primary-hex');
+var currentPrimaryColor = getComputedStyle(root).getPropertyValue('--color_primary');
+var currentSecondaryColor = getComputedStyle(root).getPropertyValue('--color_secondary');
 const neutral_saturation_level = getComputedStyle(root).getPropertyValue('--saturation-factor');
 
 
@@ -46,47 +47,6 @@ function setHex(domElement) {
   domElement.hex = hexColor;
   domElement.innerHTML = `<span class="ticker__hex" style="color: ${textColor};">${domElement.hex}</span><span class="icon_copy" style="color: ${textColor};">${icon_copy}</span>`;
 }
-
-/* Extract RGB Values and convert them to hex*/
-function extractRGBandConvertToHex(colorString) {
-  let r = 0, g = 0, b = 0; // Initialize RGB values
-  let isValidRGB = false; // To check if the RGB values are valid
-
-  // Check for color(srgb ...) format
-  const srgbMatch = colorString.match(/color\(srgb\s+([0-1]\.\d+|[01])\s+([0-1]\.\d+|[01])\s+([0-1]\.\d+|[01])\)/);
-  if (srgbMatch) {
-    r = Math.round(parseFloat(srgbMatch[1]) * 255);
-    g = Math.round(parseFloat(srgbMatch[2]) * 255);
-    b = Math.round(parseFloat(srgbMatch[3]) * 255);
-    isValidRGB = true;
-  } else {
-    // Use regex to extract RGB or RGBA values if not srgb
-    const rgbMatch = colorString.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d\.]+))?\)/);
-    if (rgbMatch) {
-      r = parseInt(rgbMatch[1], 10);
-      g = parseInt(rgbMatch[2], 10);
-      b = parseInt(rgbMatch[3], 10);
-
-      // Ensure R, G, and B are valid color values (0-255)
-      if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
-        isValidRGB = true; // Only mark as valid if within range
-      }
-    }
-  }
-
-  // If RGB values are not valid, log the warning and use a default color
-  if (!isValidRGB) {
-    console.warn('Invalid RGB/RGBA value provided: returning #000000');
-    return '#000000'; // Default to black
-  }
-
-  // Convert to hex
-  const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).padStart(6, '0')}`;
-
-  return hex;
-}
-
-
 /*Copy to clipboard mechanisms*/ 
 /*Copy Single hex: */
 function copyTextToClipboard(text) {
@@ -107,7 +67,6 @@ function copyTextToClipboard(text) {
     document.body.removeChild(dummyElement);
   }
 }
-
 /*Copy entire palette: */
 function copyPaletteToClipboard(palette) {
   // Construct the selector directly without changing 'palette---primary'
@@ -152,7 +111,7 @@ function copyPaletteToClipboard(palette) {
 //INITIATING
 function init() {
   document.documentElement.style.setProperty('--color_primary-hex', getRandomHexColor())
-  
+
   presentColorValues('colorTicker');
   setInput();
   setColorPicker();
@@ -160,17 +119,19 @@ function init() {
   alignInputsToHex();
   checkInputContrast();
   setInputAutoFocus("colorInput");
-
+  updateSecondary();
 }
 
 /*Color manipulation inputs*/
 function setInput() {
   colorInput.addEventListener("input", function () {
     colorPicker.value = colorInput.value;
-    const hexColor = colorInput.value;
+    var hexColor = colorInput.value;
+    
     document.documentElement.style.setProperty('--color_primary-hex', hexColor);
     document.documentElement.style.setProperty('--input__sec_s', hexToHSL(hexColor, 's'));
     document.documentElement.style.setProperty('--input__sec_l', hexToHSL(hexColor, 'l'));
+    currentPrimaryColor =  colorInput.value;
     presentColorValues('colorTicker');
     checkInputContrast();
     alignInputsToHex();
@@ -210,10 +171,9 @@ function setColorPicker() {
     alignInputsToHex();
     updateSecondary();
     updateSecondary_Sliders();
-    validateInputHex(input);
+    validateInputHex();
   });
 }
-
 
 function setSliders() {
   /*Map sliders and inputs to vars*/
@@ -252,14 +212,15 @@ function syncInputs(rangeInput, numberInput) {
 const updateSecondary = () => {
   const s = saturationSlider.value;
   const l = lightnessSlider.value;
-
-  // Calculate secondary color based on primary color and slider values
-  /*document.documentElement.style.setProperty('--ratio__sec_h', h);*/
   document.documentElement.style.setProperty('--ratio__sec_s', s);
   document.documentElement.style.setProperty('--ratio__sec_l', l);
-
+  var primaryHex = colorInput.value;
+  var secondaryHex = getSecondaryHex();
   presentColorValues('colorTicker');
   alignInputsToHex();
+ 
+  presentWCAG_status(getContrastLevel(primaryHex ,secondaryHex ));
+  
 };
 
 function updateSecondary_Sliders() {
@@ -275,26 +236,93 @@ function alignInputsToHex() {
   colorPicker.value = currentPrimaryColor;
 }
 
+/* Extract RGB Values and convert them to hex*/
+function extractRGBandConvertToHex(colorString) {
+  let r = 0, g = 0, b = 0; // Initialize RGB values
+  let isValidRGB = false; // To check if the RGB values are valid
+
+  // Check for color(srgb ...) format
+  const srgbMatch = colorString.match(/color\(srgb\s+([0-1]\.\d+|[01])\s+([0-1]\.\d+|[01])\s+([0-1]\.\d+|[01])\)/);
+  if (srgbMatch) {
+    r = Math.round(parseFloat(srgbMatch[1]) * 255);
+    g = Math.round(parseFloat(srgbMatch[2]) * 255);
+    b = Math.round(parseFloat(srgbMatch[3]) * 255);
+    isValidRGB = true;
+  } else {
+    // Use regex to extract RGB or RGBA values if not srgb
+    const rgbMatch = colorString.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d\.]+))?\)/);
+    if (rgbMatch) {
+      r = parseInt(rgbMatch[1], 10);
+      g = parseInt(rgbMatch[2], 10);
+      b = parseInt(rgbMatch[3], 10);
+
+      // Ensure R, G, and B are valid color values (0-255)
+      if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
+        isValidRGB = true; // Only mark as valid if within range
+      }
+    }
+  }
+
+  // If RGB values are not valid, log the warning and use a default color
+  if (!isValidRGB) {
+    console.warn('Invalid RGB/RGBA value provided: returning #000000');
+    return '#000000'; // Default to black
+  }
+
+  // Convert to hex
+  const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).padStart(6, '0')}`;
+
+  return hex;
+}
 /*Check input contrast for text*/
 function hexToRgb(hex) {
-  let r = parseInt(hex.substring(0, 2), 16);
-  let g = parseInt(hex.substring(2, 4), 16);
-  let b = parseInt(hex.substring(4, 6), 16);
-  return { r, g, b };
+  // Remove the hash if present
+  hex = hex.replace(/^#/, '');
+
+  // Expand shorthand hex if necessary (e.g., #03F becomes #0033FF)
+  if (hex.length === 3) {
+    hex = hex.split('').map(char => char + char).join('');
+  }
+
+  // Ensure the hex string is exactly 6 characters long
+  if (hex.length !== 6) {
+    console.error('Invalid hex color:', hex);
+    return undefined;
+  }
+
+  // Parse the r, g, b values
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  // Check if the parsing was successful
+  if (isNaN(r) || isNaN(g) || isNaN(b)) {
+    console.error('Failed to parse RGB values from hex:', hex);
+    return undefined;
+  }
+
+  // Return as an array
+  return [r, g, b];
 }
 
+
 function calculateBrightness(hex) {
-  const { r, g, b } = hexToRgb(hex);
+  const rgb = hexToRgb(hex);
+  if (!rgb) return 0; // Fallback if the conversion fails
+
+  const [r, g, b] = rgb;
   // Calculate relative luminance
   const Y = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  return Y * 0.009;
+  return Y / 255;  // Normalize by dividing by 255
 }
+
 
 function getContrastColor(hex) {
   hex = hex.replace('#', '');
-  var brightness = calculateBrightness(hex);
+  const brightness = calculateBrightness(hex);
   return brightness > 0.6 ? '#000000' : '#ffffff';
 }
+
 
 // Example Usage
 function checkInputContrast() {
@@ -357,6 +385,7 @@ function getRandomHexColor() {
   return `#${randomColor.padStart(6, '0')}`; // Ensure that the hex is always 6 characters
 }
 
+/* Hex to HSL */
 function hexToHSL(hex, component) {
   let r = 0, g = 0, b = 0;
 
@@ -416,12 +445,6 @@ function isValidHex(hex) {
   const hexPattern = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/;
   return hexPattern.test(hex);
 }
-
-function isValidHex(hex) {
-  const hexPattern = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/;
-  return hexPattern.test(hex);
-}
-
 function setInputAutoFocus(input) {
   const inputField = document.getElementById(input);
   const saturationInput = document.getElementById('saturationInput');
@@ -475,9 +498,7 @@ function setInputAutoFocus(input) {
   });
 
 }
-
 setInputAutoFocus('colorInput');
-
 
 function validateInputHex() {
   const hexValue = colorInput.value.trim();
@@ -490,7 +511,6 @@ function validateInputHex() {
       label.innerHTML = `<span>Type primary color hex:</span>`;
   }
 }
-
 
 /*Segmented control accessibility*/ 
 document.querySelectorAll('.segCtrl label').forEach(label => {
@@ -524,9 +544,6 @@ function changeColorScheme(scheme) {
   updateSecondary();
   console.log('--hue-differentiator: '+getComputedStyle(root).getPropertyValue('--hue-differentiator'))
 }
-
-
-
 /* Toggle accessibility */
 function setupToggleSwitch(checkboxId, callbackFunction) {
   const checkbox = document.getElementById(checkboxId);
@@ -583,5 +600,75 @@ document.addEventListener('DOMContentLoaded', function() {
   setupToggleSwitch('switchChromaCheckbox', update_Neutral_Saturation); // For the second toggle
 });
 
+/*extract secondary hex <---------------------------*/ 
+function getSecondaryComputedHex(element, cssVarName) {
+  // Apply the CSS variable as a background color to the hidden element
+  const sampleElement = document.getElementById('colorSample');
+  sampleElement.style.backgroundColor = `var(${cssVarName})`;
+  // Get the computed background color
+  const computedColor = getComputedStyle(sampleElement).backgroundColor;
+  // Convert the computed RGB color to hex
+  const hex = extractRGBandConvertToHex(computedColor);
+
+  return hex;
+}
+// Usage
+function getSecondaryHex(){
+const hexColor = getSecondaryComputedHex(document.documentElement, '--color_secondary');
+console.log('Secondary Computed Hex Color:', hexColor);
+return hexColor;
+}
+/* Accessibility status check:*/
+
+function luminance(rgb) {
+  if (!Array.isArray(rgb) || rgb.length !== 3) {
+      throw new Error("Invalid input to luminance function. Expected an array of three numbers.");
+  }
+
+  const [r, g, b] = rgb.map(v => {
+      v /= 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function contrastRatio(hex1, hex2) {
+
+  const rgb1 = hexToRgb(hex1);
+  const rgb2 = hexToRgb(hex2);
+  console.log('rgb1: '+rgb1 +' rgb2: '+ rgb2);
+  const lum1 = luminance(rgb1);
+  const lum2 = luminance(rgb2);
+
+  const ratio = (Math.max(lum1, lum2) + 0.05) / (Math.min(lum1, lum2) + 0.05);
+  return ratio;
+}
+
+function getContrastLevel(hex1, hex2) {
+  const ratio = contrastRatio(hex1, hex2);
+  if (ratio >= 7) return "AAA";
+  if (ratio >= 4.5) return "AA";
+  if (ratio >= 3) return "AA Large Text";
+  return "Fail";
+}
+function presentWCAG_status(level){
+const stautsLine = document.getElementById('contrast_status');
+var status=" ";
+if (level == "AAA"){
+status = '<p class="valid">'+ icon_check +'<span class= "bodyText--small--strong">AA Large</span></p>'+'<p class="valid">'+ icon_check + '<span class="bodyText--small--strong"> AA </span> </p><p class="valid">'+ icon_check + '<span class="bodyText--small--strong"> AAA </span></p>' ;
+}else if (level == "AA"){
+  status = '<p class="valid">'+ icon_check +'<span class= "bodyText--small--strong">AA Large</span></p>'+'<p class="valid">'+ icon_check +'<span class="bodyText--small--strong"> AA </span></p><p class="invalid">'+ icon_block + '<span class="bodyText--small--strong"> AAA</span></p>' ;
+}else if (level == "AA Large Text"){
+  status = '<p class="valid">'+ icon_check +'<span class= "bodyText--small--strong"> AA Large </span></p>'+'<p class="invalid">'+ icon_block +'<span class="bodyText--small--strong"> AA </span><p class="invalid">'+ icon_block + '<span class="bodyText--small--strong"> AAA </span></p>' ;
+}else{
+  status = '<p class="invalid">'+ icon_block +'<span class="bodyText--small--strong">AA Large </span></p>'+'<p class="invalid">'+icon_block+ '<span class= "bodyText--small--strong"> AA </span><p class="invalid">'+ icon_block + '<span class="bodyText--small--strong"> AAA</span></p>' ;
+}
+stautsLine.innerHTML = status;
+}
+
+
 /* assets---------------------------------------------------------------------*/
 const icon_copy = '<span class="icon_copy" ><svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"/></svg></span>';
+const icon_check = '<span class="icon_status"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960" fill="currentColor"><path d="M389-235 163-460l84-85 142 142 324-323 84 84-408 407Z"/></svg></span>'
+const icon_block = '<span class="icon_status"><svg  xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960" fill="currentColor"><path d="M480-87.87q-80.67 0-152.11-30.72Q256.46-149.3 202.76-203q-53.69-53.7-84.29-125.25-30.6-71.55-30.6-152.23 0-81.67 30.6-152.49 30.6-70.81 84.29-124.39 53.7-53.57 125.13-84.17 71.44-30.6 152.11-30.6 81.67 0 152.61 30.6 70.93 30.6 124.63 84.17 53.69 53.58 84.29 124.39 30.6 70.82 30.6 152.49 0 80.68-30.6 152.23-30.6 71.55-84.29 125.25-53.7 53.7-124.63 84.41Q561.67-87.87 480-87.87Zm0-83q53.09 0 100.65-16.8 47.57-16.81 86.13-47.61L234.8-667.02q-30.32 39.04-47.13 86.37-16.8 47.32-16.8 100.17 0 128.81 90.28 219.21T480-170.87Zm245.43-123.06q30.09-39.05 46.9-86.37 16.8-47.33 16.8-100.18 0-128.56-90.28-218.61-90.28-90.04-218.85-90.04-52.85 0-100.05 16.56-47.21 16.57-86.25 46.66l431.73 431.98Z"/></svg></span>'
