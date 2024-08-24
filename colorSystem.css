@@ -1,0 +1,346 @@
+/**
+* This file is a Relative Color System. It's allowing to structure your web-app style colors on internal dynamic relations rather than static palettes.
+* The file is based on CSS Relative Color: 
+* https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_colors/Relative_colors
+*
+* This file is configurable through its CSS Vars, and can also be accessed in the following gist:
+* https://gist.github.com/avinvadas/226b0c93417f0a28ce8c51f854ab3387
+* You can see the color system at work here: 
+* https://buttonsoup.xyz
+**/
+
+/* Configurations: */
+*{
+    --color-primary-hex: #000000; /* Primary color: */
+    --hue-dif: 180;  /* Harmony type (0-360) */
+    --lightness: 50; /* Lightness scales medial point */
+    --lightness-black: 20; /* Dark scales brightest edge */
+    --lightness-white: 100; /* Bright scales brightest edge */
+    --saturation-factor: 5; /* Neutral scales Chroma level. 0 for absolute grayscale */
+
+    /* primary & Secondary scales */
+    --scale-100:45;
+    --scale-200:35;
+    --scale-300:25;
+    --scale-400:15;
+    --scale-500:0;
+    --scale-600:-20;
+    --scale-700:-35;
+
+    /* lighting scales */
+    --light-scale-100: 30;
+    --light-scale-200: 20;
+    --light-scale-300: 10;
+    --light-scale-400: 5;
+    --light-scale-500: 2;
+    --light-scale-600: 1;
+    --light-scale-700: 0;
+
+    /* round multipliers: */
+    --five-thirds: 1.66;
+    --five-sixths: 0.85;
+    --three-quarters: 0.75;
+    --two-thirds: 0.66;
+    --half: 0.5;
+    --third: 0.33;
+    --quarter: 0.25;
+    --fifth: 0.2;
+    --sixth: 0.15;
+    --eighth: 0.125;
+    --tenth: 0.1;
+}
+
+
+
+
+/* Legacy support for Relative Color Syntax in browsers not yet supporting it (Safari, etc.): */
+@supports not (color: hsl( from #000000 180 100 50)){
+    html{
+    /* Converting Primary color HSL: */
+    --color-primary: hsl(from var(--color-primary-hex) h s l );
+    --legacy-multiplier: 1%; /* do not edit. convert HSL units to % for legacy browsers (Safari) */
+
+    /* Calculating Secondary color HSL: */
+    --ratio-sec-h: calc(h - var(--hue-dif) * 1deg);
+    --input-sec-s: 70; /* Secondary Saturation input */
+    --input-sec-l: 60; /* Secondary Lightness input */
+    --ratio-sec-s: var(--input-sec-s); /* Saturation level. Default 100 */
+    --ratio-sec-l: var(--input-sec-l); /* Lightness level. Default 50 */
+    --saturation-factor:5; /* Chroma level of neutral colors */
+
+
+    /* Secondary calculation */
+    --color-secondary: hsl(from var(--color-primary) /* Secondary color in HSL space*/
+                       calc((var(--ratio-sec-h) ))
+                       calc((var(--ratio-sec-s) )* var(--legacy-multiplier))
+                       calc((var(--ratio-sec-l))* var(--legacy-multiplier)));
+    --color-secondary-rgb: rgb(from var(--color-secondary) r g b); /* Secondary color in RGB space */
+    
+
+    /* Lightness scales for Primary colors */
+    --color-primary-hsl-100: hsl(from var(--color-primary) h s calc((var(--lightness) + var(--scale-100))* var(--legacy-multiplier)));
+    --color-primary-hsl-200: hsl(from var(--color-primary) h s calc((var(--lightness) + var(--scale-200))* var(--legacy-multiplier))); 
+    --color-primary-hsl-300: hsl(from var(--color-primary) h s calc((var(--lightness) + var(--scale-300))* var(--legacy-multiplier))); 
+    --color-primary-hsl-400: hsl(from var(--color-primary) h s calc((var(--lightness) + var(--scale-400))* var(--legacy-multiplier)));  
+    --color-primary-hsl-500: hsl(from var(--color-primary) h s calc((var(--lightness) + var(--scale-500))* var(--legacy-multiplier)));
+    --color-primary-hsl-600: hsl(from var(--color-primary) h s calc((var(--lightness) + var(--scale-600))* var(--legacy-multiplier))); 
+    --color-primary-hsl-700: hsl(from var(--color-primary) h s calc((var(--lightness) + var(--scale-700))* var(--legacy-multiplier))); 
+    
+    /* Lightness scales for Secondary colors */ 
+    --color-secondary-hsl-100: hsl(from var(--color-secondary) h s calc((var(--lightness) + var(--scale-100))* var(--legacy-multiplier)));
+    --color-secondary-hsl-200: hsl(from var(--color-secondary) h s calc((var(--lightness) + var(--scale-200))* var(--legacy-multiplier))); 
+    --color-secondary-hsl-300: hsl(from var(--color-secondary) h s calc((var(--lightness) + var(--scale-300))* var(--legacy-multiplier))); 
+    --color-secondary-hsl-400: hsl(from var(--color-secondary) h s calc((var(--lightness) + var(--scale-400))* var(--legacy-multiplier)));  
+    --color-secondary-hsl-500: hsl(from var(--color-secondary) h s calc((var(--lightness) + var(--scale-500))* var(--legacy-multiplier)));
+    --color-secondary-hsl-600: hsl(from var(--color-secondary) h s calc((var(--lightness) + var(--scale-600))* var(--legacy-multiplier))); 
+    --color-secondary-hsl-700: hsl(from var(--color-secondary) h s calc((var(--lightness) + var(--scale-700))* var(--legacy-multiplier))); 
+
+    /* Accent palette 01 */
+    --color-accent01-hsl-a:  var(--color-primary);
+    --color-accent01-hsl-b:  hsl(from var(--color-primary) h s calc(l * var(--half)));
+    --color-accent01-hsl-c: hsl(from var(--color-primary) h s calc(l * var(--fifth)));
+    --color-accent01-hsl-d:  hsl(from var(--color-secondary) h s  calc(l * var(--half)));
+    --color-accent01-hsl-e:  var(--color-secondary);
+
+    /* Accent palette 02 */
+    --color-accent02-hsl-a: hsl(from var(--color-secondary) calc(h * (var(--hue-dif)* var(--third))) calc(s * var(--half)) calc(l * var(--tenth)));
+    --color-accent02-hsl-b: var(--color-secondary); 
+    --color-accent02-hsl-c: hsl(from var(--color-primary) calc(h * (var(--hue-dif)* var(--sixth))) calc(s * var(--third)) calc(l * var(--five-thirds)));  
+    --color-accent02-hsl-d: var(--color-primary); 
+    --color-accent02-hsl-e: hsl(from var(--color-primary) calc(h * (var(--hue-dif)* var(--third))) calc(s * var(--half)) calc(l * var(--third))); 
+   
+    /* Accent palette 03 */
+    --color-accent03-hsl-a: var(--color-secondary);
+    --color-accent03-hsl-b: hsl(from var(--color-primary) calc(h * (var(--hue-dif)* var(--quarter))) s calc(l * var(--five-sixths)));
+    --color-accent03-hsl-c: hsl(from var(--color-primary) calc(h * (var(--hue-dif)* var(--half))) s calc(l * var(--two-thirds)));  
+    --color-accent03-hsl-d: hsl(from var(--color-primary) calc(h * (var(--hue-dif)* var(--three-quarters))) s calc(l * var(--third)));
+    --color-accent03-hsl-e: var(--color-primary); 
+  
+    /* Neutral Dark Theme scales: */
+    --color-level-dark-hsl-100: hsl(from var(--color-primary) var(--hue-dif) calc(var(--saturation-factor)* var(--legacy-multiplier)) calc((var(--lightness-black) + var(--light-scale-100))* var(--legacy-multiplier)));
+    --color-level-dark-hsl-200: hsl(from var(--color-primary) var(--hue-dif) calc(var(--saturation-factor)* var(--legacy-multiplier)) calc((var(--lightness-black) + var(--light-scale-200))* var(--legacy-multiplier)));
+    --color-level-dark-hsl-300: hsl(from var(--color-primary) var(--hue-dif) calc(var(--saturation-factor)* var(--legacy-multiplier)) calc((var(--lightness-black) + var(--light-scale-300))* var(--legacy-multiplier)));
+    --color-level-dark-hsl-400: hsl(from var(--color-primary) var(--hue-dif) calc(var(--saturation-factor)* var(--legacy-multiplier)) calc((var(--lightness-black) + var(--light-scale-400))* var(--legacy-multiplier)));
+    --color-level-dark-hsl-500: hsl(from var(--color-primary) var(--hue-dif) calc(var(--saturation-factor)* var(--legacy-multiplier)) calc((var(--lightness-black) + var(--light-scale-500))* var(--legacy-multiplier)));
+    --color-level-dark-hsl-600: hsl(from var(--color-primary) var(--hue-dif) calc(var(--saturation-factor)* var(--legacy-multiplier)) calc((var(--lightness-black) + var(--light-scale-600))* var(--legacy-multiplier)));
+    --color-level-dark-hsl-700: hsl(from var(--color-primary) var(--hue-dif) calc(var(--saturation-factor)* var(--legacy-multiplier)) calc((var(--lightness-black) + var(--light-scale-700))* var(--legacy-multiplier)));
+  
+    /* Neutral Bright Theme scales: */
+    --color-level-bright-hsl-100: hsl(from var(--color-primary) var(--hue-dif) calc(var(--saturation-factor)* var(--legacy-multiplier)) calc((var(--lightness-white) - var(--light-scale-100))* var(--legacy-multiplier)));
+    --color-level-bright-hsl-200: hsl(from var(--color-primary) var(--hue-dif) calc(var(--saturation-factor)* var(--legacy-multiplier)) calc((var(--lightness-white) - var(--light-scale-200))* var(--legacy-multiplier)));
+    --color-level-bright-hsl-300: hsl(from var(--color-primary) var(--hue-dif) calc(var(--saturation-factor)* var(--legacy-multiplier)) calc((var(--lightness-white) - var(--light-scale-300))* var(--legacy-multiplier)));
+    --color-level-bright-hsl-400: hsl(from var(--color-primary) var(--hue-dif) calc(var(--saturation-factor)* var(--legacy-multiplier)) calc((var(--lightness-white) - var(--light-scale-400))* var(--legacy-multiplier)));
+    --color-level-bright-hsl-500: hsl(from var(--color-primary) var(--hue-dif) calc(var(--saturation-factor)* var(--legacy-multiplier)) calc((var(--lightness-white) - var(--light-scale-500))* var(--legacy-multiplier)));
+    --color-level-bright-hsl-600: hsl(from var(--color-primary) var(--hue-dif) calc(var(--saturation-factor)* var(--legacy-multiplier)) calc((var(--lightness-white) - var(--light-scale-600))* var(--legacy-multiplier)));
+    --color-level-bright-hsl-700: hsl(from var(--color-primary) var(--hue-dif) calc(var(--saturation-factor)* var(--legacy-multiplier)) calc((var(--lightness-white) - var(--light-scale-700))* var(--legacy-multiplier)));
+    
+    
+    /* Convert all HSL colors to RGB color space: */
+
+    /* Primary scales */
+    --color-primary-100: rgb(from var(--color-primary-hsl-100) r g b);
+    --color-primary-200: rgb(from var(--color-primary-hsl-200) r g b);
+    --color-primary-300: rgb(from var(--color-primary-hsl-300) r g b);
+    --color-primary-400: rgb(from var(--color-primary-hsl-400) r g b);
+    --color-primary-500: rgb(from var(--color-primary-hsl-500) r g b);
+    --color-primary-600: rgb(from var(--color-primary-hsl-600) r g b);
+    --color-primary-700: rgb(from var(--color-primary-hsl-700) r g b);
+  
+    /* Secondary scales */
+    --color-secondary-100: rgb(from var(--color-secondary-hsl-100) r g b);
+    --color-secondary-200: rgb(from var(--color-secondary-hsl-200) r g b);
+    --color-secondary-300: rgb(from var(--color-secondary-hsl-300) r g b);
+    --color-secondary-400: rgb(from var(--color-secondary-hsl-400) r g b);
+    --color-secondary-500: rgb(from var(--color-secondary-hsl-500) r g b);
+    --color-secondary-600: rgb(from var(--color-secondary-hsl-600) r g b);
+    --color-secondary-700: rgb(from var(--color-secondary-hsl-700) r g b);
+    
+    /* Accent01 palette */
+    --color-accent-01-a: rgb(from var(--color-accent01-hsl-a) r g b);
+    --color-accent-01-b: rgb(from var(--color-accent01-hsl-b) r g b);
+    --color-accent-01-c: rgb(from var(--color-accent01-hsl-c) r g b);
+    --color-accent-01-d: rgb(from var(--color-accent01-hsl-d) r g b);
+    --color-accent-01-e: rgb(from var(--color-accent01-hsl-e) r g b);
+
+     /* Accent02 palette */
+    --color-accent-02-a: rgb(from var(--color-accent02-hsl-a) r g b);
+    --color-accent-02-b: rgb(from var(--color-accent02-hsl-b) r g b);
+    --color-accent-02-c: rgb(from var(--color-accent02-hsl-c) r g b);
+    --color-accent-02-d: rgb(from var(--color-accent02-hsl-d) r g b);
+    --color-accent-02-e: rgb(from var(--color-accent02-hsl-e) r g b);
+
+    /* Accent03 palette */
+    --color-accent-03-a: rgb(from var(--color-accent03-hsl-a) r g b);
+    --color-accent-03-b: rgb(from var(--color-accent03-hsl-b) r g b);
+    --color-accent-03-c: rgb(from var(--color-accent03-hsl-c) r g b);
+    --color-accent-03-d: rgb(from var(--color-accent03-hsl-d) r g b);
+    --color-accent-03-e: rgb(from var(--color-accent03-hsl-e) r g b);
+    
+    /* Neutral darks scales */
+    --color-level-dark-100: rgb(from var(--color-level-dark-hsl-100) r g b);
+    --color-level-dark-200: rgb(from var(--color-level-dark-hsl-200) r g b);
+    --color-level-dark-300: rgb(from var(--color-level-dark-hsl-300) r g b);
+    --color-level-dark-400: rgb(from var(--color-level-dark-hsl-400) r g b);
+    --color-level-dark-500: rgb(from var(--color-level-dark-hsl-500) r g b);
+    --color-level-dark-600: rgb(from var(--color-level-dark-hsl-600) r g b);
+    --color-level-dark-700: rgb(from var(--color-level-dark-hsl-700) r g b);
+    
+    /* Neutral brights scales */
+    --color-level-bright-100: rgb(from var(--color-level-bright-hsl-100) r g b);
+    --color-level-bright-200: rgb(from var(--color-level-bright-hsl-200) r g b);
+    --color-level-bright-300: rgb(from var(--color-level-bright-hsl-300) r g b);
+    --color-level-bright-400: rgb(from var(--color-level-bright-hsl-400) r g b);
+    --color-level-bright-500: rgb(from var(--color-level-bright-hsl-500) r g b);
+    --color-level-bright-600: rgb(from var(--color-level-bright-hsl-600) r g b);
+    --color-level-bright-700: rgb(from var(--color-level-bright-hsl-700) r g b);
+  
+    }
+  }
+  
+  /* Relative Color Syntax for modern browsers (Chrome, Edge, FireFox, Brave, Opera etc.) */
+  @supports (color: hsl( from #000000 180 100 50)){
+  html{
+    /* Converting Primary color HSL: */
+    --color-primary: hsl(from var(--color-primary-hex) h s l );
+
+    /* Calculating Secondary color HSL: */
+    --ratio-sec-h: calc(h - var(--hue-dif));
+    --input-sec-s: 70; /* Secondary Saturation input */
+    --input-sec-l: 60; /* Secondary Lightness input */
+    --ratio-sec-s: var(--input-sec-s); /* Saturation level. Default 100 */
+    --ratio-sec-l: var(--input-sec-l); /* Lightness level. Default 50 */
+    --color-secondary: hsl(from var(--color-primary-hex)  /* Secondary color: in HSL space */
+                       var(--ratio-sec-h) 
+                       var(--ratio-sec-s)
+                       var(--ratio-sec-l));
+    --color-secondary-rgb: rgb(from var(--color-secondary) r g b);  /* Secondary color in RGB space */
+  
+
+
+    /* Lightness scales for Primary colors */
+    --color-primary-hsl-100: hsl(from var(--color-primary) h s calc( var(--lightness) + var(--scale-100)));
+    --color-primary-hsl-200: hsl(from var(--color-primary) h s calc( var(--lightness) + var(--scale-200))); 
+    --color-primary-hsl-300: hsl(from var(--color-primary) h s calc( var(--lightness) + var(--scale-300))); 
+    --color-primary-hsl-400: hsl(from var(--color-primary) h s calc( var(--lightness) + var(--scale-400)));  
+    --color-primary-hsl-500: hsl(from var(--color-primary) h s calc( var(--lightness) + var(--scale-500)));
+    --color-primary-hsl-600: hsl(from var(--color-primary) h s calc( var(--lightness) + var(--scale-600))); 
+    --color-primary-hsl-700: hsl(from var(--color-primary) h s calc( var(--lightness) + var(--scale-700))); 
+    
+    /* Lightness scales for Secondary colors */
+    --color-secondary-hsl-100: hsl(from var(--color-secondary) h s calc(var(--lightness) + var(--scale-100)));
+    --color-secondary-hsl-200: hsl(from var(--color-secondary) h s calc(var(--lightness) + var(--scale-200))); 
+    --color-secondary-hsl-300: hsl(from var(--color-secondary) h s calc(var(--lightness) + var(--scale-300))); 
+    --color-secondary-hsl-400: hsl(from var(--color-secondary) h s calc(var(--lightness) + var(--scale-400)));  
+    --color-secondary-hsl-500: hsl(from var(--color-secondary) h s calc(var(--lightness) + var(--scale-500)));
+    --color-secondary-hsl-600: hsl(from var(--color-secondary) h s calc(var(--lightness) + var(--scale-600))); 
+    --color-secondary-hsl-700: hsl(from var(--color-secondary) h s calc(var(--lightness) + var(--scale-700)));
+    
+    /* Accent palette 01 */
+    --color-accent01-hsl-a:  var(--color-primary);
+    --color-accent01-hsl-b:  hsl(from var(--color-primary) h s calc(l * var(--half)));
+    --color-accent01-hsl-c: hsl(from var(--color-primary) h s calc(l * var(--fifth)));
+    --color-accent01-hsl-d:  hsl(from var(--color-secondary) h s  calc(l * var(--half)));
+    --color-accent01-hsl-e:  var(--color-secondary);
+
+    /* Accent palette 02 */
+     --color-accent02-hsl-a: hsl(from var(--color-secondary) calc(h * (var(--hue-dif)* var(--third))) calc(s * var(--half)) calc(l * var(--tenth)));
+    --color-accent02-hsl-b: var(--color-secondary); 
+    --color-accent02-hsl-c: hsl(from var(--color-primary) calc(h * (var(--hue-dif)* var(--sixth))) calc(s * var(--third)) calc(l * var(--five-thirds)));  
+    --color-accent02-hsl-d: var(--color-primary); 
+    --color-accent02-hsl-e: hsl(from var(--color-primary) calc(h * (var(--hue-dif)* var(--third))) calc(s * var(--half)) calc(l * var(--third))); 
+  
+    /* Accent palette 03 */
+    --color-accent03-hsl-a: var(--color-secondary);
+    --color-accent03-hsl-b: hsl(from var(--color-primary) calc(h * (var(--hue-dif)* var(--quarter))) s calc(l * var(--five-sixths)));
+    --color-accent03-hsl-c: hsl(from var(--color-primary) calc(h * (var(--hue-dif)* var(--half))) s calc(l * var(--two-thirds)));  
+    --color-accent03-hsl-d: hsl(from var(--color-primary) calc(h * (var(--hue-dif)* var(--three-quarters))) s calc(l * var(--third)));
+    --color-accent03-hsl-e: var(--color-primary); 
+    
+
+    /* Neutral Dark Theme scales: */
+    --color-level-dark-hsl-100: hsl(from var(--color-primary) var(--hue-dif) var(--saturation-factor) calc(var(--lightness-black) + var(--light-scale-100)));
+    --color-level-dark-hsl-200: hsl(from var(--color-primary) var(--hue-dif) var(--saturation-factor) calc(var(--lightness-black) + var(--light-scale-200)));
+    --color-level-dark-hsl-300: hsl(from var(--color-primary) var(--hue-dif) var(--saturation-factor) calc(var(--lightness-black) + var(--light-scale-300)));
+    --color-level-dark-hsl-400: hsl(from var(--color-primary) var(--hue-dif) var(--saturation-factor) calc(var(--lightness-black) + var(--light-scale-400)));
+    --color-level-dark-hsl-500: hsl(from var(--color-primary) var(--hue-dif) var(--saturation-factor) calc(var(--lightness-black) + var(--light-scale-500)));
+    --color-level-dark-hsl-600: hsl(from var(--color-primary) var(--hue-dif) var(--saturation-factor) calc(var(--lightness-black) + var(--light-scale-600)));
+    --color-level-dark-hsl-700: hsl(from var(--color-primary) var(--hue-dif) var(--saturation-factor) calc(var(--lightness-black) + var(--light-scale-700)));
+  
+    /* Neutral Bright Theme scales: */
+    --color-level-bright-hsl-100: hsl(from var(--color-primary) var(--hue-dif) var(--saturation-factor) calc(var(--lightness-white) - var(--light-scale-100)));
+    --color-level-bright-hsl-200: hsl(from var(--color-primary) var(--hue-dif) var(--saturation-factor) calc(var(--lightness-white) - var(--light-scale-200)));
+    --color-level-bright-hsl-300: hsl(from var(--color-primary) var(--hue-dif) var(--saturation-factor) calc(var(--lightness-white) - var(--light-scale-300)));
+    --color-level-bright-hsl-400: hsl(from var(--color-primary) var(--hue-dif) var(--saturation-factor) calc(var(--lightness-white) - var(--light-scale-400)));
+    --color-level-bright-hsl-500: hsl(from var(--color-primary) var(--hue-dif) var(--saturation-factor) calc(var(--lightness-white) - var(--light-scale-500)));
+    --color-level-bright-hsl-600: hsl(from var(--color-primary) var(--hue-dif) var(--saturation-factor) calc(var(--lightness-white) - var(--light-scale-600)));
+    --color-level-bright-hsl-700: hsl(from var(--color-primary) var(--hue-dif) var(--saturation-factor) calc(var(--lightness-white) - var(--light-scale-700)));
+    
+    
+    /* Convert all HSL colors to RGB color space: */
+
+    /* Primary scales */
+    --color-primary-100: rgb(from var(--color-primary-hsl-100) r g b);
+    --color-primary-200: rgb(from var(--color-primary-hsl-200) r g b);
+    --color-primary-300: rgb(from var(--color-primary-hsl-300) r g b);
+    --color-primary-400: rgb(from var(--color-primary-hsl-400) r g b);
+    --color-primary-500: rgb(from var(--color-primary-hsl-500) r g b);
+    --color-primary-600: rgb(from var(--color-primary-hsl-600) r g b);
+    --color-primary-700: rgb(from var(--color-primary-hsl-700) r g b);
+  
+    /* Secondary scales */
+    --color-secondary-100: rgb(from var(--color-secondary-hsl-100) r g b);
+    --color-secondary-200: rgb(from var(--color-secondary-hsl-200) r g b);
+    --color-secondary-300: rgb(from var(--color-secondary-hsl-300) r g b);
+    --color-secondary-400: rgb(from var(--color-secondary-hsl-400) r g b);
+    --color-secondary-500: rgb(from var(--color-secondary-hsl-500) r g b);
+    --color-secondary-600: rgb(from var(--color-secondary-hsl-600) r g b);
+    --color-secondary-700: rgb(from var(--color-secondary-hsl-700) r g b);
+    
+    /* Accent01 palette */
+    --color-accent-01-a: rgb(from var(--color-accent01-hsl-a) r g b);
+    --color-accent-01-b: rgb(from var(--color-accent01-hsl-b) r g b);
+    --color-accent-01-c: rgb(from var(--color-accent01-hsl-c) r g b);
+    --color-accent-01-d: rgb(from var(--color-accent01-hsl-d) r g b);
+    --color-accent-01-e: rgb(from var(--color-accent01-hsl-e) r g b);
+
+     /* Accent02 palette */
+    --color-accent-02-a: rgb(from var(--color-accent02-hsl-a) r g b);
+    --color-accent-02-b: rgb(from var(--color-accent02-hsl-b) r g b);
+    --color-accent-02-c: rgb(from var(--color-accent02-hsl-c) r g b);
+    --color-accent-02-d: rgb(from var(--color-accent02-hsl-d) r g b);
+    --color-accent-02-e: rgb(from var(--color-accent02-hsl-e) r g b);
+
+    /* Accent03 palette */
+    --color-accent-03-a: rgb(from var(--color-accent03-hsl-a) r g b);
+    --color-accent-03-b: rgb(from var(--color-accent03-hsl-b) r g b);
+    --color-accent-03-c: rgb(from var(--color-accent03-hsl-c) r g b);
+    --color-accent-03-d: rgb(from var(--color-accent03-hsl-d) r g b);
+    --color-accent-03-e: rgb(from var(--color-accent03-hsl-e) r g b);
+    
+    /* Neutral darks scales */
+    --color-level-dark-100: rgb(from var(--color-level-dark-hsl-100) r g b);
+    --color-level-dark-200: rgb(from var(--color-level-dark-hsl-200) r g b);
+    --color-level-dark-300: rgb(from var(--color-level-dark-hsl-300) r g b);
+    --color-level-dark-400: rgb(from var(--color-level-dark-hsl-400) r g b);
+    --color-level-dark-500: rgb(from var(--color-level-dark-hsl-500) r g b);
+    --color-level-dark-600: rgb(from var(--color-level-dark-hsl-600) r g b);
+    --color-level-dark-700: rgb(from var(--color-level-dark-hsl-700) r g b);
+    
+    /* Neutral bright scales */
+    --color-level-bright-100: rgb(from var(--color-level-bright-hsl-100) r g b);
+    --color-level-bright-200: rgb(from var(--color-level-bright-hsl-200) r g b);
+    --color-level-bright-300: rgb(from var(--color-level-bright-hsl-300) r g b);
+    --color-level-bright-400: rgb(from var(--color-level-bright-hsl-400) r g b);
+    --color-level-bright-500: rgb(from var(--color-level-bright-hsl-500) r g b);
+    --color-level-bright-600: rgb(from var(--color-level-bright-hsl-600) r g b);
+    --color-level-bright-700: rgb(from var(--color-level-bright-hsl-700) r g b);
+  }
+  }
+
+
+
+/* This code is created and maintained by @avinvadas. 
+You can use it, remix it, and share it as you like! All I ask is to keep this 
+comment intact to spread the love.🍀
+
+If anything doesn't work for you as expected, please feel free to contact me here or through https://avinvadas.com */

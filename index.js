@@ -1,21 +1,35 @@
+/**
+* This file holds the functionality for buttonSoup UI. 
+* buttonSoup generates full-scale color-systems from a single color, based on a relative color calculations done in CSS.
+* The color system logic itself is static and CSS only (colorSystem.css), not a part of the javascript. 
+* You can see buttonSoup live at: 
+* https://buttonsoup.xyz
+* The github repository at:
+* https://github.com/avinvadas/buttonSoup
+* Copy the color system from the following Gist:
+* https://gist.github.com/avinvadas/226b0c93417f0a28ce8c51f854ab3387
+* And play with live implementation here:
+* https://jsfiddle.net/avinvadas/t1cfs0bv/234/
+**/
+
 /*global vars*/
 const root = document.documentElement;
-const colorInput_wrapper = document.getElementsByClassName('wrapper__primary_color')[0];
-const colorInput = document.getElementById("colorInput");
-const colorInput_copyToCB = document.getElementById("mainInput_copyToCB");
-const colorPicker = document.getElementById("colorPicker__primary");
-const saturationSlider = document.getElementById("saturationSlider");
-const saturationInput = document.getElementById("saturationInput");
-const lightnessSlider = document.getElementById("lightnessSlider");
-const lightnessInput = document.getElementById("lightnessInput");
-var currentPrimaryColor = getComputedStyle(root).getPropertyValue('--color_primary');
-var currentSecondaryColor = getComputedStyle(root).getPropertyValue('--color_secondary');
+const colorInput_wrapper = document.getElementsByClassName('wrapper-primary-color')[0];
+const colorInput = document.getElementById("color-input");
+const colorInput_copyToCB = document.getElementById("main-input-copy-to-cb");
+const colorPicker = document.getElementById("color-picker-primary");
+const saturationSlider = document.getElementById("saturation-slider");
+const saturationInput = document.getElementById("saturation-input");
+const lightnessSlider = document.getElementById("lightness-slider");
+const lightnessInput = document.getElementById("lightness-input");
+var currentPrimaryColor = getComputedStyle(root).getPropertyValue('--color-primary');
+var currentSecondaryColor = getComputedStyle(root).getPropertyValue('--color-secondary');
 const neutral_saturation_level = getComputedStyle(root).getPropertyValue('--saturation-factor');
 
 
-/*-----Setting color ticker objects: Showing hexes, click to copy, etc-------*/
-/*show color values on a series of DOM elements*/
-function presentColorValues(className) {
+/* Setting color ticker objects: Showing hexes, click to copy, etc */
+
+function presentColorValues(className) { /* Display hexes on DOM elements */
   var sampElements = document.getElementsByClassName(className);
   for (var i = 0; i < sampElements.length; i++) {
     setHex(sampElements[i]);
@@ -26,34 +40,30 @@ function presentColorValues(className) {
 function setClickToCopy(domElement) {
   domElement.addEventListener("click", function () {
     copyTextToClipboard(domElement.hex);
-    domElement.innerHTML = '<span class="ticker__hex">✓ Copied</span>' + icon_copy;
+    domElement.innerHTML = '<span class="ticker-hex">✓ Copied</span>' + icon_copy;
     domElement.style.color = getContrastColor(domElement.hex);
 
     // Display the indication for 2 seconds
     setTimeout(function () {
-      // Revert back to displaying the hex value after 2 seconds
-      domElement.innerHTML = '<span class="ticker__hex">' + domElement.hex + '</span>' + icon_copy;
+      domElement.innerHTML = '<span class="ticker-hex">' + domElement.hex + '</span>' + icon_copy;
     }, 1250);
   });
 }
+
 /*set Hex for single DOM element*/
 function setHex(domElement) {
   var style = window.getComputedStyle(domElement);
   var bgColorRGB = style.getPropertyValue('background-color');
-
   const hexColor = extractRGBandConvertToHex(bgColorRGB);
   const textColor = getContrastColor(hexColor); // Get contrast color
-
   domElement.hex = hexColor;
-  domElement.innerHTML = `<span class="ticker__hex" style="color: ${textColor};">${domElement.hex}</span><span class="icon_copy" style="color: ${textColor};">${icon_copy}</span>`;
+  domElement.innerHTML = `<span class="ticker-hex" style="color: ${textColor};">${domElement.hex}</span><span class="icon-copy" style="color: ${textColor};">${icon_copy}</span>`;
 }
-/*Copy to clipboard mechanisms*/ 
-/*Copy Single hex: */
+
+/* Copy Single hex: */ 
 function copyTextToClipboard(text) {
-  // Use the Clipboard API for better usability, especially on mobile
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).then(() => {
-      console.log('Text copied to clipboard:', text);
     }).catch(err => {
       console.error('Could not copy text: ', err);
     });
@@ -69,19 +79,14 @@ function copyTextToClipboard(text) {
 }
 /*Copy entire palette: */
 function copyPaletteToClipboard(palette) {
-  // Construct the selector directly without changing 'palette---primary'
-  const paletteSelector = `.palette--${palette}`;
+  const paletteSelector = `.palette-${palette}`;
   const paletteElement = document.querySelector(paletteSelector);
-
-  console.log('Palette Selector:', paletteSelector);
-  console.log('Palette Element:', paletteElement);
-
-  if (!paletteElement) {
+  
+  if (!paletteElement) { // If the palette not found
     console.error('Palette not found:', palette);
-    return; // Exit early if the palette is not found
+    return; 
   }
-
-  const colorTickers = paletteElement.getElementsByClassName("colorTicker");
+  const colorTickers = paletteElement.getElementsByClassName("color-ticker");
   const colors = {};
 
   Array.from(colorTickers).forEach((ticker, index) => {
@@ -106,51 +111,44 @@ function copyPaletteToClipboard(palette) {
   }, 2000);
 }
 
-/*-------------------------------------------------------*/
-
-//INITIATING
+/* Initiation */ 
 function init() {
-  document.documentElement.style.setProperty('--color_primary-hex', getRandomHexColor())
-
-  presentColorValues('colorTicker');
+  document.documentElement.style.setProperty('--color-primary-hex', getRandomHexColor())
+  presentColorValues('color-ticker');
   setInput();
   setColorPicker();
   setSliders();
   alignInputsToHex();
   checkInputContrast();
-  setInputAutoFocus("colorInput");
+  setInputAutoFocus("color-input");
   updateSecondary();
 }
 
-/*Color manipulation inputs*/
+/* Color manipulation inputs */
 function setInput() {
   colorInput.addEventListener("input", function () {
     colorPicker.value = colorInput.value;
     var hexColor = colorInput.value;
-    
-    document.documentElement.style.setProperty('--color_primary-hex', hexColor);
-    document.documentElement.style.setProperty('--input__sec_s', hexToHSL(hexColor, 's'));
-    document.documentElement.style.setProperty('--input__sec_l', hexToHSL(hexColor, 'l'));
+    document.documentElement.style.setProperty('--color-primary-hex', hexColor);
+    document.documentElement.style.setProperty('--input-sec-s', hexToHSL(hexColor, 's'));
+    document.documentElement.style.setProperty('--input-sec-l', hexToHSL(hexColor, 'l'));
     currentPrimaryColor =  colorInput.value;
-    presentColorValues('colorTicker');
+    presentColorValues('color-ticker');
     checkInputContrast();
     alignInputsToHex();
     updateSecondary_Sliders();
     validateInputHex();
-    
   });
-  /*Set click to copy*/
-  const mainInput_copyToCB = document.getElementById('mainInput_copyToCB');
+  
+  const mainInput_copyToCB = document.getElementById('main-input-copy-to-cb');
   mainInput_copyToCB.addEventListener("click", function () {
     copyTextToClipboard(colorInput.value);
     copyFeedback_mainInput()
   });
+
   function copyFeedback_mainInput() {
-    // Show feedback message
     const originalContent = colorInput.value; // Store the existing content
     colorInput.value = '✓ Copied';
-
-    // Set a timeout to revert back to original content
     setTimeout(function () {
       colorInput.value = originalContent; // Restore original content
     }, 1250);
@@ -163,10 +161,10 @@ function setColorPicker() {
     colorInput.value = colorPicker.value;
     const hexColor = colorInput.value;
     // Update CSS variables to reflect the new primary color
-    document.documentElement.style.setProperty('--color_primary-hex', hexColor);
-    document.documentElement.style.setProperty('--input__sec_s', hexToHSL(hexColor, 's'));
-    document.documentElement.style.setProperty('--input__sec_l', hexToHSL(hexColor, 'l'));
-    presentColorValues('colorTicker');
+    document.documentElement.style.setProperty('--color-primary-hex', hexColor);
+    document.documentElement.style.setProperty('--input-sec-s', hexToHSL(hexColor, 's'));
+    document.documentElement.style.setProperty('--input-sec-l', hexToHSL(hexColor, 'l'));
+    presentColorValues('color-ticker');
     checkInputContrast();
     alignInputsToHex();
     updateSecondary();
@@ -177,23 +175,21 @@ function setColorPicker() {
 
 function setSliders() {
   /*Map sliders and inputs to vars*/
-  /*const hueSlider = document.getElementById("hueSlider");*/
-  const saturationSlider = document.getElementById("saturationSlider");
-  const saturationInput = document.getElementById("saturationInput");
-  const lightnessSlider = document.getElementById("lightnessSlider");
-  const lightnessInput = document.getElementById("lightnessInput");
-  //sync each slider and numerical input with one another:
+  const saturationSlider = document.getElementById("saturation-slider");
+  const saturationInput = document.getElementById("saturation-input");
+  const lightnessSlider = document.getElementById("lightness-slider");
+  const lightnessInput = document.getElementById("lightness-input");
+  /* sync each slider and numerical input with one another: */
   syncInputs(saturationSlider, saturationInput);
   syncInputs(lightnessSlider, lightnessInput);
-  /*Sync sliders range and number inputs*/
+  /* Sync sliders range and number inputs */
   saturationSlider.addEventListener("input", updateSecondary);
   saturationInput.addEventListener("input", updateSecondary);
   lightnessSlider.addEventListener("input", updateSecondary);
   lightnessInput.addEventListener("input", updateSecondary);
-
-  saturationSlider.value = getComputedStyle(root).getPropertyValue('--ratio__sec_s');
+  saturationSlider.value = getComputedStyle(root).getPropertyValue('--ratio-sec-s');
   saturationInput.value = saturationSlider.value;
-  lightnessSlider.value = getComputedStyle(root).getPropertyValue('--ratio__sec_l');
+  lightnessSlider.value = getComputedStyle(root).getPropertyValue('--ratio-sec-l');
   lightnessInput.value = lightnessSlider.value;
 }
 
@@ -208,40 +204,38 @@ function syncInputs(rangeInput, numberInput) {
     }
   });
 }
-
+/* update secondary color value */
 const updateSecondary = () => {
   const s = saturationSlider.value;
   const l = lightnessSlider.value;
-  document.documentElement.style.setProperty('--ratio__sec_s', s);
-  document.documentElement.style.setProperty('--ratio__sec_l', l);
+  document.documentElement.style.setProperty('--ratio-sec-s', s);
+  document.documentElement.style.setProperty('--ratio-sec-l', l);
   var primaryHex = colorInput.value;
   var secondaryHex = getSecondaryHex();
-  presentColorValues('colorTicker');
+  presentColorValues('color-ticker');
   alignInputsToHex();
- 
   presentWCAG_status(getContrastLevel(primaryHex ,secondaryHex ));
-  
 };
 
 function updateSecondary_Sliders() {
-  saturationSlider.value = getComputedStyle(root).getPropertyValue('--input__sec_s');
-  saturationInput.value = getComputedStyle(root).getPropertyValue('--input__sec_s');
-  lightnessSlider.value = getComputedStyle(root).getPropertyValue('--input__sec_l');
-  lightnessInput.value = getComputedStyle(root).getPropertyValue('--input__sec_l');
+  saturationSlider.value = getComputedStyle(root).getPropertyValue('--input-sec-s');
+  saturationInput.value = getComputedStyle(root).getPropertyValue('--input-sec-s');
+  lightnessSlider.value = getComputedStyle(root).getPropertyValue('--input-sec-l');
+  lightnessInput.value = getComputedStyle(root).getPropertyValue('--input-sec-l');
 }
 
 function alignInputsToHex() {
-  const currentPrimaryColor = getComputedStyle(root).getPropertyValue('--color_primary-hex').trim();
+  const currentPrimaryColor = getComputedStyle(root).getPropertyValue('--color-primary-hex').trim();
   colorInput.value = currentPrimaryColor;
   colorPicker.value = currentPrimaryColor;
 }
 
-/* Extract RGB Values and convert them to hex*/
+/* Extract RGB Values and convert them to hex */
 function extractRGBandConvertToHex(colorString) {
-  let r = 0, g = 0, b = 0; // Initialize RGB values
-  let isValidRGB = false; // To check if the RGB values are valid
+  let r = 0, g = 0, b = 0; /* Initialize RGB values */
+  let isValidRGB = false; /* Validate RGB values */
 
-  // Check for color(srgb ...) format
+  // Check for color format (srgb ...)
   const srgbMatch = colorString.match(/color\(srgb\s+([0-1]\.\d+|[01])\s+([0-1]\.\d+|[01])\s+([0-1]\.\d+|[01])\)/);
   if (srgbMatch) {
     r = Math.round(parseFloat(srgbMatch[1]) * 255);
@@ -249,7 +243,7 @@ function extractRGBandConvertToHex(colorString) {
     b = Math.round(parseFloat(srgbMatch[3]) * 255);
     isValidRGB = true;
   } else {
-    // Use regex to extract RGB or RGBA values if not srgb
+    // Extract RGB or RGBA values if not srgb
     const rgbMatch = colorString.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d\.]+))?\)/);
     if (rgbMatch) {
       r = parseInt(rgbMatch[1], 10);
@@ -263,7 +257,7 @@ function extractRGBandConvertToHex(colorString) {
     }
   }
 
-  // If RGB values are not valid, log the warning and use a default color
+  // Warn if RGB values are not valid
   if (!isValidRGB) {
     console.warn('Invalid RGB/RGBA value provided: returning #000000');
     return '#000000'; // Default to black
@@ -271,15 +265,13 @@ function extractRGBandConvertToHex(colorString) {
 
   // Convert to hex
   const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).padStart(6, '0')}`;
-
   return hex;
 }
 /*Check input contrast for text*/
 function hexToRgb(hex) {
-  // Remove the hash if present
-  hex = hex.replace(/^#/, '');
+  hex = hex.replace(/^#/, ''); /* Remove hash */
 
-  // Expand shorthand hex if necessary (e.g., #03F becomes #0033FF)
+  // Expand shorthand hex ( #03F becomes #0033FF)
   if (hex.length === 3) {
     hex = hex.split('').map(char => char + char).join('');
   }
@@ -309,20 +301,17 @@ function hexToRgb(hex) {
 function calculateBrightness(hex) {
   const rgb = hexToRgb(hex);
   if (!rgb) return 0; // Fallback if the conversion fails
-
   const [r, g, b] = rgb;
   // Calculate relative luminance
   const Y = 0.2126 * r + 0.7152 * g + 0.0722 * b;
   return Y / 255;  // Normalize by dividing by 255
 }
 
-
 function getContrastColor(hex) {
   hex = hex.replace('#', '');
   const brightness = calculateBrightness(hex);
   return brightness > 0.6 ? '#000000' : '#ffffff';
 }
-
 
 // Example Usage
 function checkInputContrast() {
@@ -336,7 +325,6 @@ function checkInputContrast() {
 /* Color theme selection modes*/
 const colorSchemeSelector = document.querySelectorAll('input[name="colorScheme"]');
 let selectedColorScheme;
-
 colorSchemeSelector.forEach((radio) => {
   radio.addEventListener('change', function () {
     selectedColorScheme = this.value;
@@ -348,21 +336,20 @@ colorSchemeSelector.forEach((radio) => {
 
 function generateSecondaryColor(colorScheme) {
   if (colorScheme == "complementary") {
-    document.documentElement.style.setProperty('--hue-differentiator', 180);
+    document.documentElement.style.setProperty('--hue-dif', 180);
   } else if (colorScheme == "triad") {
-    document.documentElement.style.setProperty('--hue-differentiator', 120);
+    document.documentElement.style.setProperty('--hue-dif', 120);
   } else if (colorScheme == "quad") {
-    document.documentElement.style.setProperty('--hue-differentiator', 90);
+    document.documentElement.style.setProperty('--hue-dif', 90);
   } else if (colorScheme == "analogous") {
-    document.documentElement.style.setProperty('--hue-differentiator', 45);
+    document.documentElement.style.setProperty('--hue-dif', 45);
   }
 }
-
+/* Add or remove chroma from Neutral scales */ 
 function update_Neutral_Saturation() {
   const chromaToggle = document.getElementById("switchChroma").querySelector('input[type="checkbox"]');
-  const chromaToggle__label = document.getElementById("chromaToggle__label");
-  const root = document.documentElement; // Define root if not done earlier
-
+  const chromaToggle__label = document.getElementById("chroma-toggle-label");
+  const root = document.documentElement;
   if (chromaToggle.checked) {
     root.style.setProperty('--saturation-factor', neutral_saturation_level);
     chromaToggle__label.innerHTML = "Chroma on";
@@ -370,22 +357,21 @@ function update_Neutral_Saturation() {
     root.style.setProperty('--saturation-factor', 0);
     chromaToggle__label.innerHTML = "Chroma off";
   }
-  presentColorValues('colorTicker');
+  presentColorValues('color-ticker');
   alignInputsToHex();
 }
 
 function themeSwitch() {
   var element = document.body;
-  element.classList.toggle("mainTheme--dark");
+  element.classList.toggle("main-theme-dark");
 }
-
+/* Generate a random hex color */
 function getRandomHexColor() {
-  // Generate a random hex color
   const randomColor = Math.floor(Math.random() * 16777215).toString(16);
   return `#${randomColor.padStart(6, '0')}`; // Ensure that the hex is always 6 characters
 }
 
-/* Hex to HSL */
+/* Color-space conversion: Hex to HSL */
 function hexToHSL(hex, component) {
   let r = 0, g = 0, b = 0;
 
@@ -445,10 +431,16 @@ function isValidHex(hex) {
   const hexPattern = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/;
   return hexPattern.test(hex);
 }
+
+/* Manage auto-focus on key press for Primary Color input:
+* Users should be able to freely type primary hex upon key event by default, and automatically focus on the primary color input, 
+* unlessed currently focused somewhere else:
+*/ 
+
 function setInputAutoFocus(input) {
-  const inputField = document.getElementById(input);
-  const saturationInput = document.getElementById('saturationInput');
-  const lightnessInput = document.getElementById('lightnessInput');
+  const inputField = document.getElementById('color-input');
+  const saturationInput = document.getElementById('saturation-input');
+  const lightnessInput = document.getElementById('lightness-input');
 
   // Variable to track if focus should be given to colorInput based on valid key press
   let autoFocusEnabled = true;
@@ -502,18 +494,20 @@ setInputAutoFocus('colorInput');
 
 function validateInputHex() {
   const hexValue = colorInput.value.trim();
-  const label = document.getElementById('mainInput__label');
+  const label = document.getElementById('main-input-label');
   
   // Validate the input value
   if (!isValidHex(hexValue)) {         
-      label.innerHTML = `<span>Type primary color hex: </span></span><span class="text--error" >Fail to read hex</span>`;
+      label.innerHTML = `<span>Type primary color hex: </span></span><span class="text-error" >Fail to read hex</span>`;
   } else {
       label.innerHTML = `<span>Type primary color hex:</span>`;
   }
 }
 
-/*Segmented control accessibility*/ 
-document.querySelectorAll('.segCtrl label').forEach(label => {
+/* ACCESSIBILITY SETTINGS AND KEYBOARD SUPPORT */
+
+/* Segmented control accessibility */ 
+document.querySelectorAll('.seg-ctrl label').forEach(label => {
   label.addEventListener('click', function () {
       const inputId = this.getAttribute('for');
       const radioInput = document.getElementById(inputId);
@@ -531,7 +525,6 @@ document.querySelectorAll('.segCtrl label').forEach(label => {
           // Get the 'for' attribute to find the associated radio input
           const inputId = this.getAttribute('for');
           const radioInput = document.getElementById(inputId);
-          console.log('inputID:'+ inputId)
           changeColorScheme(radioInput.value); // Trigger the color change
       }
   });
@@ -539,10 +532,9 @@ document.querySelectorAll('.segCtrl label').forEach(label => {
 
 // Function to change the secondary color based on the selected scheme
 function changeColorScheme(scheme) {
-  console.log('scheme: '+scheme)
   generateSecondaryColor(scheme);
   updateSecondary();
-  console.log('--hue-differentiator: '+getComputedStyle(root).getPropertyValue('--hue-differentiator'))
+ 
 }
 /* Toggle accessibility */
 function setupToggleSwitch(checkboxId, callbackFunction) {
@@ -594,16 +586,16 @@ function setupToggleSwitch(checkboxId, callbackFunction) {
   checkbox.addEventListener('change', updateSliderVisualState);
 }
 
-// Initialize both switches on DOM load
+// Initialize both switches on load
 document.addEventListener('DOMContentLoaded', function() {
-  setupToggleSwitch('themeCheckbox', themeSwitch); // For the first toggle
-  setupToggleSwitch('switchChromaCheckbox', update_Neutral_Saturation); // For the second toggle
+  setupToggleSwitch('theme-checkbox', themeSwitch); // For the first toggle
+  setupToggleSwitch('switch-chroma-checkbox', update_Neutral_Saturation); // For the second toggle
 });
 
 /*extract secondary hex <---------------------------*/ 
 function getSecondaryComputedHex(element, cssVarName) {
   // Apply the CSS variable as a background color to the hidden element
-  const sampleElement = document.getElementById('colorSample');
+  const sampleElement = document.getElementById('color-sample');
   sampleElement.style.backgroundColor = `var(${cssVarName})`;
   // Get the computed background color
   const computedColor = getComputedStyle(sampleElement).backgroundColor;
@@ -614,8 +606,7 @@ function getSecondaryComputedHex(element, cssVarName) {
 }
 // Usage
 function getSecondaryHex(){
-const hexColor = getSecondaryComputedHex(document.documentElement, '--color_secondary');
-console.log('Secondary Computed Hex Color:', hexColor);
+const hexColor = getSecondaryComputedHex(document.documentElement, '--color-secondary');
 return hexColor;
 }
 /* Accessibility status check:*/
@@ -624,23 +615,18 @@ function luminance(rgb) {
   if (!Array.isArray(rgb) || rgb.length !== 3) {
       throw new Error("Invalid input to luminance function. Expected an array of three numbers.");
   }
-
   const [r, g, b] = rgb.map(v => {
       v /= 255;
       return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
   });
-
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
 function contrastRatio(hex1, hex2) {
-
   const rgb1 = hexToRgb(hex1);
   const rgb2 = hexToRgb(hex2);
-  console.log('rgb1: '+rgb1 +' rgb2: '+ rgb2);
   const lum1 = luminance(rgb1);
   const lum2 = luminance(rgb2);
-
   const ratio = (Math.max(lum1, lum2) + 0.05) / (Math.min(lum1, lum2) + 0.05);
   return ratio;
 }
@@ -652,23 +638,24 @@ function getContrastLevel(hex1, hex2) {
   if (ratio >= 3) return "AA Large Text";
   return "Fail";
 }
+
 function presentWCAG_status(level){
-const stautsLine = document.getElementById('contrast_status');
+const stautsLine = document.getElementById('contrast-status');
 var status=" ";
 if (level == "AAA"){
-status = '<p class="valid">'+ icon_check +'<span class= "bodyText--small--strong">AA Large</span></p>'+'<p class="valid">'+ icon_check + '<span class="bodyText--small--strong"> AA </span> </p><p class="valid">'+ icon_check + '<span class="bodyText--small--strong"> AAA </span></p>' ;
+status = '<p class="valid">'+ icon_check +'<span class= "body-text-small-strong">AA Large</span></p>'+'<p class="valid">'+ icon_check + '<span class="body-text-small-strong"> AA </span> </p><p class="valid">'+ icon_check + '<span class="body-text-small-strong"> AAA </span></p>' ;
 }else if (level == "AA"){
-  status = '<p class="valid">'+ icon_check +'<span class= "bodyText--small--strong">AA Large</span></p>'+'<p class="valid">'+ icon_check +'<span class="bodyText--small--strong"> AA </span></p><p class="invalid">'+ icon_block + '<span class="bodyText--small--strong"> AAA</span></p>' ;
+  status = '<p class="valid">'+ icon_check +'<span class= "body-text-small-strong">AA Large</span></p>'+'<p class="valid">'+ icon_check +'<span class="body-text-small-strong"> AA </span></p><p class="invalid">'+ icon_block + '<span class="body-text-small-strong"> AAA</span></p>' ;
 }else if (level == "AA Large Text"){
-  status = '<p class="valid">'+ icon_check +'<span class= "bodyText--small--strong"> AA Large </span></p>'+'<p class="invalid">'+ icon_block +'<span class="bodyText--small--strong"> AA </span><p class="invalid">'+ icon_block + '<span class="bodyText--small--strong"> AAA </span></p>' ;
+  status = '<p class="valid">'+ icon_check +'<span class= "body-text-small-strong"> AA Large </span></p>'+'<p class="invalid">'+ icon_block +'<span class="body-text-small-strong"> AA </span><p class="invalid">'+ icon_block + '<span class="body-text-small-strong"> AAA </span></p>' ;
 }else{
-  status = '<p class="invalid">'+ icon_block +'<span class="bodyText--small--strong">AA Large </span></p>'+'<p class="invalid">'+icon_block+ '<span class= "bodyText--small--strong"> AA </span><p class="invalid">'+ icon_block + '<span class="bodyText--small--strong"> AAA</span></p>' ;
+  status = '<p class="invalid">'+ icon_block +'<span class="body-text-small-strong">AA Large </span></p>'+'<p class="invalid">'+icon_block+ '<span class= "body-text-small-strong"> AA </span><p class="invalid">'+ icon_block + '<span class="body-text-small-strong"> AAA</span></p>' ;
 }
 stautsLine.innerHTML = status;
 }
 
 
-/* assets---------------------------------------------------------------------*/
-const icon_copy = '<span class="icon_copy" ><svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"/></svg></span>';
-const icon_check = '<span class="icon_status"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960" fill="currentColor"><path d="M389-235 163-460l84-85 142 142 324-323 84 84-408 407Z"/></svg></span>'
-const icon_block = '<span class="icon_status"><svg  xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960" fill="currentColor"><path d="M480-87.87q-80.67 0-152.11-30.72Q256.46-149.3 202.76-203q-53.69-53.7-84.29-125.25-30.6-71.55-30.6-152.23 0-81.67 30.6-152.49 30.6-70.81 84.29-124.39 53.7-53.57 125.13-84.17 71.44-30.6 152.11-30.6 81.67 0 152.61 30.6 70.93 30.6 124.63 84.17 53.69 53.58 84.29 124.39 30.6 70.82 30.6 152.49 0 80.68-30.6 152.23-30.6 71.55-84.29 125.25-53.7 53.7-124.63 84.41Q561.67-87.87 480-87.87Zm0-83q53.09 0 100.65-16.8 47.57-16.81 86.13-47.61L234.8-667.02q-30.32 39.04-47.13 86.37-16.8 47.32-16.8 100.17 0 128.81 90.28 219.21T480-170.87Zm245.43-123.06q30.09-39.05 46.9-86.37 16.8-47.33 16.8-100.18 0-128.56-90.28-218.61-90.28-90.04-218.85-90.04-52.85 0-100.05 16.56-47.21 16.57-86.25 46.66l431.73 431.98Z"/></svg></span>'
+/* Reusable SVG icons as variables*/
+const icon_copy = '<span class="icon-copy" ><svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"/></svg></span>';
+const icon_check = '<span class="icon-status"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960" fill="currentColor"><path d="M389-235 163-460l84-85 142 142 324-323 84 84-408 407Z"/></svg></span>'
+const icon_block = '<span class="icon-status"><svg  xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960" fill="currentColor"><path d="M480-87.87q-80.67 0-152.11-30.72Q256.46-149.3 202.76-203q-53.69-53.7-84.29-125.25-30.6-71.55-30.6-152.23 0-81.67 30.6-152.49 30.6-70.81 84.29-124.39 53.7-53.57 125.13-84.17 71.44-30.6 152.11-30.6 81.67 0 152.61 30.6 70.93 30.6 124.63 84.17 53.69 53.58 84.29 124.39 30.6 70.82 30.6 152.49 0 80.68-30.6 152.23-30.6 71.55-84.29 125.25-53.7 53.7-124.63 84.41Q561.67-87.87 480-87.87Zm0-83q53.09 0 100.65-16.8 47.57-16.81 86.13-47.61L234.8-667.02q-30.32 39.04-47.13 86.37-16.8 47.32-16.8 100.17 0 128.81 90.28 219.21T480-170.87Zm245.43-123.06q30.09-39.05 46.9-86.37 16.8-47.33 16.8-100.18 0-128.56-90.28-218.61-90.28-90.04-218.85-90.04-52.85 0-100.05 16.56-47.21 16.57-86.25 46.66l431.73 431.98Z"/></svg></span>'

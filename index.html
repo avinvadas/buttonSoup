@@ -18,7 +18,7 @@
 <meta property="og:url" content="https://buttonsoup.xyz">
 <meta property="og:image" content="https://buttonSoup.xyz/buttonSoup_opengraph.png">
 <meta property="og:description" content="a lightweight color themer">
-<!---->
+<!--Titles, links-->
   <title>buttonSoup:: Light-weight theme builder</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="stylesheet" href="./style.css">
@@ -29,10 +29,11 @@
     <link rel="alternate icon" href="favicon-bright.png">
 </head>
 
-<body class="mainTheme--bright mainTheme--dark" onload="init()">
+<body class="main-theme-bright main-theme-dark" onload="init()">
+<!--Header area-->
 <header class="header">
-  <p class="header_title">
-    <span class="header__logo">
+  <p class="header-title">
+    <span class="header-logo">
     
       <svg width="100%" height="100%" viewBox="0 0 268 52" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
         <g transform="matrix(1,0,0,1,-7513,-1605.2)">
@@ -46,18 +47,16 @@
             </g>
         </g>
     </svg>
-    
-  
-  </span><span class="bodyText--small">Light-weight theme builder</span></p>
-  <div class="toggle_comp">
-    <label id="themeSwitch" class="switch">
-      <input type="checkbox" id="themeCheckbox" onChange="themeSwitch()" checked style="display: none;"> <!-- Hide default checkbox -->
+  </span><span class="body-text-small">Light-weight theme builder</span></p>
+  <div class="toggle-comp">
+    <label id="theme-switch" class="switch">
+      <input type="checkbox" id="theme-checkbox" onChange="themeSwitch()" checked style="display: none;"> <!-- Hide default checkbox -->
       <span class="slider round" title="Switch dark mode" tabindex="0"></span> <!-- Make the slider focusable -->
     </label>
-    <div id="themeSwitch__label" class="utility_icon">
+    <div id="theme-switch-label" class="utility-icon">
       <svg width="100%" height="100%" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg">
         <g transform="matrix(1,0,0,1,-84.9009,-277.014)">
-          <g id="icon_darkMode" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,318.951,275.288)">
+          <g id="icon-dark-mode" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,318.951,275.288)">
             <rect x="2.525" y="283.831" width="58.481" height="58.481" style="fill:none;"/>
             <g transform="matrix(7.91981e-17,-1.2934,1.2934,7.91981e-17,-352.172,444.715)">
               <path fill="currentColor" d="M114.583,306.723C111.887,309.658 108.018,311.499 103.723,311.499C95.586,311.499 88.979,304.892 88.979,296.754C88.979,289.393 94.386,283.284 101.441,282.186C99.03,284.811 97.557,288.312 97.557,292.155C97.557,300.292 104.164,306.899 112.301,306.899C113.077,306.899 113.839,306.839 114.583,306.723Z"/>
@@ -68,62 +67,40 @@
     </div>
   </div>
 </header>
-<section class="palettes_section ">
-  
 
-  <label id="mainInput__label" class="heading_05">Type your primary color hex:</label>
-  <ul class="palette palette_brand">
-  <li class="wrapper__primary_color excludedFromColorTheme"> 
-    <div class="button_copy" id="mainInput_copyToCB" >
+<!-- Main input for primary and secondary color -->
+<section class="palettes-section">
+  <label id="main-input-label" class="heading-05">Type your primary color hex:</label>
+  <ul class="palette palette-brand">
+    <!-- Primary color -->
+  <li class="wrapper-primary-color excluded-from-color-theme"> 
+    <div class="button-copy" id="main-input-copy-to-cb" >
   <svg width='100%' height='100%' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"/></svg></div>
-   <input class="input_field--emphasized" id="colorInput" type="text" maxlength="7" placeholder="#" title="Type Hex of primary color"></input>
-  
+   <input class="input-field-emphasized" id="color-input" type="text" maxlength="7" placeholder="#" title="Type Hex of primary color"></input>
   </li>
-  
-  <li class="colorTicker" id="secondary_color">
-    
+  <!-- Secondary color -->
+  <li class="color-ticker" id="secondary-color">
   </li>
-  <!---
-  <li class="mainInput__arrow">
-    <svg width="100%" height="100%" viewBox="0 0 13 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-      <g transform="matrix(1,0,0,1,-62.7581,-462.875)">
-          <g id="arrow" transform="matrix(0.400996,0,0,0.800917,-47.316,152.092)">
-              <rect x="274.502" y="388.033" width="30" height="30"  fill="none"/>
-              <clipPath id="_clip1">
-                  <rect fill="currentColor" x="274.502" y="388.033" width="30" height="30"/>
-              </clipPath>
-              <g clip-path="url(#_clip1)">
-                  <g transform="matrix(2.82232e-16,2.30769,-4.98758,1.52905e-16,2623.03,240.899)">
-                      <path  fill="currentColor" d="M70.258,464.875L76.758,470.875L63.758,470.875L70.258,464.875Z" />
-                  </g>
-              </g>
-          </g>
-      </g>
-  </svg>
-  
-  
-  </li>
--->
 </ul>
-<div id="colorSample" style="display: none;"></div>
-
-<div id="ctrl_hues">
-  <div class="wrapper_color_picker">
-  <input class="color_thumb" id="colorPicker__primary" type="color" value="transparent" title="pick primary color" />
-  <label  class="bodyText--small">
+<div id="color-sample" style="display: none;"></div>
+<!--Secondary hue harmony selector-->
+<div id="ctrl-hues">
+  <div class="wrapper-color-picker">
+  <input class="color-thumb" id="color-picker-primary" type="color" value="transparent" title="pick primary color" />
+  <label  class="body-text-small">
     Adjust primary color
   </label>
   </div>
-<div  class='wrapper_segCtrl'>
+<div  class='wrapper-seg-ctrl'>
 
-  <label class="bodyText--small">Set secondary hue:</label>
-  <div class="segCtrl">
+  <label class="body-text-small">Set secondary hue:</label>
+  <div class="seg-ctrl">
  <input type="radio" id="complementary" name="colorScheme"  value="complementary" checked >
   <label for="complementary"  tabindex="0"  title="Make hue complementary" >
-    <div class='segCtrl_tab'>
+    <div class='seg-ctrl-tab'>
     <svg  viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
     <g transform="matrix(1,0,0,1,-2,-283)">
-        <g id="icon_complementary" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,236.05,281.274)">
+        <g id="icon-complementary" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,236.05,281.274)">
             <rect x="2.525" y="283.831" width="58.481" height="58.481" style="fill:none;"/>
             <g transform="matrix(1.46255,0,0,1.46255,3.03649,-131.592)">
                 <path fill="currentColor" d="M22.442,321.135C21.994,322.241 20.909,323.022 19.643,323.022C18.377,323.022 17.291,322.241 16.843,321.135C8.995,319.802 3.012,312.964 3.012,304.739C3.012,297.152 8.102,290.745 15.051,288.751C15.505,286.632 17.389,285.042 19.643,285.042C21.896,285.042 23.781,286.632 24.235,288.751C31.183,290.745 36.274,297.152 36.274,304.739C36.274,312.964 30.29,319.802 22.442,321.135ZM19.643,286.719C17.976,286.719 16.623,288.072 16.623,289.738C16.623,291.405 17.976,292.758 19.643,292.758C21.309,292.758 22.662,291.405 22.662,289.738C22.662,288.072 21.309,286.719 19.643,286.719ZM24.085,291.265C23.53,292.878 22.12,294.095 20.397,294.374L20.397,317.078C21.254,317.299 21.965,317.887 22.35,318.664C28.885,317.399 33.827,311.641 33.827,304.739C33.827,298.461 29.74,293.131 24.085,291.265ZM16.936,318.664C17.321,317.887 18.031,317.299 18.888,317.078L18.888,294.374C17.165,294.095 15.755,292.878 15.2,291.265C9.545,293.131 5.458,298.461 5.458,304.739C5.458,311.641 10.4,317.399 16.936,318.664Z"/>
@@ -136,10 +113,10 @@
   
   <input type="radio" id="triad" name="colorScheme" value='triad'>
   <label for="triad"  tabindex="0"  title="Make hue triad">
-    <div class='segCtrl_tab'>
+    <div class='seg-ctrl-tab'>
     <svg viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
     <g transform="matrix(1,0,0,1,-67.2661,-283)">
-        <g id="icon_triad" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,301.316,281.274)">
+        <g id="icon-triad" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,301.316,281.274)">
             <rect x="2.525" y="283.831" width="58.481" height="58.481" style="fill:none;"/>
             <g transform="matrix(1,0,0,1,0,2.24169)">
                 <g transform="matrix(1.46255,0,0,1.46255,3.03649,-132.626)">
@@ -156,10 +133,10 @@
     
   <input type="radio" id="quad" name="colorScheme" value='quad' >
   <label for="quad"  tabindex="0" title="Make hue quad">
-   <div class='segCtrl_tab'> 
+   <div class='seg-ctrl-tab'> 
   <svg viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"> 
     <g transform="matrix(1,0,0,1,-112.071,-283)">
-        <g id="icon_quad" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,346.121,281.274)">
+        <g id="icon-quad" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,346.121,281.274)">
             <rect x="2.525" y="283.831" width="58.481" height="58.481" style="fill:none;"/>
             <g transform="matrix(1,0,0,1,-1.20795,2.24169)">
                 <g transform="matrix(1.46255,0,0,1.46255,3.03649,-132.626)">
@@ -176,10 +153,10 @@
   </label>
 
   <input type="radio" id="analogous" name="colorScheme" value="analogous">
-  <label for="analogous"  tabindex="0" title="Make hue analogous"><div class='segCtrl_tab'>
+  <label for="analogous"  tabindex="0" title="Make hue analogous"><div class='seg-ctrl-tab'>
     <svg fill="currentColor" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
     <g transform="matrix(1,0,0,1,-345.47,-283)">
-        <g id="icon_analogus" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,579.521,281.274)">
+        <g id="icon-analogous" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,579.521,281.274)">
             <rect x="2.525" y="283.831" width="58.481" height="58.481" style="fill:none;"/>
             <g transform="matrix(1,0,0,1,5.68434e-14,2.24169)">
                 <g transform="matrix(1.46255,0,0,1.46255,3.03649,-132.626)">
@@ -192,28 +169,26 @@
         </g>
     </g>
 </svg>
-
     </div>
   </label>
 </div>
 </div>
 </div>
 
-    
-   <!-- <span class="color_thumb" id="colorThumb"></span>-->
   </section>
   
-  <section class="palettes_section">
+  <section class="palettes-section">
   
-    <div class="sliders_column">
-      <div class="label_and_status">
-      <label class="bodyText--small">Adjust secondary contrast (WCAG 2.1):</label> 
-      <span id="contrast_status" class="bodyText--small"></span>
+    <div class="sliders-column">
+      <div class="label-and-status">
+      <label class="body-text-small">Adjust secondary contrast (WCAG 2.1):</label> 
+      <span id="contrast-status" class="body-text-small"></span>
       </div>
-    <div class='input_slider' title="adjust saturation of secondary color" id="input_sec_s">
-        <label for="saturationSlider"><div class='utility_icon'><svg  viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+      <!-- Secondary Saturation adjust -->
+    <div class='color-adjust-input' title="adjust saturation of secondary color" id="input-sec-s">
+        <label for="saturation-slider"><div class='utility-icon'><svg  viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
     <g transform="matrix(1,0,0,1,-48.7972,-282.225)">
-        <g id="icon_saturation" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,282.848,280.499)">
+        <g id="icon-saturation" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,282.848,280.499)">
             <rect x="2.525" y="283.831" width="58.481" height="58.481" style="fill:none;"/>
             <g transform="matrix(8.95556e-17,-1.46255,1.46255,8.95556e-17,-411.256,324.026)">
                 <path fill="currentColor" d="M8.243,286.914C8.243,286.914 12.866,290.395 16.564,294.973C19.153,298.176 21.243,301.921 21.243,305.404C21.243,312.994 15.081,319.156 7.49,319.156C-0.1,319.156 -6.262,312.994 -6.262,305.404C-6.262,301.921 -4.172,298.176 -1.583,294.973C2.115,290.395 6.738,286.914 6.738,286.914C7.184,286.578 7.797,286.578 8.243,286.914ZM7.49,289.505C6.088,290.641 2.98,293.303 0.361,296.544C-1.851,299.282 -3.762,302.426 -3.762,305.404C-3.762,311.614 1.28,316.656 7.49,316.656C13.701,316.656 18.743,311.614 18.743,305.404C18.743,302.426 16.832,299.282 14.62,296.544C12.001,293.303 8.893,290.641 7.49,289.505ZM0.017,305.769L14.964,305.769C14.964,309.897 11.618,313.243 7.49,313.243C3.363,313.243 0.017,309.897 0.017,305.769Z"/>
@@ -221,16 +196,16 @@
         </g>
     </g>
 </svg></div></label>
-        <input class="sliderInp" type="range" id="saturationSlider" min="0" max="100" value="100" />
-        <input class="numberInp" type="number" id="saturationInput" min="0" max="100" step="1"> <!-- Add input field for Saturation -->
+        <input class="slider-input" type="range" id="saturation-slider" min="0" max="100" value="100" />
+        <input class="number-input" type="number" id="saturation-input" min="0" max="100" step="1"> <!-- Add input field for Saturation -->
     </div>
-
-    <div class='input_slider' title="adjust lightness of secondary color" id="input_sec_l">
-        <label for="lightnessSlider">
-          <div class='utility_icon'>
+    <!-- Secondary Lightness adjust -->
+    <div class='color-adjust-input' title="adjust lightness of secondary color" id="input_sec_l">
+        <label for="lightness-slider">
+          <div class='utility-icon'>
           <svg width="100%" height="100%" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
     <g transform="matrix(1,0,0,1,0,-282.225)">
-        <g id="icon_lightness" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,234.05,280.499)">
+        <g id="icon-lightness" transform="matrix(4.18667e-17,0.683735,-0.683735,4.18667e-17,234.05,280.499)">
             <rect x="2.525" y="283.831" width="58.481" height="58.481" style="fill:none;"/>
             <g transform="matrix(8.95556e-17,-1.46255,1.46255,8.95556e-17,-414.299,342.426)">
                 <path fill='currentColor' d="M20.071,297.428C24.245,297.428 27.633,300.816 27.633,304.99C27.633,309.164 24.245,312.552 20.071,312.552C15.898,312.552 12.509,309.164 12.509,304.99C12.509,300.816 15.898,297.428 20.071,297.428ZM10.183,304.99C10.183,305.632 9.662,306.153 9.02,306.153L5.361,306.153C4.719,306.153 4.198,305.632 4.198,304.99C4.198,304.348 4.719,303.827 5.361,303.827L9.02,303.827C9.662,303.827 10.183,304.348 10.183,304.99ZM35.945,304.99C35.945,305.632 35.423,306.153 34.782,306.153L31.122,306.153C30.481,306.153 29.959,305.632 29.959,304.99C29.959,304.348 30.481,303.827 31.122,303.827L34.782,303.827C35.423,303.827 35.945,304.348 35.945,304.99ZM20.071,295.102C19.429,295.102 18.908,294.581 18.908,293.939L18.908,290.28C18.908,289.638 19.429,289.117 20.071,289.117C20.713,289.117 21.234,289.638 21.234,290.28L21.234,293.939C21.234,294.581 20.713,295.102 20.071,295.102ZM20.071,320.863C19.429,320.863 18.908,320.342 18.908,319.7L18.908,316.041C18.908,315.399 19.429,314.878 20.071,314.878C20.713,314.878 21.234,315.399 21.234,316.041L21.234,319.7C21.234,320.342 20.713,320.863 20.071,320.863ZM13.079,297.998C12.625,298.452 11.888,298.452 11.434,297.998L8.847,295.411C8.393,294.957 8.393,294.22 8.847,293.766C9.301,293.312 10.038,293.312 10.492,293.766L13.079,296.353C13.533,296.807 13.533,297.544 13.079,297.998ZM31.295,316.214C30.841,316.668 30.104,316.668 29.651,316.214L27.063,313.627C26.609,313.173 26.609,312.436 27.063,311.982C27.517,311.528 28.254,311.528 28.708,311.982L31.295,314.569C31.749,315.023 31.749,315.76 31.295,316.214ZM27.063,297.998C26.609,297.544 26.609,296.807 27.063,296.353L29.651,293.766C30.104,293.312 30.841,293.312 31.295,293.766C31.749,294.22 31.749,294.957 31.295,295.411L28.708,297.998C28.254,298.452 27.517,298.452 27.063,297.998ZM8.847,316.214C8.393,315.76 8.393,315.023 8.847,314.569L11.434,311.982C11.888,311.528 12.625,311.528 13.079,311.982C13.533,312.436 13.533,313.173 13.079,313.627L10.492,316.214C10.038,316.668 9.301,316.668 8.847,316.214Z"/>
@@ -240,161 +215,166 @@
 </svg>
 </div>
         </label>
-        <input class="sliderInp" type="range" id="lightnessSlider" min="0" max="100" value="50" />
-        <input class="numberInp" type="number" id="lightnessInput" min="0" max="100" step="1"> 
+        <input class="slider-input" type="range" id="lightness-slider" min="0" max="100" value="50" />
+        <input class="number-input" type="number" id="lightness-input" min="0" max="100" step="1"> 
       </div>
     </div>
   </section>
-<!-- Color lightness levels-->
-<section class="palettes_section">
+<!-- Primary and Secondary Scales -->
+<section class="palettes-section">
 
-  <div class='palette_heading'>
-  <h6 class="heading_06">Primary scales</h6>
-   <button onclick="copyPaletteToClipboard('primary')"  tabindex="0" class="button--copyPalette">
+  <div class='palette-heading'>
+  <h6 class="heading-06">Primary scales</h6>
+   <button onclick="copyPaletteToClipboard('primary')"  tabindex="0" class="button-copy-palette">
      <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
      Copy as JSON
     </button>
   </div>
-
-<ul class="palette palette--primary">
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-
-</ul>
-</section>
-<section class="palettes_section">
-  
-  <div class='palette_heading'>
-  <h6 class="heading_06">Secondary scales</h6>
-   <button onclick="copyPaletteToClipboard('secondary')"  tabindex="0" class="button--copyPalette">
-     <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
-     Copy as JSON
-    </button>
-  </div>
-<ul class="palette palette--secondary">
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
+<!-- Scales Primary -->
+<ul class="palette palette-primary">
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
 
 </ul>
 </section>
-<section class="palettes_section palettes_accent">
-<h5 class="heading_05">Accents</h5>
-<div class='palette_heading'>
-  <h6 class="heading_06">Accent01</h6>
-   <button onclick="copyPaletteToClipboard('accents01')"  tabindex="0" class="button--copyPalette">
+<!-- Scales Secondary -->
+<section class="palettes-section">
+  <div class='palette-heading'>
+  <h6 class="heading-06">Secondary scales</h6>
+   <button onclick="copyPaletteToClipboard('secondary')"  tabindex="0" class="button-copy-palette">
      <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
      Copy as JSON
     </button>
   </div>
-<ul class="palette palette--accents01">
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-</ul>
- <div class='palette_heading'>
-  <h6 class="heading_06">Accent02</h6>
-   <button onclick="copyPaletteToClipboard('accents02')" tabindex="0"  class="button--copyPalette">
-     <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
-     Copy as JSON
-    </button>
-  </div>
-<ul class="palette palette--accents02">
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-</ul>
- <div class='palette_heading'>
-  <h6 class="heading_06">Accent03</h6>
-   <button onclick="copyPaletteToClipboard('accents03')"  tabindex="0" class="button--copyPalette">
-     <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
-     Copy as JSON
-    </button>
-  </div>
-<ul class="palette palette--accents03">
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
+<ul class="palette palette-secondary">
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+
 </ul>
 </section>
-  
-<!------------------------>
-<section class="palettes_section">
-<h5 class="heading_05">Neutral spreads</h5>
-  <div class="toggle_comp">
+<!-- Accent palettes -->
+<section class="palettes-section palettes-accent">
+<h5 class="heading-05">Accents</h5>
+<!-- Accent palette 01 -->
+<div class='palette-heading'>
+  <h6 class="heading-06">Accent 01</h6>
+   <button onclick="copyPaletteToClipboard('accent-01')"  tabindex="0" class="button-copy-palette">
+     <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
+     Copy as JSON
+    </button>
+  </div>
+<ul class="palette palette-accent-01">
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+</ul>
+<!-- Accent palette 02 -->
+ <div class='palette-heading'>
+  <h6 class="heading-06">Accent 02</h6>
+   <button onclick="copyPaletteToClipboard('accent-02')" tabindex="0"  class="button-copy-palette">
+     <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
+     Copy as JSON
+    </button>
+  </div>
+<ul class="palette palette-accent-02">
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+</ul>
+<!-- Accent palette 03 -->
+ <div class='palette-heading'>
+  <h6 class="heading-06">Accent 03</h6>
+   <button onclick="copyPaletteToClipboard('accent-03')"  tabindex="0" class="button-copy-palette">
+     <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
+     Copy as JSON
+    </button>
+  </div>
+<ul class="palette palette-accent-03">
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+</ul>
+</section>
+<!-- Neutral scale palettes -->
+<section class="palettes-section">
+<h5 class="heading-05">Neutral spreads</h5>
+  <div class="toggle-comp">
   <label id="switchChroma" class="switch">
   <input type="checkbox" id="switchChromaCheckbox" onChange="update_Neutral_Saturation()" checked style="display: none;">
   <span class="slider round" title="switch chroma" tabindex="0"></span>
   </label>
-  <div id="chromaToggle__label" class="bodyText--small">Chroma on</div>
+  <div id="chroma-toggle-label" class="body-text-small">Chroma on</div>
   </div>
-  <div class='palette_heading'>
-  <h6 class="heading_06">Brights</h6>
-   <button onclick="copyPaletteToClipboard('bright')"   tabindex="0" class="button--copyPalette">
+  <!-- Neutral Scales brights -->
+  <div class='palette-heading'>
+  <h6 class="heading-06">Brights</h6>
+   <button onclick="copyPaletteToClipboard('bright')"   tabindex="0" class="button-copy-palette">
      <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
      Copy as JSON
     </button>
   </div>
-<ul class="palette palette--bright">
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
+<ul class="palette palette-bright">
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
 
 </ul>
 </section>
-<section class="palettes_section">
+<!-- Neutral Scales darks -->
+<section class="palettes-section">
   
-   <div class='palette_heading'>
-  <h6 class="heading_06">Darks</h6>
-   <button onclick="copyPaletteToClipboard('dark')"   tabindex="0" class="button--copyPalette">
+   <div class='palette-heading'>
+  <h6 class="heading-06">Darks</h6>
+   <button onclick="copyPaletteToClipboard('dark')"   tabindex="0" class="button-copy-palette">
      <svg title='icon copy' width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"></path></svg>
       Copy as JSON
     </button>
-    
   </div>
-<ul class="palette palette--dark">
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-<li class="colorTicker"></li>
-
+<ul class="palette palette-dark">
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
+<li class="color-ticker"></li>
 </ul>
 </section>
-<section class="section_text">
-  <h6 class="heading_06">
+<!-- Section heads-up-->
+<section class="section-text">
+  <h6 class="heading-06">
     <svg xmlns="http://www.w3.org/2000/svg" height="1.5rem"  width="1.5rem" viewBox="0 -960 960 960" fill="currentColor"><path d="m48-144 432-720 432 720H48Zm127-72h610L480-724 175-216Zm304.79-48q15.21 0 25.71-10.29t10.5-25.5q0-15.21-10.29-25.71t-25.5-10.5q-15.21 0-25.71 10.29t-10.5 25.5q0 15.21 10.29 25.71t25.5 10.5ZM444-384h72v-192h-72v192Zm36-86Z"/></svg>
     A Small heads-up:</h6><br/>
-<p class="bodyText--small">buttonSoup is a free, experimental tool.<br/> While these color suggestions are well calculated and aim to be awesome, please make sure to double-check for your own compliance (Accessibility, etc.) before using them.</p>
+<p class="body-text-small">buttonSoup is a free, experimental tool.<br/> While these color suggestions are well calculated and aim to be awesome, please make sure to double-check for your own compliance (Accessibility, etc.) before using them.</p>
 </section>
-  <footer class='footer'><p class="bodyText--small">
+<!-- Footer -->
+  <footer class='footer'><p class="body-text-small">
     Created by
     <a href='https://bio.site/avinvadas'  tabindex="0" target='_blank'>Avin Vadas</a> | buttonSoup is open-source, <a href='https://github.com/avinvadas/buttonSoup'   tabindex="0" target='_blank'>Check it out on Github</a>.</p>
   </footer>
 </body>
 <!-- Main Javascript-->
-  <script  src="./script.js"></script>
+  <script  src="./index.js"></script>
 
 <!--Favicon-->
 <script>
