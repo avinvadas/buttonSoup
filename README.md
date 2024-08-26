@@ -103,6 +103,10 @@ https://jsfiddle.net/avinvadas/t1cfs0bv/234/
 
 More on relative color functions and how they work in CSS can be read here: [https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_colors/Relative_colors](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_colors/Relative_colors)
 
-
+### Local Env
+```bash
+docker build . -t buttonsoup
+docker run -p 8080:80 buttonsoup
+```
 
 This is an open-source project, opened for personal and commercial use. For any problem or question, just drop me a line at [avin@avinvadas.com](mailto:avin@avinvadas.com)
