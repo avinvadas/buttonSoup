@@ -1,0 +1,16 @@
+{
+    "name": "buttonsoup",
+    "version": "1.0.0",
+    "source": "index.html",
+    "scripts": {
+        "start": "parcel index.html",
+        "clean-cache": "rm -rf .parcel-cache",
+        "build": "parcel build"
+    },
+    "dependencies": {
+        "colorjs.io": "^0.5.2"
+    },
+    "devDependencies": {
+        "parcel": "^2.8.3"
+    }
+}
