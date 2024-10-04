@@ -1,9 +1,13 @@
+/* 
+Calculation of scales and harmony palettes,
+ based on selected primary and secondary colors 
+ */
+
 import * as colorUtils from './colorUtils.js';
 import { createColorSwatches } from './uiManager.js';
 
 /* ScaleRow object | Generating a scale-based palette: */
 export function ScalesRow(sourceColor, config = {}) {
-    console.log('ScalesRow constructor called with:', sourceColor, config);
     this.sourceColor = sourceColor;
     this.isPrimaryBased = true;
 
@@ -31,9 +35,6 @@ export function ScalesRow(sourceColor, config = {}) {
 /* Generate the scales */
 ScalesRow.prototype.generateScale = function() {
     const { steps, startPoint, endPoint, interpolation, includeSource, isNeutral, neutralChroma } = this.config;
-    console.log('Generating scale with:', { steps, startPoint, endPoint, interpolation, includeSource, isNeutral, neutralChroma });
-    console.log('Source color:', this.sourceColor);
-    
     this.scale = colorUtils.generateColorScale(this.sourceColor, {
         steps,
         startPoint: { l: startPoint.l, c: this.sourceColor.lch.c, h: this.sourceColor.lch.h },
@@ -46,8 +47,6 @@ ScalesRow.prototype.generateScale = function() {
         chromaEase: 'constant',  // This ensures chroma remains constant across the scale
         huePath: 'constant'  // This ensures hue remains constant across the scale
     });
-    
-    console.log('Generated scale:', this.scale);
     
     this.calculateContrastInfo();
 };
@@ -171,6 +170,7 @@ ScalesRow.prototype.createSwatches = function(containerIdPrefix = 'color-scale',
     this.updateSwatches();
 };
 
+/* Marking the primary and secondary color swatches within their adequate scale palettes */
 ScalesRow.prototype.markPrimarySecondaryColors = function() {
     const container = document.getElementById(this.containerId);
     if (!container) return;
@@ -185,14 +185,12 @@ ScalesRow.prototype.markPrimarySecondaryColors = function() {
 
         if (currentColor === sourceHex) {
             swatch.classList.add('swatch-marked');
-            console.log(`Marked swatch ${index}`);
         }
     });
 };
 
 /* Create palette by source color and configurations */
 ScalesRow.create = function(sourceColor, config = {}) {
-    console.log('ScalesRow.create called with:', sourceColor ? sourceColor.toString() : 'undefined sourceColor', JSON.stringify(config));
     
     if (!sourceColor) {
         console.warn('ScalesRow.create: sourceColor is undefined or null');
@@ -204,11 +202,7 @@ ScalesRow.create = function(sourceColor, config = {}) {
         console.warn('Source color has zero chroma, adjusting');
         sourceColor = new colorUtils.Color('lch', [sourceColor.lch.l, 1, sourceColor.lch.h]);
     }
-
     const row = new ScalesRow(sourceColor, config);
-    
-    console.log('ScalesRow created:', row.sourceColor.toString(), JSON.stringify(row.config));
-
     return row;
 };
 
@@ -216,7 +210,6 @@ ScalesRow.create = function(sourceColor, config = {}) {
 
 /* HarmonicColorRow object | Generating a hue- spreaded palette: */
 export function HarmonicColorRow(primaryColor, secondaryColor, config = {}) {
-    console.log('🎨 HarmonicColorRow constructor called 🎨');
     this.primaryColor = primaryColor;
     this.secondaryColor = secondaryColor;
 
@@ -239,14 +232,7 @@ export function HarmonicColorRow(primaryColor, secondaryColor, config = {}) {
 
 HarmonicColorRow.prototype.generateColors = function() {
     const { steps, interpolation, lightnessEase, chromaEase, huePath } = this.config;
-    console.log('Generating colors with config:', JSON.stringify(this.config, null, 2));
-
     this.colors = new Array(steps);
-
-    console.log(`Primary color: ${this.primaryColor.toString()}`);
-    console.log(`Secondary color: ${this.secondaryColor.toString()}`);
-    console.log(`Hue path: ${huePath}`);
-
     const toHex = (color) => color.to('srgb').toString({format: 'hex'});
 
     // Calculate hue difference
@@ -271,7 +257,7 @@ HarmonicColorRow.prototype.generateColors = function() {
         this.colors[primaryIndex] = toHex(this.primaryColor);
         this.colors[secondaryIndex] = toHex(this.secondaryColor);
     } else {
-        // Shorter and longer path logic
+        // Interpolations across shorter and longer paths of the hue circumference, between the primary and secondary colors
         let shorterPath, longerPath;
         if (hueDiff <= 180) {
             shorterPath = hueDiff;
@@ -295,21 +281,15 @@ HarmonicColorRow.prototype.generateColors = function() {
             this.colors[i] = toHex(new colorUtils.Color("lch", [l, c, h]));
         }
     }
-
-    console.log('Final generated colors:', this.colors);
 };
 
-
+/* Update palettes according to color changes */
 HarmonicColorRow.prototype.update = function(primaryColor, secondaryColor) {
-    console.log('Updating HarmonicColorRow');
-    console.log('Before update - Primary:', this.primaryColor.toString(), 'Secondary:', this.secondaryColor.toString());
     this.primaryColor = primaryColor;
     this.secondaryColor = secondaryColor;
-    console.log('After update - Primary:', this.primaryColor.toString(), 'Secondary:', this.secondaryColor.toString());
     this.generateColors();
     
     if (this.containerId) {
-        console.log('Updating swatches for container:', this.containerId);
         this.updateSwatches();
     } else {
         console.warn('Container ID not set for HarmonicColorRow. Swatches not updated.');
@@ -318,7 +298,6 @@ HarmonicColorRow.prototype.update = function(primaryColor, secondaryColor) {
 
 HarmonicColorRow.prototype.updateSwatches = function() {
     if (this.containerId && this.colors) {
-        console.log(`Updating swatches for ${this.containerId} with colors:`, this.colors);
         createColorSwatches(this.colors, this.containerId, this.contrastRatios);
        // this.markPrimarySecondaryColors();
     } else {
@@ -330,7 +309,6 @@ HarmonicColorRow.prototype.createSwatches = function(containerIdPrefix = 'harmon
     this.containerId = `${containerIdPrefix}-${Math.random().toString(36).substr(2, 9)}`;
     const palettesSection = document.querySelector('.palettes-section');
     if (!palettesSection) {
-        console.error('Palettes section not found');
         return;
     }
 
@@ -347,13 +325,10 @@ HarmonicColorRow.prototype.createSwatches = function(containerIdPrefix = 'harmon
     container.id = this.containerId;
     container.classList.add('color-swatch-container', 'accent-swatch-container');
     palettesSection.appendChild(container);
-    
-    console.log(`Created container with ID: ${this.containerId}`);
     this.updateSwatches();
 };
-
+/* Marking the primary and secondary color swatches within their adequate scale palettes */
 HarmonicColorRow.prototype.markPrimarySecondaryColors = function() {
-    console.log('Marking colors for HarmonicColorRow');
     const container = document.getElementById(this.containerId);
     if (!container) {
         console.error('Container not found:', this.containerId);
@@ -361,31 +336,20 @@ HarmonicColorRow.prototype.markPrimarySecondaryColors = function() {
     }
 
     const swatches = container.querySelectorAll('.color-swatch');
-    console.log('Number of swatches found:', swatches.length);
 
     const primaryHex = this.primaryColor.to('srgb').toString({format: "hex"});
     const secondaryHex = this.secondaryColor.to('srgb').toString({format: "hex"});
-    console.log('Primary color (hex):', primaryHex);
-    console.log('Secondary color (hex):', secondaryHex);
-
     swatches.forEach((swatch, index) => {
         swatch.classList.remove('swatch-marked');
         
         const currentColor = this.colors[index];
-        console.log(`Swatch ${index} color:`, currentColor);
-
         if (currentColor === primaryHex || currentColor === secondaryHex) {
             swatch.classList.add('swatch-marked');
-            console.log(`Marked swatch ${index}`);
         }
     });
 };
 
 HarmonicColorRow.create = function(primaryColor, secondaryColor, config = {}) {
-    console.log('🎨 CREATING HarmonicColorRow 🎨');
-    console.log('Config:', JSON.stringify(config, null, 2));
-    console.log('Primary Color:', primaryColor.toString());
-    console.log('Secondary Color:', secondaryColor.toString());
     const row = new HarmonicColorRow(primaryColor, secondaryColor, config);
     return row;
 };

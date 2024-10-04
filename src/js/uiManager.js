@@ -1,3 +1,8 @@
+/*
+UI Functionalities and dynamic DOM creation (color palettes)
+*/
+
+
 import * as colorUtils from './colorUtils.js';
 
 export const uiManager = {
@@ -8,6 +13,7 @@ export const uiManager = {
     addColorTickerFunctionality
 };
 
+/* Creating color swatches in the palettes */
 export function createColorSwatches(colorScale, containerId, contrastRatios, contrastMarkers) {
     const container = document.getElementById(containerId);
     if (!container) {
@@ -83,7 +89,7 @@ export function createColorSwatches(colorScale, containerId, contrastRatios, con
 
         swatch.appendChild(hexValueContainer);
 
-        // Interactions event listeners
+        // Interactions event listeners (Mouse+ Keyboard)
         swatch.addEventListener('mouseenter', () => {
             copyIconElement.style.display = 'block';
             
@@ -114,7 +120,6 @@ export function createColorSwatches(colorScale, containerId, contrastRatios, con
                 copyColor(hexColor, hexValue, copyIconElement, checkIconElement);
             }
         });
-        
 
         container.appendChild(swatch);
     });
@@ -126,6 +131,9 @@ export function createColorSwatches(colorScale, containerId, contrastRatios, con
     }, 100);
 }
 
+/* Copy-to-clipboard functionality to swatches: */
+
+/* copy icon (on swatch hover/focus) */
 function createCopyIcon() {
     const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("width", "2rem");
@@ -138,7 +146,7 @@ function createCopyIcon() {
     `;
     return icon;
 }
-
+/* Check icon (on copy success) */
 function createCheckIcon() {
     const checkIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     checkIcon.setAttribute("width", "2rem");
@@ -155,48 +163,9 @@ function createCheckIcon() {
     return checkIcon;
 }
 
-function copyColor(hexColor, hexValueElement, copyIcon, checkIcon) {
-    navigator.clipboard.writeText(hexColor).then(() => {
-        const originalContent = hexValueElement.textContent;
-        hexValueElement.textContent = 'Copied!';
-        
-        if (copyIcon.querySelector) {
-            // SVG path approach
-            const copyPath = copyIcon.querySelector('.copy-path');
-            const checkPath = copyIcon.querySelector('.check-path');
-            
-            if (copyPath) copyPath.style.display = 'none';
-            if (checkPath) checkPath.style.display = 'block';
-        } else {
-            // Separate icon elements approach
-            if (copyIcon) copyIcon.style.display = 'none';
-            if (checkIcon) checkIcon.style.display = 'block';
-        }
-
-        setTimeout(() => {
-            hexValueElement.textContent = originalContent;
-            if (copyIcon.querySelector) {
-                // SVG path approach
-                const copyPath = copyIcon.querySelector('.copy-path');
-                const checkPath = copyIcon.querySelector('.check-path');
-                
-                if (copyPath) copyPath.style.display = 'block';
-                if (checkPath) checkPath.style.display = 'none';
-            } else {
-                // Separate icon elements approach
-                if (copyIcon) copyIcon.style.display = 'block';
-                if (checkIcon) checkIcon.style.display = 'none';
-            }
-        }, 1000);
-    }).catch(err => {
-        console.error('Failed to copy: ', err);
-    });
-}
-
-
 function addSwatchInteractivity(swatch, hexColor) {
     const hexValue = swatch.querySelector('.hex-value');
-    const copyColor = () => {
+    const copyColorFeedback = () => {
         navigator.clipboard.writeText(hexColor).then(() => {
             const originalContent = hexValue.innerHTML;
             hexValue.textContent = 'Copied!';
@@ -206,14 +175,14 @@ function addSwatchInteractivity(swatch, hexColor) {
         });
     };
 
-    swatch.addEventListener('click', copyColor);
+    swatch.addEventListener('click', copyColorFeedback);
     swatch.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
-            copyColor();
+            copyColorFeedback();
         }
     });
 }
-
+/* Show 'copied!' instead of the hex value */
 function showCopiedMessage(swatch) {
     const copiedMsg = document.createElement('div');
     copiedMsg.textContent = 'Copied!';

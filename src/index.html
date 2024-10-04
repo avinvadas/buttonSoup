@@ -5,14 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Button Soup</title>
     <link rel="stylesheet" href="./style.css">
-    
+<!--Fonts import-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="header">
         <p class="header-title">
           <span class="header-logo">
-          
-            <svg width="100%" height="100%" viewBox="0 0 268 52" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+            buttonsoup
+          <!--
+            <svg width="100%" height="auto" viewBox="0 0 268 52" xmlns="http://www.w3.org/2000/svg">
+
               <g transform="matrix(1,0,0,1,-7513,-1605.2)">
                   <g id="buttonSoup_logo" transform="matrix(0.594486,0,0,0.431127,3046.12,955.899)">
                       <g>
@@ -24,6 +29,7 @@
                   </g>
               </g>
           </svg>
+        -->
         </span><span class="body-text-small">Light-weight theme builder</span></p>
         <div class="toggle-comp">
           <label class="switch" for="theme-checkbox">
@@ -223,7 +229,7 @@
       
     <h5 class="heading-05">
         🌈 Special thanks:</h5>
-  <p class="body-text-small">All color calculations are supported by the wonderful <a href="https://colorjs.io/" target="_blank">Color.js</a> library.<br/> Special thanks to <a href="https://lea.verou.me/" and >Lea Verou</a> and <a href="https://natebaldw.in/">Nate Baldwin</a>, whose both in-depth works and writings helped me re-build understanding and get my head around the subject.</p>
+  <p class="body-text-small">All color calculations are supported by the wonderful <a href="https://colorjs.io/" target="_blank">Color.js</a> library.<br/> Special thanks to <a href="https://lea.verou.me/" target="_blank">Lea Verou</a>, <a href="https://svgees.us/", target="_blank">Chris Lilley</a> and <a href="https://natebaldw.in/">Nate Baldwin</a>, whose in-depth works and writings helped me re-build understanding and get my head around the subject. As I was strongly basing on their work and ideas, any mistake or miscalculation are solely my own.</p>
 </section>
   <!-- Footer -->
     <footer class='footer'><p class="body-text-small">
@@ -231,14 +237,13 @@
       <a href='https://bio.site/avinvadas'  tabindex="0" target='_blank'>Avin Vadas</a>  |  buttonSoup is open-source, <a href='https://github.com/avinvadas/buttonSoup'   tabindex="0" target='_blank'>Check it out on Github</a>.</p>
     </footer>
   
-    <script type="module" src="./index.js"></script>
+    <script type="module" src="./app.js"></script>
     
   <!--Favicon-->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             const copyIcons = document.querySelectorAll('.copy-icon');
-            console.log('Number of copy icons found:', copyIcons.length);
             copyIcons.forEach((icon, index) => {
                 
             });

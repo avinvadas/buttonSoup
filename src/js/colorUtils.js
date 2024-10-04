@@ -1,3 +1,7 @@
+/* 
+Color operation functions for use across the app
+ */
+
 import Color from 'colorjs.io';
 
 // Export Color for use in other modules
@@ -23,17 +27,10 @@ export function setValue(value, factor) {
 
 // Set one color relative to a source color (LCH format)
 export function relateColor(srcColor, l, c, h) {
-    console.log('relateColor called with:', 
-                'srcColor:', srcColor.toString(), 
-                'l:', l, 
-                'c:', c, 
-                'h:', h);
     try {
         const result = new Color('lch', [l, c, h]);
-        console.log('relateColor result:', result.toString());
         return result;
     } catch (error) {
-        console.error('Error in relateColor:', error);
         return srcColor; // Return the source color if conversion fails
     }
 }
@@ -135,32 +132,26 @@ function interpolateColor(start, end, t, method) {
 
 // Interpolate hue values
 export function interpolateHue(start, end, t, method = 'linear') {
-    console.log('interpolateHue called with:', { start, end, t, method });
     let diff = end - start;
     if (Math.abs(diff) > 179.5) {
         diff = diff > 0 ? diff - 360 : diff + 360;
     }
-    console.log('Hue difference:', diff);
     let h = interpolate(start, start + diff, t, method) % 360;
     h = h < 0 ? h + 360 : h;
-    console.log('Interpolated hue (shorter):', h);
     return h;
 }
 
 export function interpolateHueLonger(start, end, t, method = 'linear') {
-    console.log('interpolateHueLonger called with:', { start, end, t, method });
     let diff = end - start;
     if (Math.abs(diff) < 179.5) {
         diff = diff > 0 ? diff - 360 : diff + 360;
     }
-    console.log('Hue difference (longer):', diff);
     let h = interpolate(start, start + diff, t, method) % 360;
     h = h < 0 ? h + 360 : h;
-    console.log('Interpolated hue (longer):', h);
     return h;
 }
 
-// General interpolation function
+// General interpolation methods
 function elastic(t, amplitude = 1, period = 0.3) {
     const s = period / (2 * Math.PI) * Math.asin(1 / amplitude);
     return amplitude * Math.pow(2, -10 * t) * Math.sin((t - s) * (2 * Math.PI) / period) + 1;
@@ -187,7 +178,7 @@ function cosineWave(t) {
     return (Math.cos(2 * Math.PI * t) + 1) / 2;
 }
 
-// Updated interpolate function
+// Interpolate functions by methods:
 export function interpolate(start, end, t, method = 'linear', options = {}) {
     const { amplitude = 1, period = 0.3 } = options;
     const isReverse = method.startsWith('reverse');
@@ -251,11 +242,9 @@ export function calculateChroma(primaryChroma, hueDifference) {
 
 // Update contrast status
 export function updateContrastStatus(color1Hex, color2Hex) {
-    console.log("updateContrastStatus called with:", color1Hex, color2Hex);
     const color1 = new Color(color1Hex);
     const color2 = new Color(color2Hex);
     const contrastRatio = color1.contrast(color2, "WCAG21");
-    console.log("Calculated contrast ratio:", contrastRatio);
     return {
         ratio: contrastRatio.toFixed(2),
         aa: contrastRatio >= 4.5,

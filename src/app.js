@@ -75,15 +75,15 @@ function updateColorProperties() {
     document.documentElement.style.setProperty('--color-secondary', secondaryColor.toString({format: "srgb"}));
 }
 
+/* Initiation function*/
+
 function init() {
     initCallCount++;
-    console.log(`🏁 Init function called (call #${initCallCount})`);
-
     if (initCallCount > 1) {
         console.warn(`Warning: Init function called ${initCallCount} times!`);
     }
     
-    /* Initiation */
+    /* Initiation calls: */
     initiateColors(); /* initiating system colors */
     initializeMainColorInput(); /* Main color input field */
     setupSecondaryColorHandlers(); /* secondary color controls*/
@@ -108,24 +108,17 @@ function init() {
 
     /* UI controls */
     setupColorHandlers();
-    
-    console.log('About to set up rows...');
+
     /* Setting the color scale and harmony palettes: */
     setupRows();
-    console.log('Rows set up complete');
 
     // Force an update of UI elements to ensure everything is in sync
-    console.log('About to update UI elements...');
     updateUIElements();
-    console.log('UI elements update complete');
-
-    console.log('🏁 Initialization complete');
      
 }
 
 // New function to update UI elements without setting up rows again
 function updateUIElementsWithoutSetup() {
-    console.log('Entering updateUIElementsWithoutSetup');
     
     // Update CSS variables
     document.documentElement.style.setProperty('--color-primary', primaryColor.to('srgb').toString({format: "hex"}));
@@ -142,26 +135,21 @@ function updateUIElementsWithoutSetup() {
     updateSecondaryColorControls();
 
     // Update existing rows
-    console.log('Updating existing rows. Current row count:', rows.length);
     if (rows) {
         rows.forEach((item, index) => {
             if (item.row && typeof item.row.update === 'function') {
-                console.log(`Updating row ${index} of type ${item.row.constructor.name}`);
                 item.row.update(primaryColor, secondaryColor);
             } else {
-                console.log(`Row ${index} does not have an update function`);
+                console.error(`Row ${index} does not have an update function`);
             }
         });
     }
 
     // Update contrast status
     updateContrastStatus(primaryColor, secondaryColor);
-    
-    console.log('Exiting updateUIElementsWithoutSetup');
 }
 
 function setupRows() {
-    console.log('🚀 setupRows called');
     rows = []; // Clear existing rows
     
     // Create ScalesRow instances
@@ -177,10 +165,7 @@ function setupRows() {
         neutralChroma: 5
     }), label: "Neutral scales" });
 
-    console.log('ScalesRow instances created');
-
     // Create HarmonicColorRow instances
-    console.log('Creating HarmonicColorRow instances');
     rows.push({ 
         row: HarmonicColorRow.create(primaryColor, secondaryColor, {
             steps: 6,
@@ -223,8 +208,6 @@ function setupRows() {
         label: "Full Hue Circumference" 
     });
 
-    console.log('HarmonicColorRow instances created');
-
     // Set up observers and create swatches
     rows.forEach((item, index) => {
         const row = item.row;
@@ -240,8 +223,6 @@ function setupRows() {
             row.isPrimaryBased = index === 0;
         }
     });
-
-    console.log(`setupRows: Created ${rows.length} rows`);
 }
 /** Color controls in the UI: */
 
@@ -259,28 +240,37 @@ function setupColorHandlers() {
     updateColor(initialHexColor);
 
     // Set up event listeners
-    colorInput.addEventListener('input', handleColorInput);
+    colorInput.addEventListener('input', handlePrimaryColorInput);
     colorPicker.addEventListener('input', handleColorPicker);
     document.addEventListener('keydown', handleKeyDown);
 }
 
-function handleColorInput(event) {
+
+
+/* Handle color input for primary */
+function handlePrimaryColorInput(event) {
     let value = event.target.value;
 
-    // Remove non-hexadecimal characters
+    // Remove non-hexadecimal characters, but allow #
     value = value.replace(/[^#0-9A-Fa-f]/g, '');
 
-    // Ensure the value starts with #
-    if (!value.startsWith('#')) {
+    // Ensure the value starts with # if it's not empty
+    if (value && !value.startsWith('#')) {
         value = '#' + value;
     }
 
     // Limit to 7 characters (including #)
     value = value.slice(0, 7);
 
-    updateColor(value);
-}
+    // Update the input value
+    event.target.value = value;
 
+    // Only update color if we have a valid hex color
+    if (/^#[0-9A-Fa-f]{3}$|^#[0-9A-Fa-f]{6}$/.test(value)) {
+        updateColor(value);
+    }
+    updatePrimaryColor(value);
+}
 
 function handleColorPicker(event) {
     updateColor(event.target.value);
@@ -330,7 +320,6 @@ function updateColorPickerAppearance(colorValue) {
 
 /* Update primary color value to secondary*/
 function updatePrimaryColor(colorValue) {
-    console.log("updatePrimaryColor called");
     try {
         const newPrimaryColor = new Color(colorValue).to('lch');
         
@@ -349,9 +338,7 @@ function updatePrimaryColor(colorValue) {
         updateUIElements();
         updateAllScalesRows(primaryColor, secondaryColor);
         updateContrastStatus(primaryColor, secondaryColor);
-        
-        console.log('Updated primary color:', primaryColor.toString());
-        console.log('Updated secondary color:', secondaryColor.toString());
+
     } catch (error) {
         console.error("Invalid color value:", error);
     }
@@ -359,9 +346,6 @@ function updatePrimaryColor(colorValue) {
 }
 
 function updateUIElements() {
-    console.log('Updating UI Elements');
-    console.log('Primary color:', primaryColor.toString());
-    console.log('Secondary color before update:', secondaryColor.toString());
 
     // Update CSS variables
     document.documentElement.style.setProperty('--color-primary', primaryColor.to('srgb').toString({format: "hex"}));
@@ -381,7 +365,6 @@ function updateUIElements() {
     if (rows) {
         rows.forEach((item, index) => {
             if (item.row && typeof item.row.update === 'function') {
-                console.log(`Updating row ${index}`);
                 item.row.update(primaryColor, secondaryColor);
             }
         });
@@ -393,7 +376,6 @@ function updateUIElements() {
     if (secondaryColor.lch.c === 0) {
         console.warn('Warning: Secondary color chroma is zero');
     }
-    console.log('Secondary color after update:', secondaryColor.toString());
 }
 
 // Add this new function to update the UI controls for secondary color
@@ -423,7 +405,6 @@ function updateSecondaryColorControls() {
         lightnessInput.value = lightness;
     }
     updateContrastCheck();
-    console.log('Updated secondary color controls - Chroma:', chroma, 'Lightness:', lightness);
 }
 
 function updateAllScalesRows(primaryColor, secondaryColor) {
@@ -481,7 +462,7 @@ function setupSecondaryColorHandlers() {
     if (lightnessSlider && lightnessInput) {
         lightnessSlider.addEventListener('input', handleLightnessChange);
         lightnessInput.addEventListener('input', handleLightnessChange);
-        lightnessInput.addEventListener('change', handleLightnessChange); // For when the input loses focus
+        lightnessInput.addEventListener('change', handleSecondaryLightnessChange); // For when the input loses focus
     } else {
         console.error('Lightness controls not found');
     }
@@ -527,8 +508,17 @@ function handleLightnessChange(event) {
     lastUserLightness = newValue;
     updateSecondaryColor();
 }
+
+function handleSecondaryLightnessChange(event) {
+    const maxLightness = 100;
+    lastUserLightness = Math.min(Math.max(parseInt(event.target.value), 0), maxLightness);
+    document.getElementById('lightness-slider').value = lastUserLightness;
+    document.getElementById('lightness-input').value = lastUserLightness;
+    updateSecondaryColor();
+}
+
+
 function handleHueChange(event) {
-    console.log('handleHueChange - Before update:', secondaryColor.toString());
 
     switch(event.target.value) {
         case 'complementary': hue_dif = 179.5; break; // Maintaining 179.5 for complementary
@@ -538,15 +528,10 @@ function handleHueChange(event) {
     }
 
     const newSecondaryColor = recalculateSecondaryColor(primaryColor, hue_dif, secondaryColor);
-    console.log('handleHueChange - After recalculate:', newSecondaryColor.toString());
-
     secondaryColor = newSecondaryColor;
-
     colorManager.setSecondaryColor(secondaryColor);
     updateUIElements();
     updateAllScalesRows(primaryColor, secondaryColor);
-
-    console.log('handleHueChange - After update:', secondaryColor.toString());
 }
 
 function calculateChroma(primaryChroma, hueDifference) {
@@ -572,17 +557,8 @@ function handleChromaChange(event) {
     updateSecondaryColor();
 }
 
-function handleLightnessChange(event) {
-    const maxLightness = 100;
-    lastUserLightness = Math.min(Math.max(parseInt(event.target.value), 0), maxLightness);
-    document.getElementById('lightness-slider').value = lastUserLightness;
-    document.getElementById('lightness-input').value = lastUserLightness;
-    updateSecondaryColor();
-}
-
 
 function updateSecondaryColor() {
-    console.log("updateSecondaryColor called");
 
     if (!primaryColor) {
         return;
@@ -597,9 +573,6 @@ function updateSecondaryColor() {
     const maxChroma = 132;
     const chroma = parseInt(chromaSlider.value);
     const lightness = parseInt(lightnessSlider.value);
-
-    console.log('Updating secondary color - Chroma:', chroma, 'Lightness:', lightness);
-
     const newSecondaryColor = colorUtils.relateColor(
         primaryColor,
         lightness,
@@ -607,15 +580,10 @@ function updateSecondaryColor() {
         colorUtils.setHue(primaryColor.lch.h, hue_dif)
     );
 
-    console.log('New secondary color:', newSecondaryColor.toString());
-
     secondaryColor = newSecondaryColor;
     colorManager.setSecondaryColor(secondaryColor);
-
     updateUIElements();
     updateAllScalesRows(primaryColor, secondaryColor);
-
-    console.log('Final secondary color:', secondaryColor.toString());
     updateContrastCheck();
 }
 
@@ -626,7 +594,6 @@ function updateSecondaryColorManual() {
 }
 
 function updateSecondaryColorDisplay() {
-    console.log('updateSecondaryColorDisplay - Secondary color:', secondaryColor ? secondaryColor.toString() : 'undefined');
 
     const secondaryColorElement = document.getElementById('secondary-color');
     if (!secondaryColorElement) {
@@ -641,18 +608,13 @@ function updateSecondaryColorDisplay() {
 
     let hexColor;
     try {
-        console.log('Secondary color before conversion:', secondaryColor.toString());
         hexColor = secondaryColor.to('srgb').toString({format: "hex"});
-        console.log('Secondary color hex:', hexColor);
-        
         // Convert back to LCH to check if chroma is preserved
         const backToLCH = new colorUtils.Color(hexColor).to('lch');
-        console.log('Secondary color converted back to LCH:', backToLCH.toString());
     } catch (error) {
         console.error('Error converting secondary color to hex:', error);
         hexColor = '#000000'; // Fallback to black if conversion fails
     }
-
     secondaryColorElement.style.backgroundColor = hexColor;
     
     // update hex value display
@@ -677,8 +639,6 @@ function updateSecondaryColorDisplay() {
     } catch (error) {
         console.error('Error setting contrast text color:', error);
     }
-
-    console.log('updateSecondaryColorDisplay completed');
 }
 
 function correlateSecondaryColor(primaryColor, hue_dif) {
@@ -718,31 +678,6 @@ function handleKeyDown(event) {
     }
 }
 
-/* Set primary color input field typing behavior */
-function handleColorInput(event) {
-    let value = event.target.value;
-
-    // Remove non-hexadecimal characters, but allow #
-    value = value.replace(/[^#0-9A-Fa-f]/g, '');
-
-    // Ensure the value starts with # if it's not empty
-    if (value && !value.startsWith('#')) {
-        value = '#' + value;
-    }
-
-    // Limit to 7 characters (including #)
-    value = value.slice(0, 7);
-
-    // Update the input value
-    event.target.value = value;
-
-    // Only update color if we have a valid hex color
-    if (/^#[0-9A-Fa-f]{3}$|^#[0-9A-Fa-f]{6}$/.test(value)) {
-        updateColor(value);
-    }
-    updatePrimaryColor(value);
-}
-
 /* Setup bright/dark theme switch */
 function setupThemeSwitch() {
     const body = document.body;
@@ -776,13 +711,10 @@ function setupThemeSwitch() {
             toggleTheme();
         }
     });
-
-    console.log('Theme switch setup complete');
 }
 
 // Call this function when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, setting up theme switch');
     setupThemeSwitch();
 });
 
@@ -849,23 +781,14 @@ function initializeMainColorInput() {
 
 
 function recalculateSecondaryColor(primaryColor, hue_dif, currentSecondaryColor) {
-    console.log('Recalculating secondary color');
-    console.log('Primary color:', primaryColor.toString());
-    console.log('Hue difference:', hue_dif);
-    console.log('Current secondary color:', currentSecondaryColor.toString());
 
     const newHue = colorUtils.setHue(primaryColor.lch.h, hue_dif);
     
     // Adjust chroma and lightness based on primary color changes
     const chromaRatio = primaryColor.lch.c / lastPrimaryChroma;
     const lightnessRatio = primaryColor.lch.l / lastPrimaryLightness;
-    
     const newChroma = Math.min(Math.max(lastUserChroma * chromaRatio, 1), 132);
     const newLightness = Math.min(Math.max(lastUserLightness * lightnessRatio, 0), 100);
-    
-    console.log('New chroma before relateColor:', newChroma);
-    console.log('New lightness before relateColor:', newLightness);
-
     const newSecondaryColor = colorUtils.relateColor(
         primaryColor,
         newLightness,
@@ -876,44 +799,13 @@ function recalculateSecondaryColor(primaryColor, hue_dif, currentSecondaryColor)
     // Update last user values
     lastUserChroma = newChroma;
     lastUserLightness = newLightness;
-
-    console.log('New secondary color after relateColor:', newSecondaryColor.toString());
     return newSecondaryColor;
 }
 
-function updateSecondaryColorControls() {
-    const chromaSlider = document.getElementById('chroma-slider');
-    const chromaInput = document.getElementById('chroma-input');
-    const lightnessSlider = document.getElementById('lightness-slider');
-    const lightnessInput = document.getElementById('lightness-input');
-
-    if (!chromaSlider || !chromaInput || !lightnessSlider || !lightnessInput) {
-        console.error('Secondary color control elements not found');
-        return;
-    }
-
-    const maxChroma = 132;
-    const chroma = Math.round(secondaryColor.lch.c);
-    const lightness = Math.round(secondaryColor.lch.l);
-
-    chromaSlider.value = chroma;
-    chromaInput.value = chroma;
-    lightnessSlider.value = lightness;
-    lightnessInput.value = lightness;
-
-    console.log('Updated secondary color controls - Chroma:', chroma, 'Lightness:', lightness);
-}
-
 function updateContrastCheck() {
-    console.log("updateContrastCheck called");
     const primaryColorHex = primaryColor.to('srgb').toString({format: "hex"});
     const secondaryColorHex = secondaryColor.to('srgb').toString({format: "hex"});
-    console.log("Primary color (hex):", primaryColorHex);
-    console.log("Secondary color (hex):", secondaryColorHex);
-    
     const contrastStatus = colorUtils.updateContrastStatus(primaryColorHex, secondaryColorHex);
-    console.log("Contrast status:", contrastStatus);
-    
     const contrastStatusElement = document.getElementById('contrast-status');
     if (!contrastStatusElement) {
         console.error("Contrast status element not found in the DOM");
@@ -935,7 +827,7 @@ function updateContrastCheck() {
         </span>
     `;
     contrastStatusElement.setAttribute('title', `Contrast ratio: ${contrastStatus.ratio}`);
-    console.log("Contrast status HTML updated:", contrastStatusElement.innerHTML);
+
 }
 
 // Make sure to call this function when the DOM is loaded
