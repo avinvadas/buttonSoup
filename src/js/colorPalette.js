@@ -5,7 +5,7 @@ Calculation of scales and harmony palettes,
 
 import * as colorUtils from './colorUtils.js';
 import { createColorSwatches } from './uiManager.js';
-
+import { copyToClipboard } from './uiManager.js';
 /* ScaleRow object | Generating a scale-based palette: */
 export function ScalesRow(sourceColor, config = {}) {
     this.sourceColor = sourceColor;
@@ -28,7 +28,7 @@ export function ScalesRow(sourceColor, config = {}) {
     this.containerId = null;
     this.contrastRatios = []; /* Contrast ratios for each swatch */
     this.contrastMarkers = []; /* Contrast markers across the palette: AA18, AA, AAA */
-
+    this.colors = []; 
     this.generateScale();
 }
 
@@ -105,42 +105,45 @@ ScalesRow.prototype.updateSwatches = function() {
 
 /* Chroma toggle for neutral scales palette */
 ScalesRow.prototype.createChromaToggle = function() {
+    console.log("Inside createChromaToggle function");
+
     const toggleContainer = document.createElement('div');
-    toggleContainer.className = 'neutral-chroma-toggle toggle-comp';
+    toggleContainer.className = ' toggle-comp neutral-chroma-toggle';
     toggleContainer.innerHTML = `
-        <span id="chroma-toggle-label">Add chroma: </span>
+    <span id="chroma-toggle-label">| Chroma</span>
         <label class="switch">
             <input type="checkbox" id="chroma-toggle-checkbox" 
                    class="toggle-checkbox"
-                   role="switch"
-                   aria-checked="${this.config.neutralChroma > 0}"
-                   aria-labelledby="chroma-toggle-label"
-                   tabindex="0"
                    ${this.config.neutralChroma > 0 ? 'checked' : ''}>
             <span class="slider round"></span>
         </label>
+        
     `;
 
     const checkbox = toggleContainer.querySelector('input');
     checkbox.addEventListener('change', () => {
-        this.config.neutralChroma = checkbox.checked ? 5 : 0;
-        this.config.isNeutral = true;
-        checkbox.setAttribute('aria-checked', checkbox.checked);
-        this.generateScale();
-        this.updateSwatches();
-    });
-
-    checkbox.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            checkbox.click();
-        }
+        console.log("Chroma toggle changed");
+        this.config.neutralChroma = checkbox.checked ? 5 : 0; // Toggle chroma
+        this.generateScale(); // Regenerate the scale based on the chroma toggle
+        this.updateSwatches(); // Refresh the swatches
     });
 
     return toggleContainer;
 };
+
+
+
 /* Create the container & Swatches */
-ScalesRow.prototype.createSwatches = function(containerIdPrefix = 'color-scale', label = '') {
+ScalesRow.prototype.createSwatches = function(containerIdPrefix = 'color-scale', label = '', isNeutral = false) {
+    // Prevent creating swatches if already created
+    const existingContainer = document.getElementById(this.containerId);
+    if (existingContainer) {
+        console.log("Swatches already exist, skipping creation.");
+        return;
+    }
+
+    console.log("Inside createSwatches - Is Neutral Palette:", isNeutral);
+
     this.containerId = `${containerIdPrefix}-${Math.random().toString(36).substr(2, 9)}`;
     const palettesSection = document.querySelector('.palettes-section');
     if (!palettesSection) {
@@ -148,27 +151,62 @@ ScalesRow.prototype.createSwatches = function(containerIdPrefix = 'color-scale',
         return;
     }
 
+    // Create a wrapper for the label, copy button, and chroma toggle
+    const labelButtonContainer = document.createElement('div');
+    labelButtonContainer.classList.add('label-button-container');
+    labelButtonContainer.style.display = 'flex';
+    labelButtonContainer.style.justifyContent = 'space-between';
+    labelButtonContainer.style.alignItems = 'center';
+
     // Create and append the label
     if (label) {
         const labelElement = document.createElement('h4');
         labelElement.textContent = label;
         labelElement.classList.add('heading-04', 'palette-label');
-        palettesSection.appendChild(labelElement);
+        labelButtonContainer.appendChild(labelElement);
     }
 
-    // Create and append the container
+    // Add the chroma toggle if this is the neutral palette
+    if (isNeutral) {
+        console.log("Creating chroma toggle...");
+        const chromaToggle = this.createChromaToggle();
+        labelButtonContainer.appendChild(chromaToggle);
+        console.log("Chroma toggle added to the DOM.");
+    }
+
+    // Create and append the Copy as JSON Button
+    const copyJsonButton = document.createElement('button');
+    copyJsonButton.textContent = "Copy to clipboard";
+    copyJsonButton.classList.add('copy-json-button');
+    labelButtonContainer.appendChild(copyJsonButton);
+
+    // Append the label-button container to the palettes section
+    palettesSection.appendChild(labelButtonContainer);
+
+    // Add event listener for copying JSON
+    copyJsonButton.addEventListener('click', () => {
+        const jsonPalette = this.getSwatchesAsJson();
+        copyToClipboard(jsonPalette, copyJsonButton);
+    });
+
+    // Create the swatches container and update swatches
     const container = document.createElement('div');
     container.id = this.containerId;
     container.classList.add('color-swatch-container', 'scale-swatch-container');
-
-    // Add chroma toggle for neutral palette
-    if (this.config.isNeutral) {
-        const chromaToggle = this.createChromaToggle();
-        palettesSection.appendChild(chromaToggle);
-    }
     palettesSection.appendChild(container);
+
+    // Generate and update swatches
     this.updateSwatches();
 };
+
+
+ScalesRow.prototype.getSwatchesAsJson = function() {
+    const swatchData = this.scale.map((color, index) => {
+        return { [`palette-${index}`]: color.to('srgb').toString({format: 'hex'}) };
+    });
+    return JSON.stringify(swatchData, null, 2);
+};
+
 
 /* Marking the primary and secondary color swatches within their adequate scale palettes */
 ScalesRow.prototype.markPrimarySecondaryColors = function() {
@@ -190,8 +228,7 @@ ScalesRow.prototype.markPrimarySecondaryColors = function() {
 };
 
 /* Create palette by source color and configurations */
-ScalesRow.create = function(sourceColor, config = {}) {
-    
+ScalesRow.create = function(sourceColor, config = {}, label = 'Scale Row') {
     if (!sourceColor) {
         console.warn('ScalesRow.create: sourceColor is undefined or null');
         sourceColor = new colorUtils.Color('lch', [50, 1, 0]); // Default color with non-zero chroma
@@ -202,9 +239,16 @@ ScalesRow.create = function(sourceColor, config = {}) {
         console.warn('Source color has zero chroma, adjusting');
         sourceColor = new colorUtils.Color('lch', [sourceColor.lch.l, 1, sourceColor.lch.h]);
     }
+
+    // Create a ScalesRow instance
     const row = new ScalesRow(sourceColor, config);
+
+    // Pass the dynamic label instead of hardcoding "Neutral scales"
+    row.createSwatches('scalesrow', label, config.isNeutral);
+
     return row;
 };
+
 
 
 
@@ -248,14 +292,14 @@ HarmonicColorRow.prototype.generateColors = function() {
             let l = colorUtils.interpolate(this.primaryColor.lch.l, this.secondaryColor.lch.l, t, lightnessEase);
             let c = colorUtils.interpolate(this.primaryColor.lch.c, this.secondaryColor.lch.c, t, chromaEase);
 
-            this.colors[i] = toHex(new colorUtils.Color("lch", [l, c, h]));
+            this.colors[i] = new colorUtils.Color("lch", [l, c, h]); // Store color objects instead of hex for later conversion
         }
 
         // Ensure primary and secondary colors are included
         const primaryIndex = 0;
         const secondaryIndex = Math.round((hueDiff / 360) * steps) % steps;
-        this.colors[primaryIndex] = toHex(this.primaryColor);
-        this.colors[secondaryIndex] = toHex(this.secondaryColor);
+        this.colors[primaryIndex] = this.primaryColor;
+        this.colors[secondaryIndex] = this.secondaryColor;
     } else {
         // Interpolations across shorter and longer paths of the hue circumference, between the primary and secondary colors
         let shorterPath, longerPath;
@@ -269,8 +313,8 @@ HarmonicColorRow.prototype.generateColors = function() {
 
         let selectedPath = huePath === 'shorter' ? shorterPath : longerPath;
 
-        this.colors[0] = toHex(this.primaryColor);
-        this.colors[steps - 1] = toHex(this.secondaryColor);
+        this.colors[0] = this.primaryColor;
+        this.colors[steps - 1] = this.secondaryColor;
 
         for (let i = 1; i < steps - 1; i++) {
             let t = i / (steps - 1);
@@ -278,9 +322,12 @@ HarmonicColorRow.prototype.generateColors = function() {
             let l = colorUtils.interpolate(this.primaryColor.lch.l, this.secondaryColor.lch.l, t, lightnessEase);
             let c = colorUtils.interpolate(this.primaryColor.lch.c, this.secondaryColor.lch.c, t, chromaEase);
 
-            this.colors[i] = toHex(new colorUtils.Color("lch", [l, c, h]));
+            this.colors[i] = new colorUtils.Color("lch", [l, c, h]); // Store color objects instead of hex for consistency
         }
     }
+
+    // Debugging to ensure colors are populated
+    console.log("Generated Colors:", this.colors);
 };
 
 /* Update palettes according to color changes */
@@ -297,36 +344,68 @@ HarmonicColorRow.prototype.update = function(primaryColor, secondaryColor) {
 };
 
 HarmonicColorRow.prototype.updateSwatches = function() {
-    if (this.containerId && this.colors) {
-        createColorSwatches(this.colors, this.containerId, this.contrastRatios);
-       // this.markPrimarySecondaryColors();
-    } else {
-        console.error(`Cannot update swatches: containerId or colors is missing`, this);
-    }
-};
-
-HarmonicColorRow.prototype.createSwatches = function(containerIdPrefix = 'harmonic-color-row', label = '') {
-    this.containerId = `${containerIdPrefix}-${Math.random().toString(36).substr(2, 9)}`;
-    const palettesSection = document.querySelector('.palettes-section');
-    if (!palettesSection) {
+    const container = document.getElementById(this.containerId);
+    if (!container) {
+        console.error('Container not found for harmony swatches');
         return;
     }
 
+    // Clear existing swatches
+    container.innerHTML = '';
+
+    // Convert LCH to Hex and create swatches
+    const srgbColors = this.colors.map(color => color.to('srgb').toString({ format: 'hex' }));
+    
+    // Create swatches using the hex colors
+    createColorSwatches(srgbColors, this.containerId, this.contrastRatios);
+};
+
+HarmonicColorRow.prototype.createSwatches = function(containerIdPrefix = 'harmony-row', label = '') {
+    this.containerId = `${containerIdPrefix}-${Math.random().toString(36).substr(2, 9)}`;
+    const palettesSection = document.querySelector('.palettes-section');
+    if (!palettesSection) {
+        console.error('Palettes section not found');
+        return;
+    }
+
+    // Create a wrapper for the label and the button
+    const labelButtonContainer = document.createElement('div');
+    labelButtonContainer.classList.add('label-button-container');
+    
     // Create and append the label
     if (label) {
         const labelElement = document.createElement('h4');
         labelElement.textContent = label;
         labelElement.classList.add('heading-04', 'palette-label');
-        palettesSection.appendChild(labelElement);
+        labelButtonContainer.appendChild(labelElement);
     }
 
-    // Create and append the container
+    // Create and append the Copy as JSON Button
+    const copyJsonButton = document.createElement('button');
+    copyJsonButton.textContent = "Copy to clipboard";
+    copyJsonButton.classList.add('copy-json-button');
+    labelButtonContainer.appendChild(copyJsonButton);
+
+    // Append the label-button container to the palettes section
+    palettesSection.appendChild(labelButtonContainer);
+
+    // Event listener for copying to clipboard
+    copyJsonButton.addEventListener('click', () => {
+        const jsonPalette = this.getSwatchesAsJson(); // Generate the JSON
+        copyToClipboard(jsonPalette, copyJsonButton); // Copy to clipboard and handle label change
+    });
+
+    // Create and append the swatches container
     const container = document.createElement('div');
     container.id = this.containerId;
-    container.classList.add('color-swatch-container', 'accent-swatch-container');
+    container.classList.add('color-swatch-container', 'harmony-swatch-container');
     palettesSection.appendChild(container);
+    
+    // Create swatches
     this.updateSwatches();
 };
+
+
 /* Marking the primary and secondary color swatches within their adequate scale palettes */
 HarmonicColorRow.prototype.markPrimarySecondaryColors = function() {
     const container = document.getElementById(this.containerId);
@@ -348,6 +427,22 @@ HarmonicColorRow.prototype.markPrimarySecondaryColors = function() {
         }
     });
 };
+
+HarmonicColorRow.prototype.getSwatchesAsJson = function() {
+    if (!this.colors || this.colors.length === 0) {
+        console.error('Cannot generate JSON: Harmony array is empty or undefined');
+        return '{}';  // Return an empty JSON object if the harmony array is not available
+    }
+
+    const swatchData = this.colors.map((color, index) => {
+        return { [`harmony-palette-${index}`]: color.to('srgb').toString({ format: 'hex' }) }; // Convert to hex at this stage
+    });
+
+    return JSON.stringify(swatchData, null, 2);
+};
+
+
+
 
 HarmonicColorRow.create = function(primaryColor, secondaryColor, config = {}) {
     const row = new HarmonicColorRow(primaryColor, secondaryColor, config);

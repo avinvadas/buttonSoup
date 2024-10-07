@@ -16,46 +16,48 @@ export const uiManager = {
 /* Creating color swatches in the palettes */
 export function createColorSwatches(colorScale, containerId, contrastRatios, contrastMarkers) {
     const container = document.getElementById(containerId);
+
+    // Ensure the container exists before proceeding
     if (!container) {
-        console.error(`Container with id ${containerId} not found`);
+        console.error(`Container with id ${containerId} not found while trying to create color swatches.`);
         return;
     }
 
-    // Clear existing content
+    // Clear any existing content inside the container
     container.innerHTML = '';
 
     const isScaleRow = contrastRatios && contrastMarkers;
 
+    // Iterate through the colors in the color scale
     colorScale.forEach((color, index) => {
-        if (!color) {
-            return;
-        }
-        
+        // Guard against null/undefined colors
+        if (!color) return;
+
         const swatch = document.createElement('div');
-        let hexColor = color.toString({format: "hex"});
-        
+        let hexColor = color.toString({ format: "hex" });
+
         swatch.className = 'color-swatch';
         swatch.style.backgroundColor = hexColor;
-        swatch.tabIndex = 0; // Make the swatch focusable
+        swatch.tabIndex = 0;
         swatch.setAttribute('role', 'button');
         swatch.setAttribute('aria-label', `Copy color ${hexColor}`);
 
-        // Calculate text color based on contrast
+        // Calculate text color for proper contrast
         const textColor = colorUtils.getContrastTextColor(hexColor);
         swatch.style.color = textColor;
 
         const hexValueContainer = document.createElement('div');
         hexValueContainer.className = 'hex-value-container';
 
-        if (isScaleRow && contrastRatios[index] !== undefined) {
+        // Add contrast ratio if applicable
+        if (isScaleRow && contrastRatios && contrastRatios[index] !== undefined) {
             const ratio = contrastRatios[index];
-            const contrastRatio = document.createElement('span');
-            contrastRatio.className = 'contrast-ratio';
-            contrastRatio.textContent = `${ratio.toFixed(2)}:1`;
-            contrastRatio.style.color = textColor;
-            hexValueContainer.appendChild(contrastRatio);
+            const contrastRatioElement = document.createElement('span');
+            contrastRatioElement.className = 'contrast-ratio';
+            contrastRatioElement.textContent = `${ratio.toFixed(2)}:1`;
+            contrastRatioElement.style.color = textColor;
+            hexValueContainer.appendChild(contrastRatioElement);
         }
-
 
         const hexValue = document.createElement('span');
         hexValue.textContent = hexColor;
@@ -64,56 +66,50 @@ export function createColorSwatches(colorScale, containerId, contrastRatios, con
         hexValue.style.color = textColor;
         hexValueContainer.appendChild(hexValue);
 
-        if (isScaleRow && contrastMarkers[index]) {
+        // Add contrast markers if applicable
+        if (isScaleRow && contrastMarkers && contrastMarkers[index]) {
             const markerContainer = document.createElement('div');
             markerContainer.className = 'swatch__MarkerContainer';
-            
+
             const contrastMarker = document.createElement('span');
             contrastMarker.className = 'swatch__Marker';
             contrastMarker.textContent = contrastMarkers[index];
             contrastMarker.dataset.level = contrastMarkers[index];
             contrastMarker.style.color = textColor;
             markerContainer.appendChild(contrastMarker);
-            
+
             swatch.appendChild(markerContainer);
         }
 
+        // Create copy and check icons
         const copyIconElement = createCopyIcon();
         copyIconElement.style.color = textColor;
         const checkIconElement = createCheckIcon();
         checkIconElement.style.color = textColor;
-        
+
+        // Append icons and hex value container to swatch
         swatch.appendChild(copyIconElement);
         swatch.appendChild(checkIconElement);
-
-
         swatch.appendChild(hexValueContainer);
 
-        // Interactions event listeners (Mouse+ Keyboard)
+        // Interaction event listeners for copy functionality
         swatch.addEventListener('mouseenter', () => {
             copyIconElement.style.display = 'block';
-            
         });
-        
         swatch.addEventListener('mouseleave', () => {
             copyIconElement.style.display = 'none';
-            
         });
-        
         swatch.addEventListener('focus', () => {
             copyIconElement.style.display = 'block';
-           
         });
-        
         swatch.addEventListener('blur', () => {
             copyIconElement.style.display = 'none';
-            
         });
-        
+
+        // Copy color on click or keyboard interaction
         swatch.addEventListener('click', () => {
             copyColor(hexColor, hexValue, copyIconElement, checkIconElement);
         });
-        
         swatch.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
@@ -121,15 +117,19 @@ export function createColorSwatches(colorScale, containerId, contrastRatios, con
             }
         });
 
+        // Append the swatch to the container
         container.appendChild(swatch);
     });
-  
+
+    // Optional delay for processing
     setTimeout(() => {
         const swatches = document.querySelectorAll(`#${containerId} .color-swatch`);
         swatches.forEach((swatch, index) => {
+            // Additional processing logic for swatches (if needed)
         });
     }, 100);
 }
+
 
 /* Copy-to-clipboard functionality to swatches: */
 
@@ -297,4 +297,16 @@ function copyColor(hexColor, hexValueElement, copyIcon) {
     }).catch(err => {
         console.error('Failed to copy: ', err);
     });
+}
+
+export function copyToClipboard(text, button) {
+    navigator.clipboard.writeText(text)
+        .then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied to clipboard!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 1500); // Use the same timeout as swatch copy
+        })
+        .catch(err => console.error('Failed to copy text to clipboard: ', err));
 }

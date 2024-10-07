@@ -16,7 +16,7 @@ let secondaryColor;
 let rows = [];
 let neutralColor;
 let swatchCounter = 0;
-let hue_dif = 179.5;
+let hueDif = 179.5;
 let scales = 10;
 let lightest = 95;
 let darkest = 2;
@@ -40,9 +40,9 @@ function setPrimary(color) {
     document.documentElement.style.setProperty('--color-primary', primaryColor.toString({format: "srgb"}));
 }
 
-function setSecondary(hue_dif) {
-    const newHue = colorUtils.setHue(primaryColor.lch.h, hue_dif);
-    const newChroma = calculateChroma(primaryColor.lch.c, hue_dif);
+function setSecondary(hueDif) {
+    const newHue = colorUtils.setHue(primaryColor.lch.h, hueDif);
+    const newChroma = calculateChroma(primaryColor.lch.c, hueDif);
     secondaryColor = colorUtils.relateColor(
         primaryColor, 
         100 - primaryColor.lch.l,
@@ -59,16 +59,43 @@ function setNeutral(color) {
         primaryColor,
         colorUtils.setValue(color.lch.l, 1),
         colorUtils.setValue(color.lch.c, 0.05),
-        colorUtils.setHue(color.lch.h, hue_dif)
+        colorUtils.setHue(color.lch.h, hueDif)
     );
 }
+function defaultHueDif() {
+    // This function should return a default hue difference, adjust as necessary
+    return 179;  // Example: Returns a default hue difference of 30 degrees
+}
+
 
 function initiateColors() {
-    const initialPrimary = colorUtils.generateRandomLCH();
-    setPrimary(initialPrimary);
-    setSecondary(hue_dif);
+    const params = new URLSearchParams(window.location.search);
+    
+    // Check if the URL contains 'primaryColor' and 'hueDif' query strings
+    if (params.has('primaryColor')) {
+        const primaryColor = params.get('primaryColor');
+        const hueDif = params.get('hueDif') || defaultHueDif();
+
+        // Validate and set the colors from the query string
+        if (isValidColor(primaryColor)) {
+            setPrimary(primaryColor);
+            setSecondary(hueDif);
+        } else {
+            console.error('Invalid primary color from URL');
+        }
+    } else {
+        // Fallback: Generate random colors if no query parameters are present
+        const initialPrimary = colorUtils.generateRandomLCH();
+        const initialHueDif = defaultHueDif();
+
+        setPrimary(initialPrimary);
+        setSecondary(initialHueDif);
+    }
+
+    // Ensure the UI reflects the correct initial state
     updateColorProperties();
 }
+
 
 function updateColorProperties() {
     document.documentElement.style.setProperty('--color-primary', primaryColor.toString({format: "srgb"}));
@@ -151,10 +178,16 @@ function updateUIElementsWithoutSetup() {
 
 function setupRows() {
     rows = []; // Clear existing rows
-    
+
+    const palettesSection = document.querySelector('.palettes-section');
+    if (!palettesSection) {
+        console.error('Palettes section not found');
+        return;
+    }
+
     // Create ScalesRow instances
-    rows.push({ row: ScalesRow.create(primaryColor, { steps: scales }), label: "Primary scales" });
-    rows.push({ row: ScalesRow.create(secondaryColor, { steps: scales, interpolation: 'quadratic', includeSource: true }), label: "Secondary scales" });
+    rows.push({ row: ScalesRow.create(primaryColor, { steps: scales }, "Primary scales"), label: "Primary scales" });
+    rows.push({ row: ScalesRow.create(secondaryColor, { steps: scales, interpolation: 'quadratic', includeSource: true }, "Secondary scales"), label: "Secondary scales" });
     rows.push({ row: ScalesRow.create(neutralColor, { 
         steps: scales, 
         startPoint: {l: darkest, c: 0, h: primaryColor.lch.h}, 
@@ -163,7 +196,7 @@ function setupRows() {
         includeSource: true,
         isNeutral: true,
         neutralChroma: 5
-    }), label: "Neutral scales" });
+    },"Neutrals"), label: "Neutrals" });
 
     // Create HarmonicColorRow instances
     rows.push({ 
@@ -177,7 +210,7 @@ function setupRows() {
             huePath: 'shorter',
             hueOrder: 'auto'
         }),
-        label: "Hue cir. range 1" 
+        label: "Hue range A" 
     });
 
     rows.push({ 
@@ -191,7 +224,7 @@ function setupRows() {
             huePath: 'longer',
             hueOrder: 'auto'
         }),
-        label: "Hue cir. range 2" 
+        label: "Hue range B" 
     });
 
     rows.push({ 
@@ -202,7 +235,7 @@ function setupRows() {
             chromaEase: 'sineWave',
             lightnessRange: 70,
             chromaRange: 132,
-            huePath: 'full-circle',  // Changed from 'shorter' to 'full-circle'
+            huePath: 'full-circle',  
             hueOrder: 'auto'
         }),
         label: "Full Hue Circumference" 
@@ -211,19 +244,27 @@ function setupRows() {
     // Set up observers and create swatches
     rows.forEach((item, index) => {
         const row = item.row;
+        const label = item.label;
+
         if (typeof row.update === 'function') {
             colorManager.addObserver(row);
         }
+
         if (typeof row.createSwatches === 'function') {
             let prefix = row instanceof ScalesRow ? 'scalesrow' : 'row';
             const containerId = `${prefix}-${index + 1}`;
-            row.createSwatches(containerId, item.label);
+            console.log(`Creating swatches for ${label} with container ID: ${containerId}`);
+            row.createSwatches(containerId, label);
+          
         }
+
         if (row instanceof ScalesRow) {
             row.isPrimaryBased = index === 0;
         }
     });
 }
+
+
 /** Color controls in the UI: */
 
 function setupColorHandlers() {
@@ -301,6 +342,7 @@ function updateColor(value) {
         // Update primary color
         updatePrimaryColor(extendedValue);
     }
+    
 }
 
 /* Update teh color-picker element */
@@ -329,7 +371,7 @@ function updatePrimaryColor(colorValue) {
         
         primaryColor = newPrimaryColor;
 
-        const newSecondaryColor = recalculateSecondaryColor(primaryColor, hue_dif, secondaryColor);
+        const newSecondaryColor = recalculateSecondaryColor(primaryColor, hueDif, secondaryColor);
         secondaryColor = newSecondaryColor;
 
         colorManager.setPrimaryColor(primaryColor);
@@ -361,6 +403,7 @@ function updateUIElements() {
     // Update UI controls for secondary color
     updateSecondaryColorControls();
 
+    
     // Update all rows (both ScalesRow and HarmonicColorRow)
     if (rows) {
         rows.forEach((item, index) => {
@@ -376,6 +419,7 @@ function updateUIElements() {
     if (secondaryColor.lch.c === 0) {
         console.warn('Warning: Secondary color chroma is zero');
     }
+    
 }
 
 // Add this new function to update the UI controls for secondary color
@@ -521,13 +565,13 @@ function handleSecondaryLightnessChange(event) {
 function handleHueChange(event) {
 
     switch(event.target.value) {
-        case 'complementary': hue_dif = 179.5; break; // Maintaining 179.5 for complementary
-        case 'triad': hue_dif = 120; break;
-        case 'quad': hue_dif = 60; break;
-        case 'analogous': hue_dif = 30; break;
+        case 'complementary': hueDif = 179.5; break; // Maintaining 179.5 for complementary
+        case 'triad': hueDif = 120; break;
+        case 'quad': hueDif = 60; break;
+        case 'analogous': hueDif = 30; break;
     }
 
-    const newSecondaryColor = recalculateSecondaryColor(primaryColor, hue_dif, secondaryColor);
+    const newSecondaryColor = recalculateSecondaryColor(primaryColor, hueDif, secondaryColor);
     secondaryColor = newSecondaryColor;
     colorManager.setSecondaryColor(secondaryColor);
     updateUIElements();
@@ -577,7 +621,7 @@ function updateSecondaryColor() {
         primaryColor,
         lightness,
         chroma,  // Use the chroma value directly, without constraining it
-        colorUtils.setHue(primaryColor.lch.h, hue_dif)
+        colorUtils.setHue(primaryColor.lch.h, hueDif)
     );
 
     secondaryColor = newSecondaryColor;
@@ -641,7 +685,7 @@ function updateSecondaryColorDisplay() {
     }
 }
 
-function correlateSecondaryColor(primaryColor, hue_dif) {
+function correlateSecondaryColor(primaryColor, hueDif) {
     // Calculate correlated lightness (inverse of primary)
     const correlatedLightness = 100 - primaryColor.lch.l;
     
@@ -649,7 +693,7 @@ function correlateSecondaryColor(primaryColor, hue_dif) {
     const correlatedChroma = primaryColor.lch.c;
     
     // Calculate new hue
-    const correlatedHue = (primaryColor.lch.h + hue_dif) % 360;
+    const correlatedHue = (primaryColor.lch.h + hueDif) % 360;
     
     return {
         l: correlatedLightness,
@@ -780,9 +824,9 @@ function initializeMainColorInput() {
 }
 
 
-function recalculateSecondaryColor(primaryColor, hue_dif, currentSecondaryColor) {
+function recalculateSecondaryColor(primaryColor, hueDif, currentSecondaryColor) {
 
-    const newHue = colorUtils.setHue(primaryColor.lch.h, hue_dif);
+    const newHue = colorUtils.setHue(primaryColor.lch.h, hueDif);
     
     // Adjust chroma and lightness based on primary color changes
     const chromaRatio = primaryColor.lch.c / lastPrimaryChroma;
@@ -830,5 +874,29 @@ function updateContrastCheck() {
 
 }
 
-// Make sure to call this function when the DOM is loaded
+/* Copying palettes to clipboard */
+function extractColorsWithLabels(rowId, label) {
+    const colors = [];
+    const rowContainer = document.getElementById(rowId);
+
+    if (!rowContainer) {
+        console.error(`Row container with ID ${rowId} not found.`);
+        return colors;
+    }
+
+    // Select all .hex-value spans and use the label for each color
+    const hexValueElements = rowContainer.querySelectorAll('.hex-value');
+    hexValueElements.forEach((hexElement, index) => {
+        const colorValue = hexElement.textContent.trim();
+        if (colorValue) {
+            const colorLabel = `${label}-color${index + 1}`;
+            colors.push({ [colorLabel]: colorValue });
+        }
+    });
+
+    return colors; // Returns an array of color objects with labels
+} 
+
 document.addEventListener('DOMContentLoaded', init);
+
+

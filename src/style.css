@@ -438,12 +438,10 @@ input[type="range"]::-moz-range-track {
 }
 
 .palette-label {
-    font-size: 1.2em;
-    margin-top: 3rem;
+    grid-column: 1 /span 1;
+    font-size: var(--font-size-h6);
     margin:0;
-    margin-top:2rem;
-    margin-bottom: 10px;
-    color: var(--font-color)
+    color: var(--font-color);
 
 }
 
@@ -619,8 +617,18 @@ font-weight: var(--font-weight-h4);
     opacity:0.5;
     color:inherit;
   }
- /* copy as JSON button */
-.button-copy-palette{
+ 
+ .label-button-container {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom:1rem;
+  margin-top:2rem;
+}
+
+.copy-json-button{
+  grid-column: 3/ span 1;
   color: var(--font-color);
   font-family: var(--typeface-body);
   font-size:var(--font-size-small);
@@ -640,24 +648,37 @@ font-weight: var(--font-weight-h4);
   background:transparent;
 }
 
-.button-copy-palette svg{
+.neutral-chroma-toggle{
+  justify-self: start;
+  grid-column: 2/ span 1;
+  width:auto;
+  
+  margin-right: auto;
+  margin-left: 0.5rem;
+  color: var(--font-color);
+  font-family: var(--typeface-body);
+  font-size:var(--font-size-small);
+  font-weight:200;
+}
+
+.copy-json-button svg{
   width:1rem;
   height:1rem;
 }
 
-.button-copy-palette:hover{
+.copy-json-button:hover{
   color: var(--font-color);
   background: transparent;
   opacity:1;
 }
 
-.button-copy-palette:focus{
+.copy-json-button:focus{
   color: var(--font-color);
   background: var(--layout-border);
   opacity:1;
 }
 
-.button-copy-palette:active{
+.copy-json-button:active{
   color: var(--font-color);
   background:rgb(from var(--font-color) r g b / 0.25); 
 }
@@ -750,37 +771,36 @@ font-weight: var(--font-weight-h4);
 }
 
 
-    .scale-swatch-container {
-        min-height:12rem;
-        height: var(--palette-height-l);
-    }
+.scale-swatch-container {
+  min-height:12rem;
+  height: var(--palette-height-l);
+}
 
-    .accent-swatch-container {
-        min-height:6rem;
-        height: var(--palette-height-m);
-        display:flex;
-        justify-content: flex-end;
-    }
+.accent-swatch-container {
+  min-height:6rem;
+  height: var(--palette-height-m);
+  display:flex;
+  justify-content: flex-end;
+}
 
-    .hex-value-container {
-        grid-row: 3 / span 1;
-        font-family: var(--typeface-body);
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-end;
-        width: calc(100%);  
-        padding-left:0.5rem;
-        
-    }
+.hex-value-container {
+  grid-row: 3 / span 1;
+  font-family: var(--typeface-body);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  width: calc(100%);  
+  padding-left:0.5rem;
+  }
 
     
-  .hex-value {
+ .hex-value {
     flex-grow: 0;
     font-size: 0.875rem;
     font-weight: 500;
     
-  }
+ }
 
   .hex-value-container svg {
     flex-shrink: 0;
@@ -904,7 +924,7 @@ input:checked + .slider:before {
 .toggle-comp{
   display:flex;
   flex-direction:row;
-  gap:1.5rem;
+  gap:1rem;
   align-items:center;
 }
 
@@ -941,15 +961,7 @@ input:checked + .slider:before {
     margin-top:0.5rem;
   }
 
-.neutral-chroma-toggle{
-  width:fit-content;
-  display:flex;
-  flex-direction:row;
-  gap:0.5rem;
-  align-items: center;
-  margin-bottom:0.5rem;
-  margin-top:0.5rem;
-}
+
 
 .footer{
   width:100%;
@@ -1150,12 +1162,7 @@ input[type="range"]::-moz-slider-thumb{
   transform:scale(1);
 }
 
-.toggle-comp{
-  display:flex;
-  flex-direction:row;
-  gap:1.5rem;
-  align-items:center;
-} 
+
 }
 .swatch__MarkerContainer {
   position:relative;
@@ -1167,6 +1174,27 @@ input[type="range"]::-moz-slider-thumb{
 }
 
 
+
+.copy-json-button{
+  grid-column: 3/ span 1;
+  color: var(--font-color);
+  font-family: var(--typeface-body);
+  font-size:var(--font-size-small);
+  font-weight:200;
+  opacity:0.85;
+  border:none;
+  padding:0.5rem;
+  cursor:pointer;
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  gap:0.25rem;
+  width:auto;
+  margin-left:0.5rem;
+  border-radius:0.25rem;
+  border: 1px solid var(--font-color);
+  background:transparent;
+}
 
 @media only screen and (min-width:1920px) {
   :root{
