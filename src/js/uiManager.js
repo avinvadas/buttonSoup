@@ -306,7 +306,8 @@ export function copyToClipboard(text, button) {
             button.textContent = 'Copied to clipboard!';
             setTimeout(() => {
                 button.textContent = originalText;
-            }, 1500); // Use the same timeout as swatch copy
+            }, 1500); // Same timeout as swatch copy
         })
         .catch(err => console.error('Failed to copy text to clipboard: ', err));
 }
+

@@ -34,6 +34,7 @@ export function ScalesRow(sourceColor, config = {}) {
 
 /* Generate the scales */
 ScalesRow.prototype.generateScale = function() {
+    
     const { steps, startPoint, endPoint, interpolation, includeSource, isNeutral, neutralChroma } = this.config;
     this.scale = colorUtils.generateColorScale(this.sourceColor, {
         steps,
@@ -105,10 +106,10 @@ ScalesRow.prototype.updateSwatches = function() {
 
 /* Chroma toggle for neutral scales palette */
 ScalesRow.prototype.createChromaToggle = function() {
-    console.log("Inside createChromaToggle function");
+    
 
     const toggleContainer = document.createElement('div');
-    toggleContainer.className = ' toggle-comp neutral-chroma-toggle';
+    toggleContainer.className = 'toggle-comp neutral-chroma-toggle';
     toggleContainer.innerHTML = `
     <span id="chroma-toggle-label">| Chroma</span>
         <label class="switch">
@@ -117,12 +118,21 @@ ScalesRow.prototype.createChromaToggle = function() {
                    ${this.config.neutralChroma > 0 ? 'checked' : ''}>
             <span class="slider round"></span>
         </label>
-        
     `;
 
     const checkbox = toggleContainer.querySelector('input');
+
+    // Step 1: Add URL query parameter handling
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('chromaToggle')) {
+        const chromaToggleValue = params.get('chromaToggle');
+        checkbox.checked = (chromaToggleValue === 'on');
+        this.config.neutralChroma = checkbox.checked ? 5 : 0; // Set the chroma value based on the toggle state
+        
+    }
+
+    // Step 2: Add the event listener for changes in the toggle
     checkbox.addEventListener('change', () => {
-        console.log("Chroma toggle changed");
         this.config.neutralChroma = checkbox.checked ? 5 : 0; // Toggle chroma
         this.generateScale(); // Regenerate the scale based on the chroma toggle
         this.updateSwatches(); // Refresh the swatches
@@ -138,11 +148,8 @@ ScalesRow.prototype.createSwatches = function(containerIdPrefix = 'color-scale',
     // Prevent creating swatches if already created
     const existingContainer = document.getElementById(this.containerId);
     if (existingContainer) {
-        console.log("Swatches already exist, skipping creation.");
         return;
     }
-
-    console.log("Inside createSwatches - Is Neutral Palette:", isNeutral);
 
     this.containerId = `${containerIdPrefix}-${Math.random().toString(36).substr(2, 9)}`;
     const palettesSection = document.querySelector('.palettes-section');
@@ -168,10 +175,8 @@ ScalesRow.prototype.createSwatches = function(containerIdPrefix = 'color-scale',
 
     // Add the chroma toggle if this is the neutral palette
     if (isNeutral) {
-        console.log("Creating chroma toggle...");
         const chromaToggle = this.createChromaToggle();
         labelButtonContainer.appendChild(chromaToggle);
-        console.log("Chroma toggle added to the DOM.");
     }
 
     // Create and append the Copy as JSON Button
@@ -202,7 +207,7 @@ ScalesRow.prototype.createSwatches = function(containerIdPrefix = 'color-scale',
 
 ScalesRow.prototype.getSwatchesAsJson = function() {
     const swatchData = this.scale.map((color, index) => {
-        return { [`palette-${index}`]: color.to('srgb').toString({format: 'hex'}) };
+        return { [`color-${index}`]: color.to('srgb').toString({format: 'hex'}) };
     });
     return JSON.stringify(swatchData, null, 2);
 };
@@ -325,9 +330,6 @@ HarmonicColorRow.prototype.generateColors = function() {
             this.colors[i] = new colorUtils.Color("lch", [l, c, h]); // Store color objects instead of hex for consistency
         }
     }
-
-    // Debugging to ensure colors are populated
-    console.log("Generated Colors:", this.colors);
 };
 
 /* Update palettes according to color changes */

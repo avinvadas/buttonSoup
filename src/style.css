@@ -705,7 +705,8 @@ font-weight: var(--font-weight-h4);
     height: auto;
     margin:auto;
     margin-top:2rem;
-    border-radius:1rem; 
+    border-top: solid 1px var(--layout-border);
+    
 }
 
   .color-swatch-container {
@@ -766,7 +767,7 @@ font-weight: var(--font-weight-h4);
   cursor: pointer;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
-  min-height: 3rem;
+  min-height: 6rem;
   outline: none; 
 }
 
@@ -984,7 +985,13 @@ input:checked + .slider:before {
   margin:auto;
 }
 
-
+#generate-shareable-url-button{
+  display:flex;
+  align-self:flex-end;
+  width: fit-content;
+  margin-top:1rem;
+  
+}
 
 
 @media only screen and (max-width: 900px) {
@@ -1012,7 +1019,6 @@ input:checked + .slider:before {
   height:auto;
   margin:auto;
   margin-top:2rem;
-  border-radius:1rem;
 }
 
 

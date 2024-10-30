@@ -39,7 +39,7 @@ function setPrimary(color) {
     primaryColor = new colorUtils.Color(color);
     document.documentElement.style.setProperty('--color-primary', primaryColor.toString({format: "srgb"}));
 }
-
+/*
 function setSecondary(hueDif) {
     const newHue = colorUtils.setHue(primaryColor.lch.h, hueDif);
     const newChroma = calculateChroma(primaryColor.lch.c, hueDif);
@@ -53,7 +53,7 @@ function setSecondary(hueDif) {
     updateColorProperties();
     return secondaryColor;
 }
-
+*/
 function setNeutral(color) {
     neutralColor = colorUtils.relateColor(
         primaryColor,
@@ -67,34 +67,131 @@ function defaultHueDif() {
     return 179;  // Example: Returns a default hue difference of 30 degrees
 }
 
-
 function initiateColors() {
     const params = new URLSearchParams(window.location.search);
-    
-    // Check if the URL contains 'primaryColor' and 'hueDif' query strings
-    if (params.has('primaryColor')) {
-        const primaryColor = params.get('primaryColor');
-        const hueDif = params.get('hueDif') || defaultHueDif();
 
-        // Validate and set the colors from the query string
-        if (isValidColor(primaryColor)) {
-            setPrimary(primaryColor);
-            setSecondary(hueDif);
-        } else {
-            console.error('Invalid primary color from URL');
+    let primaryLCH;
+    let hueDifValue = hueDif; // Default to current hueDif (179.5)
+
+    // Step 1: Load the primaryColor
+    if (params.has('primaryColor')) {
+        const primaryColorValue = params.get('primaryColor');
+        const primaryColorInput = document.getElementById('color-input');
+        if (primaryColorInput) {
+            primaryColorInput.value = primaryColorValue;
+            try {
+                primaryLCH = new Color(primaryColorValue).to("lch");  // Convert hex to LCH
+                setPrimary(primaryLCH);  // Set primary color
+            } catch (error) {
+                console.error('Error converting primary color to LCH:', error);
+                return;
+            }
         }
     } else {
-        // Fallback: Generate random colors if no query parameters are present
-        const initialPrimary = colorUtils.generateRandomLCH();
-        const initialHueDif = defaultHueDif();
-
-        setPrimary(initialPrimary);
-        setSecondary(initialHueDif);
+        // Fallback: Generate a random primary color if no query parameter exists
+        primaryLCH = colorUtils.generateRandomLCH();  // Generate random LCH color
+        setPrimary(primaryLCH);
     }
 
-    // Ensure the UI reflects the correct initial state
+    // Ensure the primary color is set before proceeding
+    if (!primaryLCH) {
+        console.error('Primary color (LCH) is not defined. Cannot calculate secondary color.');
+        return;
+    }
+
+    // Step 2: Load the numeric hueDif and update seg-ctrl accordingly
+    if (params.has('hueDif')) {
+        const hueDifParam = params.get('hueDif');
+        hueDifValue = parseFloat(hueDifParam);
+
+        if (isNaN(hueDifValue)) {
+            console.error(`Invalid hueDif value: ${hueDifParam}. Falling back to default hueDif.`);
+            hueDifValue = 179.5;  // Default hueDif if NaN
+        }
+
+        // Update the seg-ctrl UI based on the hueDif
+        let segCtrlValue;
+        switch (hueDifValue) {
+            case 179.5:
+                segCtrlValue = 'complementary';
+                break;
+            case 120:
+                segCtrlValue = 'triad';
+                break;
+            case 60:
+                segCtrlValue = 'quad';
+                break;
+            case 30:
+                segCtrlValue = 'analogous';
+                break;
+            default:
+                console.error('Invalid numeric hueDif value:', hueDifValue);  // Log error
+                return;  // Stop execution if hueDif is invalid
+        }
+
+        const segCtrlInput = document.querySelector(`.seg-ctrl input[value="${segCtrlValue}"]`);
+        if (segCtrlInput) {
+            segCtrlInput.checked = true;
+
+            // Manually trigger handleHueChange to update the hueDif and recalculate secondary color
+            handleHueChange({ target: segCtrlInput });
+        } else {
+            console.error('Failed to update seg-ctrl for hueDif:', hueDifValue);  // Log error
+        }
+    } else {
+        // Fallback: Use default hue difference if no query parameter exists
+        hueDifValue = 179.5;  // Default to complementary if no query parameter
+        setSecondary(hueDifValue); // Ensure secondary color is calculated with the default hueDif
+    }
+
+    // Step 3: Set chroma and lightness sliders
+    const chromaSlider = document.getElementById('chroma-slider');
+    const lightnessSlider = document.getElementById('lightness-slider');
+    if (chromaSlider && lightnessSlider) {
+        if (params.has('chroma')) {
+            const chromaValue = params.get('chroma');
+            chromaSlider.value = chromaValue;
+            lastUserChroma = parseFloat(chromaValue);
+        } else {
+            chromaSlider.value = lastUserChroma;
+        }
+
+        if (params.has('lightness')) {
+            const lightnessValue = params.get('lightness');
+            lightnessSlider.value = lightnessValue;
+            lastUserLightness = parseFloat(lightnessValue);
+        } else {
+            lightnessSlider.value = lastUserLightness;
+        }
+    }
+
+    // Step 4: Load the dynamically created chroma toggle state
+    const chromaToggle = document.getElementById('chroma-toggle-checkbox');
+    if (chromaToggle && params.has('chromaToggle')) {
+        chromaToggle.checked = (params.get('chromaToggle') === 'on');
+    }
+
+    // After setting chroma and lightness, update the secondary color controls
+    updateSecondaryColorControls();
+
+    // Update the rest of the UI
     updateColorProperties();
 }
+
+
+function setSecondary(hueDif) {
+    const newHue = colorUtils.setHue(primaryColor.lch.h, hueDif);
+    const newChroma = calculateChroma(primaryColor.lch.c, hueDif);
+    secondaryColor = colorUtils.relateColor(
+        primaryColor, 
+        100 - primaryColor.lch.l,
+        newChroma,
+        newHue
+    );
+    updateColorProperties();
+    return secondaryColor;
+}
+
 
 
 function updateColorProperties() {
@@ -187,7 +284,7 @@ function setupRows() {
 
     // Create ScalesRow instances
     rows.push({ row: ScalesRow.create(primaryColor, { steps: scales }, "Primary scales"), label: "Primary scales" });
-    rows.push({ row: ScalesRow.create(secondaryColor, { steps: scales, interpolation: 'quadratic', includeSource: true }, "Secondary scales"), label: "Secondary scales" });
+    rows.push({ row: ScalesRow.create(secondaryColor, { steps: scales, includeSource: true }, "Secondary scales"), label: "Secondary scales" });
     rows.push({ row: ScalesRow.create(neutralColor, { 
         steps: scales, 
         startPoint: {l: darkest, c: 0, h: primaryColor.lch.h}, 
@@ -201,7 +298,21 @@ function setupRows() {
     // Create HarmonicColorRow instances
     rows.push({ 
         row: HarmonicColorRow.create(primaryColor, secondaryColor, {
-            steps: 6,
+            steps: scales,
+            interpolation: 'linear',
+            lightnessEase: 'linear',
+            chromaEase: 'linear',
+            lightnessRange: 100,
+            chromaRange: 132,
+            huePath: 'longer',
+            hueOrder: 'auto'
+        }),
+        label: "Hue range 1" 
+    });
+    
+    rows.push({ 
+        row: HarmonicColorRow.create(primaryColor, secondaryColor, {
+            steps: scales,
             interpolation: 'linear',
             lightnessEase: 'linear',
             chromaEase: 'linear',
@@ -210,9 +321,9 @@ function setupRows() {
             huePath: 'shorter',
             hueOrder: 'auto'
         }),
-        label: "Hue range A" 
+        label: "hue range 2" 
     });
-
+    
     rows.push({ 
         row: HarmonicColorRow.create(primaryColor, secondaryColor, {
             steps: 6,
@@ -224,7 +335,21 @@ function setupRows() {
             huePath: 'longer',
             hueOrder: 'auto'
         }),
-        label: "Hue range B" 
+        label: "Hue palette 1" 
+    });
+
+    rows.push({ 
+        row: HarmonicColorRow.create(primaryColor, secondaryColor, {
+            steps: 6,
+            interpolation: 'linear',
+            lightnessEase: 'linear',
+            chromaEase: 'linear',
+            lightnessRange: 100,
+            chromaRange: 132,
+            huePath: 'shorter',
+            hueOrder: 'auto'
+        }),
+        label: "Hue palette 2" 
     });
 
     rows.push({ 
@@ -238,7 +363,7 @@ function setupRows() {
             huePath: 'full-circle',  
             hueOrder: 'auto'
         }),
-        label: "Full Hue Circumference" 
+        label: "Hue palette full Circumference" 
     });
 
     // Set up observers and create swatches
@@ -253,7 +378,6 @@ function setupRows() {
         if (typeof row.createSwatches === 'function') {
             let prefix = row instanceof ScalesRow ? 'scalesrow' : 'row';
             const containerId = `${prefix}-${index + 1}`;
-            console.log(`Creating swatches for ${label} with container ID: ${containerId}`);
             row.createSwatches(containerId, label);
           
         }
@@ -896,6 +1020,91 @@ function extractColorsWithLabels(rowId, label) {
 
     return colors; // Returns an array of color objects with labels
 } 
+
+
+/* generate Sharable URL */
+function generateShareableURL() {
+    const params = new URLSearchParams();
+
+    // Capture the primary color from #color-input
+    const primaryColorInput = document.getElementById('color-input');
+    if (primaryColorInput) {
+        const primaryColorValue = primaryColorInput.value;
+        params.set('primaryColor', primaryColorValue);
+    }
+
+    // Capture the selected hue difference (hueDif) from seg-ctrl and set the numeric value
+    const selectedSegCtrl = document.querySelector('.seg-ctrl input:checked');
+    if (selectedSegCtrl) {
+        let hueDifValue;
+        switch (selectedSegCtrl.value) {
+            case 'complementary':
+                hueDifValue = 179.5;
+                break;
+            case 'triad':
+                hueDifValue = 120;
+                break;
+            case 'quad':
+                hueDifValue = 60;
+                break;
+            case 'analogous':
+                hueDifValue = 30;
+                break;
+            default:
+                hueDifValue = 0;  // Fallback
+        }
+        params.set('hueDif', hueDifValue);
+    }
+
+    // Capture chroma and lightness slider values
+    const chromaSlider = document.getElementById('chroma-slider');
+    const lightnessSlider = document.getElementById('lightness-slider');
+    if (chromaSlider && lightnessSlider) {
+        params.set('chroma', chromaSlider.value);
+        params.set('lightness', lightnessSlider.value);
+    }
+
+    // Capture the state of the chroma toggle
+    const chromaToggle = document.getElementById('chroma-toggle-checkbox');
+    if (chromaToggle) {
+        params.set('chromaToggle', chromaToggle.checked ? 'on' : 'off');
+    }
+
+    // Create the full URL with query parameters
+    const shareableURL = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+
+    navigator.clipboard.writeText(shareableURL)
+        .then(() => {
+            const shareButton = document.getElementById('generate-shareable-url-button'); // Confirm correct button ID
+            if (shareButton) {
+                const originalText = shareButton.innerHTML;
+                shareButton.innerHTML = "Theme URL copied to clipboard!";
+
+                setTimeout(() => {
+                    shareButton.innerHTML = originalText;
+                }, 1500);
+            } else {
+                console.error("Button not found: Check ID or DOM timing.");
+            }
+        })
+        .catch(err => {
+            console.error('Error copying URL to clipboard:', err);
+        });
+}
+
+
+// Add event listener for the share button
+
+document.addEventListener("DOMContentLoaded", () => {
+    const shareButton = document.getElementById('generate-shareable-url-button');
+    if (shareButton) {
+        shareButton.addEventListener("click", generateShareableURL);
+    } else {
+        console.error("Share button not found after DOM load.");
+    }
+});
+
+
 
 document.addEventListener('DOMContentLoaded', init);
 
