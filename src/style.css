@@ -33,7 +33,7 @@
 
 /* Color settings for bright-mode theme */
 .main-theme-bright{
-  --font-color: black;
+  --font-color: #000000;
   --bg-color: #f0f0f0;
   --layout-border: rgba(0, 0, 0, 0.15);
   --layout-skelekton:rgba(0, 0, 0, 0.15);
@@ -49,7 +49,7 @@
 
 /* Color settings for dark-mode theme */
 .main-theme-dark{
-  --font-color: white;
+  --font-color: #ffffff;
   --bg-color: #1e1e1e;
   --layout-border: rgba(255, 255, 255, 0.15);
   --layout-skelekton:rgba(255, 255, 255, 0.15);
@@ -995,7 +995,7 @@ input:checked + .slider:before {
   margin-top:1rem;
   padding:0.75rem;
   font-weight: 500;
-  
+  background: rgb(from var(--font-color) r g b / 10%)
 }
 
 
