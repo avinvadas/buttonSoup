@@ -101,7 +101,7 @@ body{
 
   .header-logo{
     display:flex;
-    justify-content:center;
+    justify-content:start;
     align-items:center;
     gap:0;
     width:7rem;
@@ -311,7 +311,7 @@ outline-offset: -1rem ;
 .utility-icon{
   width:1.5rem;
   height:1.5rem;
-  color:var(--font-color);
+  color: var(--font-color);
 }
 
 /*hiding spinboxes from number text inputs*/
@@ -442,6 +442,9 @@ input[type="range"]::-moz-range-track {
     font-size: var(--font-size-h6);
     margin:0;
     color: var(--font-color);
+    display:flex;
+    align-items:center;
+    gap:0.5rem; 
 
 }
 
@@ -990,6 +993,8 @@ input:checked + .slider:before {
   align-self:flex-end;
   width: fit-content;
   margin-top:1rem;
+  padding:0.75rem;
+  font-weight: 500;
   
 }
 

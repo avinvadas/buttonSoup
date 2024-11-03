@@ -181,7 +181,7 @@ ScalesRow.prototype.createSwatches = function(containerIdPrefix = 'color-scale',
 
     // Create and append the Copy as JSON Button
     const copyJsonButton = document.createElement('button');
-    copyJsonButton.textContent = "Copy to clipboard";
+    copyJsonButton.textContent = "Copy as JSON";
     copyJsonButton.classList.add('copy-json-button');
     labelButtonContainer.appendChild(copyJsonButton);
 
@@ -384,7 +384,7 @@ HarmonicColorRow.prototype.createSwatches = function(containerIdPrefix = 'harmon
 
     // Create and append the Copy as JSON Button
     const copyJsonButton = document.createElement('button');
-    copyJsonButton.textContent = "Copy to clipboard";
+    copyJsonButton.textContent = "Copy as JSON";
     copyJsonButton.classList.add('copy-json-button');
     labelButtonContainer.appendChild(copyJsonButton);
 
