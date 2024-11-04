@@ -100,6 +100,25 @@ function defaultHueDif() {
     return 179;  // Example: Returns a default hue difference of 30 degrees
 }
 
+const primaryColorInput = document.getElementById('color-input');
+if (primaryColorInput) {
+    primaryColorInput.addEventListener('input', handlePrimaryColorInput);
+    primaryColorInput.addEventListener('paste', (event) => {
+        // Prevent default paste behavior to control the input
+        event.preventDefault();
+
+        // Get the pasted text and remove any leading or trailing whitespace
+        const pasteData = (event.clipboardData || window.clipboardData).getData('text').trim();
+
+        // Remove any `#` from the pasted text, then prepend a single `#`
+        let sanitizedValue = '#' + pasteData.replace(/#/g, '').slice(0, 6);
+
+        // Update the input field and call the handler
+        primaryColorInput.value = sanitizedValue;
+        handlePrimaryColorInput({ target: primaryColorInput });
+    });
+}
+
 function initiateColors() {
     const params = new URLSearchParams(window.location.search);
 
@@ -471,7 +490,7 @@ function setupColorHandlers() {
 
 
 
-/* Handle color input for primary */
+/* Handle color input for primary 
 function handlePrimaryColorInput(event) {
     let value = event.target.value;
 
@@ -495,6 +514,30 @@ function handlePrimaryColorInput(event) {
     }
     updatePrimaryColor(value);
 }
+*/
+function handlePrimaryColorInput(event) {
+    let value = event.target.value;
+
+    // Step 1: Keep only the first `#` and remove any others
+    if (value.startsWith('#')) {
+        value = '#' + value.slice(1).replace(/#/g, '');  // Remove all additional `#`
+    } else {
+        value = '#' + value.replace(/#/g, ''); // Add a single leading `#`
+    }
+
+    // Step 2: Enforce a max length of 7 characters (including #)
+    value = value.slice(0, 7);
+
+    // Step 3: Update the input field with sanitized value
+    event.target.value = value;
+
+    // Step 4: Only update color if it matches a valid hex format
+    if (/^#[0-9A-Fa-f]{3}$|^#[0-9A-Fa-f]{6}$/.test(value)) {
+        updateColor(value);
+    }
+    updatePrimaryColor(value);
+}
+
 
 function handleColorPicker(event) {
     updateColor(event.target.value);
