@@ -407,7 +407,7 @@ function setupRows() {
             huePath: 'full-circle',  
             hueOrder: 'auto'
         }),
-        label: "Hue full circumference" 
+        label: "Palette: full circumference" 
     });
     
     rows.push({ 
@@ -421,7 +421,7 @@ function setupRows() {
             huePath: 'longer',
             hueOrder: 'auto'
         }),
-        label: "Palette 1" 
+        label: "Palette: narrow circumference" 
     });
 
     rows.push({ 
@@ -435,7 +435,7 @@ function setupRows() {
             huePath: 'shorter',
             hueOrder: 'auto'
         }),
-        label: "Palette 2" 
+        label: "Palette: wide circumference" 
     });
 
    
@@ -465,7 +465,7 @@ function setupRows() {
 document.addEventListener('DOMContentLoaded', () => {
     appendIconToRow("Hue wider segment", iconLongRange);
     appendIconToRow("Hue narrower segment", iconShortRange);
-    appendIconToRow("Hue full circumference", iconSvgFullCircle);
+    appendIconToRow("Palette: full circumference", iconSvgFullCircle);
 });
 /** Color controls in the UI: */
 

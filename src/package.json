@@ -3,15 +3,16 @@
     "version": "1.0.0",
     "source": "index.html",
     "scripts": {
-      "start": "parcel index.html",
-      "clean-cache": "rm -rf .parcel-cache",
-      "build": "npm run clean-cache && parcel build index.html --public-url ./"
+        "start": "parcel index.html",
+        "clean-cache": "rm -rf .parcel-cache",
+        "build": "npm run clean-cache && parcel build index.html --public-url ./"
     },
     "dependencies": {
-      "colorjs.io": "^0.5.2"
+        "colorjs.io": "^0.5.2"
     },
     "devDependencies": {
-      "parcel": "^2.8.3"
+        "@parcel/config-default": "^2.13.0",
+        "parcel": "^2.13.0",
+        "svgo": "^3.3.2"
     }
-  }
-  
+}
