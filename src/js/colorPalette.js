@@ -77,18 +77,26 @@ ScalesRow.prototype.calculateContrastInfo = function() {
 };
 
 /* Update scales spread */
-ScalesRow.prototype.update = function(primaryColor, secondaryColor) {
-    const newSourceColor = this.isPrimaryBased ? primaryColor : secondaryColor;
-    const shouldUpdate = !this.sourceColor.equals(newSourceColor);
-    if (shouldUpdate) {
-        this.sourceColor = newSourceColor;
-        this.config.startPoint.h = this.sourceColor.lch.h;
-        this.config.endPoint.h = this.sourceColor.lch.h;
+ScalesRow.prototype.update = function (primaryColor, secondaryColor) {
+    console.log('Updating ScalesRow with:', { primaryColor, secondaryColor });
+
+    const sourceColor = this.isPrimaryBased ? primaryColor : secondaryColor;
+
+    if (!sourceColor || !sourceColor.lch) {
+        console.error('Invalid sourceColor in ScalesRow.update:', sourceColor);
+        return;
+    }
+
+    if (!this.sourceColor || !this.sourceColor.equals(sourceColor)) {
+        this.sourceColor = sourceColor;
+        this.config.startPoint.h = sourceColor.lch.h;
+        this.config.endPoint.h = sourceColor.lch.h;
         this.generateScale();
         this.calculateContrastInfo();
         this.updateSwatches();
     }
 };
+
 
 /* Update the palette & swatches */
 ScalesRow.prototype.updateSwatches = function() {
@@ -333,17 +341,31 @@ HarmonicColorRow.prototype.generateColors = function() {
 };
 
 /* Update palettes according to color changes */
-HarmonicColorRow.prototype.update = function(primaryColor, secondaryColor) {
+HarmonicColorRow.prototype.update = function (primaryColor, secondaryColor, tertiaryColor) {
+    console.log('Updating HarmonicColorRow with:', { primaryColor, secondaryColor, tertiaryColor });
+
+    if (!primaryColor || !primaryColor.lch) {
+        console.error('Invalid primaryColor in HarmonicColorRow.update:', primaryColor);
+        return;
+    }
+    if (!secondaryColor || !secondaryColor.lch) {
+        console.error('Invalid secondaryColor in HarmonicColorRow.update:', secondaryColor);
+        return;
+    }
+    if (!tertiaryColor || !tertiaryColor.lch) {
+        console.error('Invalid tertiaryColor in HarmonicColorRow.update:', tertiaryColor);
+        return;
+    }
+
     this.primaryColor = primaryColor;
     this.secondaryColor = secondaryColor;
+    this.tertiaryColor = tertiaryColor;
+
     this.generateColors();
-    
-    if (this.containerId) {
-        this.updateSwatches();
-    } else {
-        console.warn('Container ID not set for HarmonicColorRow. Swatches not updated.');
-    }
+    this.updateSwatches();
 };
+
+
 
 HarmonicColorRow.prototype.updateSwatches = function() {
     const container = document.getElementById(this.containerId);

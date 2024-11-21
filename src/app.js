@@ -13,6 +13,8 @@ import { mapToGamut } from './js/colorUtils.js';
 // Basic parameters
 let primaryColor;
 let secondaryColor;
+let tertiaryColor;
+
 let rows = [];
 let neutralColor;
 let swatchCounter = 0;
@@ -31,6 +33,20 @@ let initCallCount = 0;
 
 const { Color } = colorUtils;
 const colorManager = new ColorManager();
+
+// Observer for tertiaryColor updates
+const tertiaryColorObserver = {
+    update({ tertiaryColor: updatedTertiaryColor }) {
+        if (updatedTertiaryColor) {
+            tertiaryColor = updatedTertiaryColor; // Update the global variable
+            console.log('Updated global tertiaryColor:', tertiaryColor);
+        }
+    }
+};
+
+// Register the observer with ColorManager
+colorManager.addObserver(tertiaryColorObserver);
+
 
 const iconSvgCompLong = '<svg  class="utility-icon" width="100%" height="100%" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill:currentColor;fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g><path d="M17.202,37.029C9.346,35.701 3.362,28.865 3.362,20.631C3.362,13.163 8.331,6.655 15.44,4.635C15.911,2.555 17.772,1 19.993,1C22.569,1 24.661,3.092 24.661,5.668C24.661,7.99 22.961,9.919 20.738,10.276L20.738,33.09C22.037,33.416 23,34.592 23,35.992C23,37.643 21.66,38.983 20.008,38.983C18.722,38.983 17.624,38.169 17.202,37.029ZM15.578,7.186C9.82,9.073 5.842,14.468 5.842,20.631C5.842,27.557 10.819,33.321 17.391,34.543C17.782,33.838 18.45,33.307 19.248,33.098L19.248,10.276C17.534,10.001 16.13,8.791 15.578,7.186ZM19.993,2.617C18.309,2.617 16.942,3.984 16.942,5.668C16.942,7.352 18.309,8.719 19.993,8.719C21.677,8.719 23.044,7.352 23.044,5.668C23.044,3.984 21.677,2.617 19.993,2.617Z"/><g><path d="M19.993,37.262L19.993,34.782C27.808,34.782 34.144,28.446 34.144,20.631C34.144,14.031 29.582,8.308 23.149,6.836L23.702,4.419C31.263,6.149 36.624,12.875 36.624,20.631C36.624,29.816 29.178,37.262 19.993,37.262Z" style="fill-opacity:0.33;"/></g></g></svg>';
 
@@ -488,33 +504,6 @@ function setupColorHandlers() {
     document.addEventListener('keydown', handleKeyDown);
 }
 
-
-
-/* Handle color input for primary 
-function handlePrimaryColorInput(event) {
-    let value = event.target.value;
-
-    // Remove non-hexadecimal characters, but allow #
-    value = value.replace(/[^#0-9A-Fa-f]/g, '');
-
-    // Ensure the value starts with # if it's not empty
-    if (value && !value.startsWith('#')) {
-        value = '#' + value;
-    }
-
-    // Limit to 7 characters (including #)
-    value = value.slice(0, 7);
-
-    // Update the input value
-    event.target.value = value;
-
-    // Only update color if we have a valid hex color
-    if (/^#[0-9A-Fa-f]{3}$|^#[0-9A-Fa-f]{6}$/.test(value)) {
-        updateColor(value);
-    }
-    updatePrimaryColor(value);
-}
-*/
 function handlePrimaryColorInput(event) {
     let value = event.target.value;
 
@@ -613,39 +602,66 @@ function updatePrimaryColor(colorValue) {
     updateContrastCheck();
 }
 
+// Updated function to update all UI elements
 function updateUIElements() {
+    // Validate primaryColor, secondaryColor, and tertiaryColor
+    if (!primaryColor || !primaryColor.lch) {
+        console.error('Invalid primaryColor in updateUIElements:', primaryColor);
+        return;
+    }
+    if (!secondaryColor || !secondaryColor.lch) {
+        console.error('Invalid secondaryColor in updateUIElements:', secondaryColor);
+        return;
+    }
+    if (!tertiaryColor || !tertiaryColor.lch) {
+        console.warn('Missing or invalid tertiaryColor. Using fallback.');
+        tertiaryColor = new Color('lch', [50, 0, 180]); // Fallback color
+    }
 
     // Update CSS variables
-    document.documentElement.style.setProperty('--color-primary', primaryColor.to('srgb').toString({format: "hex"}));
-    document.documentElement.style.setProperty('--color-secondary', secondaryColor.to('srgb').toString({format: "hex"}));
-    
+    document.documentElement.style.setProperty('--color-primary', primaryColor.to('srgb').toString({ format: "hex" }));
+    document.documentElement.style.setProperty('--color-secondary', secondaryColor.to('srgb').toString({ format: "hex" }));
+    if (tertiaryColor) {
+        document.documentElement.style.setProperty('--color-tertiary', tertiaryColor.to('srgb').toString({ format: "hex" }));
+    }
+
     // Update primary color inputs
-    document.getElementById('color-input').value = primaryColor.to('srgb').toString({format: "hex"});
-    updateColorPickerAppearance(primaryColor.to('srgb').toString({format: "hex"}));
-    
+    document.getElementById('color-input').value = primaryColor.to('srgb').toString({ format: "hex" });
+    updateColorPickerAppearance(primaryColor.to('srgb').toString({ format: "hex" }));
+
     // Update secondary color display
     updateSecondaryColorDisplay();
-    
+
     // Update UI controls for secondary color
     updateSecondaryColorControls();
 
-    
     // Update all rows (both ScalesRow and HarmonicColorRow)
     if (rows) {
         rows.forEach((item, index) => {
-            if (item.row && typeof item.row.update === 'function') {
-                item.row.update(primaryColor, secondaryColor);
+            try {
+                if (item.row && typeof item.row.update === 'function') {
+                    console.log(`Updating row ${index}:`, item.row);
+                    // Pass tertiaryColor along with primary and secondary
+                    item.row.update(primaryColor, secondaryColor, tertiaryColor);
+                } else {
+                    console.warn(`Row ${index} does not have a valid update method:`, item.row);
+                }
+            } catch (error) {
+                console.error(`Error updating row ${index}:`, error);
             }
         });
     }
 
     // Update contrast status
-    updateContrastStatus(primaryColor, secondaryColor);
+    updateContrastStatus(primaryColor, secondaryColor, tertiaryColor);
 
+    // Log warnings for zero chroma
     if (secondaryColor.lch.c === 0) {
         console.warn('Warning: Secondary color chroma is zero');
     }
-    
+    if (tertiaryColor && tertiaryColor.lch.c === 0) {
+        console.warn('Warning: Tertiary color chroma is zero');
+    }
 }
 
 // Add this new function to update the UI controls for secondary color
@@ -792,33 +808,50 @@ function handleHueChange(event) {
 
     switch(event.target.value) {
         case 'complementary': 
-        hueDif = 179.5; 
-        iconShortRange = iconSvgCompShort;
-        iconLongRange = iconSvgCompLong;
-        break; 
+            hueDif = 179.5; 
+            iconShortRange = iconSvgCompShort;
+            iconLongRange = iconSvgCompLong;
+            break; 
         case 'triad': 
-        hueDif = 120; 
-        iconShortRange = iconSvgTriadShort;
-        iconLongRange = iconSvgTriadLong;
-        break;
-        case 'quad': hueDif = 60; 
-        iconShortRange = iconSvgQuadShort;
-        iconLongRange = iconSvgQuadLong;
-        break;
-        case 'analogous': hueDif = 30; 
-        iconShortRange = iconSvgAnaShort;
-        iconLongRange = iconSvgAnaLong;
-        break;
+            hueDif = 120; 
+            iconShortRange = iconSvgTriadShort;
+            iconLongRange = iconSvgTriadLong;
+            break;
+        case 'quad': 
+            hueDif = 60; 
+            iconShortRange = iconSvgQuadShort;
+            iconLongRange = iconSvgQuadLong;
+            break;
+        case 'analogous': 
+            hueDif = 30; 
+            iconShortRange = iconSvgAnaShort;
+            iconLongRange = iconSvgAnaLong;
+            break;
     }
     appendIconToRow("Hue wider segment", iconLongRange);
     appendIconToRow("Hue narrower segment", iconShortRange);
 
+    // Calculate new secondary color
     const newSecondaryColor = recalculateSecondaryColor(primaryColor, hueDif, secondaryColor);
+
+    if (!newSecondaryColor || !newSecondaryColor.lch || typeof newSecondaryColor.lch.h === 'undefined') {
+        console.error('Invalid secondary color calculated:', newSecondaryColor);
+        return;
+    }
+
     secondaryColor = newSecondaryColor;
+
+    // Log secondary color for debugging
+    console.log('Setting new secondary color:', secondaryColor);
+
+    // Update secondary color in ColorManager
     colorManager.setSecondaryColor(secondaryColor);
+
+    // Keep other functionalities intact
     updateUIElements();
     updateAllScalesRows(primaryColor, secondaryColor);
 }
+
 
 function calculateChroma(primaryChroma, hueDifference) {
     // This is a simple example. You might want to adjust this based on your specific needs
@@ -845,26 +878,32 @@ function handleChromaChange(event) {
 
 
 function updateSecondaryColor() {
-
     if (!primaryColor) {
+        console.error('Primary color is not set.');
         return;
     }
+
     const chromaSlider = document.getElementById('chroma-slider');
     const lightnessSlider = document.getElementById('lightness-slider');
-  
+
     if (!chromaSlider || !lightnessSlider) {
+        console.error('Chroma or Lightness slider not found.');
         return;
     }
 
-    const maxChroma = 132;
     const chroma = parseInt(chromaSlider.value);
     const lightness = parseInt(lightnessSlider.value);
     const newSecondaryColor = colorUtils.relateColor(
         primaryColor,
         lightness,
-        chroma,  // Use the chroma value directly, without constraining it
+        chroma,
         colorUtils.setHue(primaryColor.lch.h, hueDif)
     );
+
+    if (!newSecondaryColor || !newSecondaryColor.lch) {
+        console.error('Failed to calculate secondary color:', newSecondaryColor);
+        return;
+    }
 
     secondaryColor = newSecondaryColor;
     colorManager.setSecondaryColor(secondaryColor);
@@ -872,6 +911,25 @@ function updateSecondaryColor() {
     updateAllScalesRows(primaryColor, secondaryColor);
     updateContrastCheck();
 }
+
+
+const secondaryColorObserver = {
+    update(data) {
+        const { secondaryColor } = data;
+        if (secondaryColor) {
+            const secondarySwatch = document.querySelector('#secondary-color .color-ticker');
+            if (secondarySwatch) {
+                const hexColor = secondaryColor.to('srgb').toString({ format: 'hex' });
+                secondarySwatch.style.backgroundColor = hexColor;
+                secondarySwatch.setAttribute('aria-label', `Secondary color: ${hexColor}`);
+            }
+        }
+    }
+};
+
+// Register the observer with ColorManager
+colorManager.addObserver(secondaryColorObserver);
+
 
 function updateSecondaryColorManual() {
     updateSecondaryColor();

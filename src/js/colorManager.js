@@ -2,64 +2,87 @@
 Holding the values of currently selected Primary and Secondary colors,
 Observe and notify their hanges.
 */
+import ObserverManager from './observerManager.js';
 import { Color } from './colorUtils.js';
 
 export default class ColorManager {
     constructor() {
         this.primaryColor = null;
         this.secondaryColor = null;
-        this.observers = []; 
+        this.tertiaryColor = null;
+        this.observerManager = new ObserverManager(); // Centralized observer management
     }
 
-    /* Primary and Secondary color set functions */
     setPrimaryColor(color) {
         if (color && color instanceof Color) {
             this.primaryColor = color;
-           /* console.log('Primary color set:', this.primaryColor);*/
-            this.maybeNotifyObservers();
+            this.updateSecondaryColor(); // Recalculate secondary color
+            this.updateTertiaryColor(); // Recalculate tertiary color based on updated secondary
+            this.notify(); // Notify observers
         } else {
-            console.error("Invalid primary color:", color);
+            console.error('Invalid primary color:', color);
+        }
+    }
+
+    updateSecondaryColor() {
+        if (this.primaryColor) {
+            // Example: Derive secondary color from primary
+            const primaryHue = this.primaryColor.lch.h;
+            const secondaryHue = (primaryHue + 120) % 360; // Example logic
+
+            const l = this.primaryColor.lch.l;
+            const c = this.primaryColor.lch.c;
+
+            this.secondaryColor = new Color('lch', [l, c, secondaryHue]);
+            this.updateTertiaryColor(); // Cascade to tertiary color
+        } else {
+            console.warn('Cannot calculate secondaryColor without primaryColor.');
+        }
+    }
+
+    updateTertiaryColor() {
+        if (this.primaryColor && this.secondaryColor) {
+            const primaryHue = this.primaryColor.lch.h;
+            const secondaryHue = this.secondaryColor.lch.h;
+
+            // Example: Calculate tertiary as midpoint
+            const tertiaryHue = (primaryHue + secondaryHue + 180) % 360;
+            const tertiaryL = (this.primaryColor.lch.l + this.secondaryColor.lch.l) / 2;
+            const tertiaryC = (this.primaryColor.lch.c + this.secondaryColor.lch.c) / 2;
+
+            this.tertiaryColor = new Color('lch', [tertiaryL, tertiaryC, tertiaryHue]);
+        } else {
+            console.warn('Cannot calculate tertiaryColor without primaryColor and secondaryColor.');
         }
     }
 
     setSecondaryColor(color) {
         if (color && color instanceof Color) {
-            const lch = color.to('lch');
-           /* console.log('Setting secondary color to LCH:', lch);  // Log the LCH values of the secondary color*/
-            this.secondaryColor = new Color('lch', [lch.l, Math.max(lch.c, 1), lch.h]);
-           /* console.log('Secondary color set as:', this.secondaryColor);*/
-            this.maybeNotifyObservers();
+            this.secondaryColor = color;
+            this.updateTertiaryColor(); // Cascade to tertiary color
+            this.notify(); // Notify observers
         } else {
-            console.error("Invalid secondary color:", color);
+            console.error('Invalid secondary color:', color);
         }
     }
 
-    /* Adding observers */   
+    notify() {
+        const data = {
+            primaryColor: this.primaryColor,
+            secondaryColor: this.secondaryColor,
+            tertiaryColor: this.tertiaryColor,
+        };
+
+        console.log('Notifying observers with:', data);
+
+        this.observerManager.notifyObservers(data);
+    }
+
     addObserver(observer) {
-        if (typeof observer.update === 'function') {
-            this.observers.push(observer);
-        } else {
-            console.error('Invalid observer: update method is missing', observer);
-        }
+        this.observerManager.addObserver(observer);
     }
 
-    /* Notify observers only if both primary and secondary are set */
-    maybeNotifyObservers() {
-        if (this.primaryColor && this.secondaryColor) {
-            this.notifyObservers();
-        } else {
-        }
-    }
-
-    /* The observer function notifies when both primary and secondary color updates */
-    notifyObservers() {
-        this.observers.forEach((observer, index) => {
-            if (typeof observer.update === 'function') {
-                observer.update(this.primaryColor, this.secondaryColor);
-            } else {
-                console.error('Observer does not have an update method:', observer);
-            }
-        });
+    removeObserver(observer) {
+        this.observerManager.removeObserver(observer);
     }
 }
-
