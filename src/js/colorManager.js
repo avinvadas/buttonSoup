@@ -4,7 +4,7 @@ Observe and notify their hanges.
 */
 import ObserverManager from './observerManager.js';
 import { Color } from './colorUtils.js';
-
+let debounceTimer;
 export default class ColorManager {
     constructor() {
         this.primaryColor = null;
@@ -16,13 +16,34 @@ export default class ColorManager {
     setPrimaryColor(color) {
         if (color && color instanceof Color) {
             this.primaryColor = color;
-            this.updateSecondaryColor(); // Recalculate secondary color
-            this.updateTertiaryColor(); // Recalculate tertiary color based on updated secondary
-            this.notify(); // Notify observers
+    
+            // Update secondary and tertiary colors before notifying
+            this.updateSecondaryColor();
+            this.updateTertiaryColor();
+    
+            // Notify only after all updates
+            this.notify();
         } else {
             console.error('Invalid primary color:', color);
         }
     }
+    
+
+    setSecondaryColor(color) {
+        if (color && color instanceof Color) {
+            const lch = color.to('lch');
+            this.secondaryColor = new Color('lch', [lch.l, Math.max(lch.c, 1), lch.h]);
+    
+            // Update tertiary color before notifying
+            this.updateTertiaryColor();
+    
+            // Notify only after all updates
+            this.notify();
+        } else {
+            console.error('Invalid secondary color:', color);
+        }
+    }
+    
 
     updateSecondaryColor() {
         if (this.primaryColor) {
@@ -44,39 +65,45 @@ export default class ColorManager {
         if (this.primaryColor && this.secondaryColor) {
             const primaryHue = this.primaryColor.lch.h;
             const secondaryHue = this.secondaryColor.lch.h;
-
-            // Example: Calculate tertiary as midpoint
-            const tertiaryHue = (primaryHue + secondaryHue + 180) % 360;
+    
+            let tertiaryHue = (primaryHue - (secondaryHue - primaryHue) + 360) % 360;
+            if (Math.abs(secondaryHue - primaryHue) > 175) {
+                tertiaryHue = (primaryHue + (secondaryHue - primaryHue) / 2 + 360) % 360;
+            }
+    
             const tertiaryL = (this.primaryColor.lch.l + this.secondaryColor.lch.l) / 2;
-            const tertiaryC = (this.primaryColor.lch.c + this.secondaryColor.lch.c) / 2;
-
+            const tertiaryC = Math.max(this.primaryColor.lch.c, this.secondaryColor.lch.c);
+    
             this.tertiaryColor = new Color('lch', [tertiaryL, tertiaryC, tertiaryHue]);
+
+            console.log("Generated tertiaryColor:", this.tertiaryColor);
+
         } else {
-            console.warn('Cannot calculate tertiaryColor without primaryColor and secondaryColor.');
+            console.warn("Skipping tertiaryColor update: primaryColor or secondaryColor is not set.");
         }
     }
-
-    setSecondaryColor(color) {
-        if (color && color instanceof Color) {
-            this.secondaryColor = color;
-            this.updateTertiaryColor(); // Cascade to tertiary color
-            this.notify(); // Notify observers
-        } else {
-            console.error('Invalid secondary color:', color);
-        }
-    }
-
+    
     notify() {
         const data = {
-            primaryColor: this.primaryColor,
-            secondaryColor: this.secondaryColor,
-            tertiaryColor: this.tertiaryColor,
+            primaryColor: this.primaryColor || new Color('lch', [50, 50, 0]),
+            secondaryColor: this.secondaryColor || new Color('lch', [60, 40, 0]),
+            tertiaryColor: this.tertiaryColor || new Color('lch', [70, 30, 180]),
         };
-
-        console.log('Notifying observers with:', data);
-
+    
+        // Skip notification if tertiary color is invalid
+        if (data.tertiaryColor.lch.c === 0) {
+            console.warn('Skipping notification: Tertiary color chroma is zero');
+            return;
+        }
+    
+        console.log('Notifying observers with validated data:', data);
         this.observerManager.notifyObservers(data);
     }
+    
+
+
+    
+    
 
     addObserver(observer) {
         this.observerManager.addObserver(observer);

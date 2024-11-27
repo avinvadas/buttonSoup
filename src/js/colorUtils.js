@@ -85,13 +85,13 @@ export function rgbToHex(rgb) {
 }
 
 // Calculate source index
-function calculateSourceIndex(sourceL, startL, endL, steps) {
+export function calculateSourceIndex(sourceL, startL, endL, steps) {
     const normalizedPosition = (sourceL - startL) / (endL - startL);
     return Math.round(normalizedPosition * (steps - 1));
 }
 
 // Calculate interpolation points
-function calculateInterpolationPoints(currentStep, sourceIndex, totalSteps, startPoint, endPoint, sourceLch) {
+export function calculateInterpolationPoints(currentStep, sourceIndex, totalSteps, startPoint, endPoint, sourceLch) {
     if (currentStep < sourceIndex) {
         return {
             startLch: startPoint,
@@ -108,7 +108,7 @@ function calculateInterpolationPoints(currentStep, sourceIndex, totalSteps, star
 }
 
 // Interpolate color
-function interpolateColor(start, end, t, method) {
+export function interpolateColor(start, end, t, method) {
     const interpolate = (a, b) => a + (b - a) * t;
     let l, c, h;
 
@@ -242,16 +242,22 @@ export function calculateChroma(primaryChroma, hueDifference) {
 
 // Update contrast status
 export function updateContrastStatus(color1Hex, color2Hex) {
+    console.log("Calculating contrast between:", color1Hex, color2Hex);
+
     const color1 = new Color(color1Hex);
     const color2 = new Color(color2Hex);
+
     const contrastRatio = color1.contrast(color2, "WCAG21");
+    console.log(`Contrast ratio between ${color1Hex} and ${color2Hex}: ${contrastRatio.toFixed(2)}`);
+
     return {
         ratio: contrastRatio.toFixed(2),
         aa: contrastRatio >= 4.5,
         aaa: contrastRatio >= 7,
-        aaLarge: contrastRatio >= 3
+        aaLarge: contrastRatio >= 3,
     };
 }
+
 
 // Generate random LCH color
 export function generateRandomLCH() {

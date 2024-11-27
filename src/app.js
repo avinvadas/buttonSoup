@@ -5,7 +5,7 @@ It builds the UI, and coordinates the functionalities with the color calculation
 import ColorManager from './js/colorManager.js';
 import * as colorUtils from './js/colorUtils.js';
 import { updateContrastStatus } from './js/colorUtils.js';
-import { ScalesRow, HarmonicColorRow } from './js/colorPalette.js';
+import { ScalesRow, HarmonicColorRow, TertiaryRow } from './js/colorPalette.js';
 import { uiManager } from './js/uiManager.js';
 import { copyTimeouts } from './js/uiManager.js';
 import { mapToGamut } from './js/colorUtils.js';
@@ -71,14 +71,11 @@ const iconSvgAnaLong = '<svg class="utility-icon" width="100%" height="100%" vie
 
 const iconSvgAnaShort = '<svg class="utility-icon" width="100%" height="100%" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill:currentColor;fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><path d="M34.557,15.689L32.14,16.336C31.17,12.717 28.802,9.631 25.557,7.757C18.804,3.859 10.156,6.176 6.257,12.929C2.359,19.682 4.676,28.33 11.429,32.229C16.967,35.426 23.962,34.505 28.483,29.983L30.253,31.753C24.93,37.076 16.696,38.16 10.178,34.396C2.228,29.806 -0.499,19.627 4.09,11.678C8.68,3.728 18.859,1.001 26.809,5.59C30.628,7.796 33.416,11.428 34.557,15.689Z" style="fill-opacity:0.33;"/><path d="M20.004,22.562C19.549,22.84 19.014,23 18.442,23C16.787,23 15.442,21.656 15.442,20C15.442,18.344 16.787,17 18.442,17C19.838,17 21.012,17.955 21.347,19.247L28.829,19.247C29.186,17.009 31.127,15.296 33.465,15.296C36.055,15.296 38.158,17.399 38.158,19.99C38.158,22.58 36.055,24.684 33.465,24.684C31.13,24.684 29.192,22.976 28.831,20.743L21.349,20.743C21.282,21.007 21.179,21.258 21.047,21.489L27.74,28.182C28.061,28.064 28.409,28 28.771,28C30.427,28 31.771,29.344 31.771,31C31.771,32.656 30.427,34 28.771,34C27.115,34 25.771,32.656 25.771,31C25.771,30.256 26.042,29.574 26.492,29.05L20.004,22.562ZM33.465,16.925C31.773,16.925 30.4,18.298 30.4,19.99C30.4,21.681 31.773,23.054 33.465,23.054C35.156,23.054 36.529,21.681 36.529,19.99C36.529,18.298 35.156,16.925 33.465,16.925Z"/<path d="M30.278,31.727L28.505,29.962C30.255,28.204 31.511,26.017 32.148,23.62L34.567,24.263C33.817,27.084 32.338,29.659 30.278,31.727Z"/></svg>';
 
-const iconSvgFullCircle = `<svg class="utility-icon" width="100%" height="100%" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill:currentColor;fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <g>
-        <path d="M20,3.431C29.144,3.431 36.569,10.856 36.569,20C36.569,29.145 29.144,36.569 20,36.569C10.855,36.569 3.431,29.145 3.431,20C3.431,10.856 10.855,3.431 20,3.431ZM20,5.785C12.155,5.785 5.785,12.155 5.785,20C5.785,27.845 12.155,34.215 20,34.215C27.845,34.215 34.215,27.845 34.215,20C34.215,12.155 27.845,5.785 20,5.785ZM20,16.867C21.73,16.867 23.133,18.27 23.133,20C23.133,21.73 21.73,23.133 20,23.133C18.27,23.133 16.867,21.73 16.867,20C16.867,18.27 18.27,16.867 20,16.867Z"/>
-    </g>
-</svg>`;
+const iconSvgFullCircle = '<svg class="utility-icon" width="100%" height="100%" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill:currentColor;fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><path d="M20,3.431C29.144,3.431 36.569,10.856 36.569,20C36.569,29.145 29.144,36.569 20,36.569C10.855,36.569 3.431,29.145 3.431,20C3.431,10.856 10.855,3.431 20,3.431ZM20,5.785C12.155,5.785 5.785,12.155 5.785,20C5.785,27.845 12.155,34.215 20,34.215C27.845,34.215 34.215,27.845 34.215,20C34.215,12.155 27.845,5.785 20,5.785ZM20,16.867C21.73,16.867 23.133,18.27 23.133,20C23.133,21.73 21.73,23.133 20,23.133C18.27,23.133 16.867,21.73 16.867,20C16.867,18.27 18.27,16.867 20,16.867Z"/></svg>';
 
 let iconShortRange = iconSvgCompShort;
 let iconLongRange = iconSvgCompLong;
+let iconFullRange = iconSvgFullCircle;
 document.addEventListener('DOMContentLoaded', init);
 
 
@@ -88,21 +85,7 @@ function setPrimary(color) {
     primaryColor = new colorUtils.Color(color);
     document.documentElement.style.setProperty('--color-primary', primaryColor.toString({format: "srgb"}));
 }
-/*
-function setSecondary(hueDif) {
-    const newHue = colorUtils.setHue(primaryColor.lch.h, hueDif);
-    const newChroma = calculateChroma(primaryColor.lch.c, hueDif);
-    secondaryColor = colorUtils.relateColor(
-        primaryColor, 
-        100 - primaryColor.lch.l,
-        newChroma,
-        newHue
-    );
-    
-    updateColorProperties();
-    return secondaryColor;
-}
-*/
+
 function setNeutral(color) {
     neutralColor = colorUtils.relateColor(
         primaryColor,
@@ -300,46 +283,11 @@ function init() {
 
     /* UI controls */
     setupColorHandlers();
-
-    /* Setting the color scale and harmony palettes: */
-    setupRows();
-
-    // Force an update of UI elements to ensure everything is in sync
     updateUIElements();
      
 }
 
 // New function to update UI elements without setting up rows again
-function updateUIElementsWithoutSetup() {
-    
-    // Update CSS variables
-    document.documentElement.style.setProperty('--color-primary', primaryColor.to('srgb').toString({format: "hex"}));
-    document.documentElement.style.setProperty('--color-secondary', secondaryColor.to('srgb').toString({format: "hex"}));
-    
-    // Update primary color inputs
-    document.getElementById('color-input').value = primaryColor.to('srgb').toString({format: "hex"});
-    updateColorPickerAppearance(primaryColor.to('srgb').toString({format: "hex"}));
-    
-    // Update secondary color display
-    updateSecondaryColorDisplay();
-    
-    // Update UI controls for secondary color
-    updateSecondaryColorControls();
-
-    // Update existing rows
-    if (rows) {
-        rows.forEach((item, index) => {
-            if (item.row && typeof item.row.update === 'function') {
-                item.row.update(primaryColor, secondaryColor);
-            } else {
-                console.error(`Row ${index} does not have an update function`);
-            }
-        });
-    }
-
-    // Update contrast status
-    updateContrastStatus(primaryColor, secondaryColor);
-}
 function appendIconToRow(rowLabelText, svgIcon) {
     // Select all row labels within palettes-section
     const rowLabels = document.querySelectorAll('.palettes-section .palette-label');
@@ -361,127 +309,192 @@ function appendIconToRow(rowLabelText, svgIcon) {
     });
 }
 
+function createAndAddRow(rowInstance, label, containerIdPrefix, isNeutral = false) {
+    // Check if the row already exists
+    const existingRow = rows.find(row => row.label === label);
+    if (existingRow) {
+        console.warn(`Row with label "${label}" already exists. Skipping creation.`);
+        rowInstance.update(existingRow.row.sourceColor);
+        return;
+    }
 
-function setupRows() {
-    rows = []; // Clear existing rows
+    // Check if the container already exists
+    const existingContainer = document.querySelector(`#${containerIdPrefix}`);
+    if (existingContainer) {
+        console.warn(`Container for ${containerIdPrefix} already exists. Skipping creation.`);
+        return;
+    }
 
+    // Add the row instance to the rows array and observe it
+    rows.push({ row: rowInstance, label });
+    colorManager.addObserver(rowInstance);
+
+    // Ensure the palettes section exists
     const palettesSection = document.querySelector('.palettes-section');
     if (!palettesSection) {
         console.error('Palettes section not found');
         return;
     }
-     // Create ScalesRow instances
-    rows.push({ row: ScalesRow.create(primaryColor, { steps: scales }, "Primary scales"), label: "Primary scales" });
-    rows.push({ row: ScalesRow.create(secondaryColor, { steps: scales, includeSource: true }, "Secondary scales"), label: "Secondary scales" });
-    rows.push({ row: ScalesRow.create(neutralColor, { 
-        steps: scales, 
-        startPoint: {l: darkest, c: 0, h: primaryColor.lch.h}, 
-        endPoint: {l: lightest, c: 0, h: primaryColor.lch.h}, 
-        interpolation: 'linear', 
-        includeSource: true,
-        isNeutral: true,
-        neutralChroma: 5
-    },"Neutrals"), label: "Neutrals" });
 
-    // Create HarmonicColorRow instances
-    rows.push({ 
-        row: HarmonicColorRow.create(primaryColor, secondaryColor, {
-            steps: scales,
-            interpolation: 'linear',
-            lightnessEase: 'linear',
-            chromaEase: 'linear',
-            lightnessRange: 100,
-            chromaRange: 132,
-            huePath: 'longer',
-            hueOrder: 'auto'
-        }),
-        label: "Hue wider segment" 
+    // Create row wrapper
+    const rowWrapper = document.createElement('div');
+    rowWrapper.className = 'row-wrapper';
+
+    // Add label and buttons container
+    const labelButtonContainer = document.createElement('div');
+    labelButtonContainer.className = 'label-button-container';
+
+    // Add label
+    if (label) {
+        const labelElement = document.createElement('h4');
+        labelElement.textContent = label;
+        labelElement.className = 'palette-label heading-04';
+        labelButtonContainer.appendChild(labelElement);
+    }
+
+    // Add chroma toggle for neutral palettes
+    if (isNeutral) {
+        const chromaToggle = rowInstance.createChromaToggle();
+        labelButtonContainer.appendChild(chromaToggle);
+    }
+
+    // Add "Copy as JSON" button
+    const copyJsonButton = document.createElement('button');
+    copyJsonButton.textContent = 'Copy as JSON';
+    copyJsonButton.className = 'copy-json-button';
+    copyJsonButton.addEventListener('click', () => {
+        const jsonPalette = rowInstance.getSwatchesAsJson();
+        copyToClipboard(jsonPalette, copyJsonButton);
     });
-    
-    rows.push({ 
-        row: HarmonicColorRow.create(primaryColor, secondaryColor, {
-            steps: scales,
-            interpolation: 'linear',
-            lightnessEase: 'linear',
-            chromaEase: 'linear',
-            lightnessRange: 100,
-            chromaRange: 132,
-            huePath: 'shorter',
-            hueOrder: 'auto'
-        }),
-        label: "Hue narrower segment" 
-    });
-    
-    rows.push({ 
-        row: HarmonicColorRow.create(primaryColor, secondaryColor, {
-            steps: 6,
-            interpolation: 'sineWave',
-            lightnessEase: 'cosineWave',
-            chromaEase: 'sineWave',
-            lightnessRange: 70,
-            chromaRange: 132,
-            huePath: 'full-circle',  
-            hueOrder: 'auto'
-        }),
-        label: "Palette: full circumference" 
-    });
-    
-    rows.push({ 
-        row: HarmonicColorRow.create(primaryColor, secondaryColor, {
-            steps: 6,
-            interpolation: 'quadratic',
-            lightnessEase: 'quadratic',
-            chromaEase: 'quadratic',
-            lightnessRange: 100,
-            chromaRange: 132,
-            huePath: 'longer',
-            hueOrder: 'auto'
-        }),
-        label: "Palette: narrow circumference" 
-    });
+    labelButtonContainer.appendChild(copyJsonButton);
 
-    rows.push({ 
-        row: HarmonicColorRow.create(primaryColor, secondaryColor, {
-            steps: 6,
-            interpolation: 'linear',
-            lightnessEase: 'linear',
-            chromaEase: 'linear',
-            lightnessRange: 100,
-            chromaRange: 132,
-            huePath: 'shorter',
-            hueOrder: 'auto'
-        }),
-        label: "Palette: wide circumference" 
-    });
+    rowWrapper.appendChild(labelButtonContainer);
 
-   
+    // Generate unique containerId and assign it to the row
+    const containerId = `${containerIdPrefix}-${Math.random().toString(36).substr(2, 9)}`;
+    rowInstance.containerId = containerId; // Assign here
+    console.log(`Assigned containerId: ${rowInstance.containerId} to ${label}`);
 
-    // Set up observers and create swatches
-    rows.forEach((item, index) => {
-        const row = item.row;
-        const label = item.label;
+    // Create the swatch container
+    const swatchContainer = document.createElement('div');
+    swatchContainer.id = containerId;
+    swatchContainer.className = 'color-swatch-container';
+    if (rowInstance instanceof TertiaryRow) {
+        swatchContainer.classList.add('tertiary-swatch-container');
+    }
+    rowWrapper.appendChild(swatchContainer);
 
-        if (typeof row.update === 'function') {
-            colorManager.addObserver(row);
-        }
+    // Append the row wrapper to the palettes section
+    palettesSection.appendChild(rowWrapper);
 
-        if (typeof row.createSwatches === 'function') {
-            let prefix = row instanceof ScalesRow ? 'scalesrow' : 'row';
-            const containerId = `${prefix}-${index + 1}`;
-            row.createSwatches(containerId, label);
-          
-        }
-
-        if (row instanceof ScalesRow) {
-            row.isPrimaryBased = index === 0;
-        }
-    });
+    // Generate swatches for the row
+    try {
+        rowInstance.createSwatches(containerId, label);
+    } catch (error) {
+        console.error(`Failed to create swatches for ${label}:`, error);
+    }
 }
+
+
+
+
+function setupRows() {
+    console.log('setupRows called');
+    rows = []; // Clear the rows array
+    const palettesSection = document.querySelector('.palettes-section');
+    if (palettesSection) {
+        console.log('Clearing palettes section');
+        palettesSection.innerHTML = ''; // Clear all previous rows
+    } else {
+        console.error('Palettes section not found');
+        return;
+    }
+
+    // Create and add rows
+    console.log('Creating Primary Scales Row');
+    const primaryScalesRow = ScalesRow.create(primaryColor, { steps: 10 }, 'Primary Scales');
+    primaryScalesRow.isPrimaryBased = true;
+    createAndAddRow(primaryScalesRow, 'Primary Scales', 'scalesrow');
+
+    console.log('Creating Secondary Scales Row');
+    const secondaryScalesRow = ScalesRow.create(secondaryColor, { steps: 10 }, 'Secondary Scales');
+    secondaryScalesRow.isPrimaryBased = false;
+    createAndAddRow(secondaryScalesRow, 'Secondary Scales', 'scalesrow');
+
+    console.log('Creating Neutral Scales Row');
+    const neutralScalesRow = ScalesRow.create(primaryColor, {
+        steps: 10,
+        isNeutral: true,
+        neutralChroma: 5,
+    }, 'Neutral Scales', true);
+    createAndAddRow(neutralScalesRow, 'Neutral Scales', 'scalesrow', true);
+
+    console.log('Creating Harmony Rows');
+    const harmonyWideCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
+        steps: 6,
+        interpolation: 'linear',
+        lightnessEase: 'linear',
+        chromaEase: 'linear',
+        huePath: 'longer',
+    }, 'Hue wider segment');
+    createAndAddRow(harmonyWideCircRow, 'Hue wider segment', 'harmonyrow');
+
+    const harmonyNarrowCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
+        steps: 6,
+        interpolation: 'linear',
+        lightnessEase: 'linear',
+        chromaEase: 'linear',
+        huePath: 'shorter',
+    }, 'Hue narrower segment');
+    createAndAddRow(harmonyNarrowCircRow, 'Hue narrower segment', 'harmonyrow');
+
+    const harmonyFullCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
+        steps: 6,
+        interpolation: 'linear',
+        lightnessEase: 'linear',
+        chromaEase: 'linear',
+        huePath: 'full-circle',
+    }, 'Full circumference');
+    createAndAddRow(harmonyFullCircRow, 'Full circumference', 'harmonyrow');
+/*
+    const paletteNarrowCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
+        steps: 6,
+        interpolation: 'linear',
+        lightnessEase: 'linear',
+        chromaEase: 'linear',
+        huePath: 'shorter',
+    }, 'Palette: narrower segment');
+    createAndAddRow(paletteNarrowCircRow, 'Palette: narrower segment', 'harmonyrow');
+
+    const paletteWideCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
+        steps: 6,
+        interpolation: 'linear',
+        lightnessEase: 'linear',
+        chromaEase: 'linear',
+        huePath: 'longer',
+    }, 'Palette: wider segment');
+    createAndAddRow(paletteWideCircRow, 'Palette: wider segment', 'harmonyrow');
+  */ 
+    const tertiaryRow = TertiaryRow.create(primaryColor, secondaryColor, tertiaryColor, {
+        steps: 5, // Number of colors to generate
+        interpolation: 'linear',
+        lightnessEase: 'linear',
+        chromaEase: 'linear',
+    }, 'Tertiary Row');
+    createAndAddRow(tertiaryRow, 'Tertiary Row', 'tertiaryrow');
+
+    appendIconToRow("Hue wider segment", iconLongRange);
+    appendIconToRow("Hue narrower segment", iconShortRange);
+    appendIconToRow("Full circumference", iconFullRange);
+    
+}
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
     appendIconToRow("Hue wider segment", iconLongRange);
     appendIconToRow("Hue narrower segment", iconShortRange);
-    appendIconToRow("Palette: full circumference", iconSvgFullCircle);
+    appendIconToRow("Full circumference", iconFullRange);
 });
 /** Color controls in the UI: */
 
@@ -614,9 +627,15 @@ function updateUIElements() {
         return;
     }
     if (!tertiaryColor || !tertiaryColor.lch) {
-        console.warn('Missing or invalid tertiaryColor. Using fallback.');
-        tertiaryColor = new Color('lch', [50, 0, 180]); // Fallback color
+        console.warn('Missing or invalid tertiaryColor. Generating from secondaryColor.');
+        tertiaryColor = colorUtils.relateColor(
+            secondaryColor,
+            secondaryColor.lch.l,
+            Math.max(secondaryColor.lch.c, 5), // Ensure minimum chroma
+            (secondaryColor.lch.h + 120) % 360
+        );
     }
+    
 
     // Update CSS variables
     document.documentElement.style.setProperty('--color-primary', primaryColor.to('srgb').toString({ format: "hex" }));
@@ -830,6 +849,7 @@ function handleHueChange(event) {
     }
     appendIconToRow("Hue wider segment", iconLongRange);
     appendIconToRow("Hue narrower segment", iconShortRange);
+    appendIconToRow("Full circumference", iconFullRange)
 
     // Calculate new secondary color
     const newSecondaryColor = recalculateSecondaryColor(primaryColor, hueDif, secondaryColor);
@@ -1057,25 +1077,6 @@ function setupThemeSwitch() {
     });
 }
 
-// Call this function when the DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    setupThemeSwitch();
-});
-
-document.addEventListener('DOMContentLoaded', setupThemeSwitch);
-
-// Call this function when the DOM is loaded
-document.addEventListener('DOMContentLoaded', setupThemeSwitch);
-
-// Call this function when the DOM is loaded
-document.addEventListener('DOMContentLoaded', setupThemeSwitch);
-
-// Call this function when the DOM is loaded
-document.addEventListener('DOMContentLoaded', setupThemeSwitch);
-// Call this function when the DOM is loaded
-document.addEventListener('DOMContentLoaded', setupThemeSwitch);
-
-// Call this function when the DOM is loaded
 document.addEventListener('DOMContentLoaded', setupThemeSwitch);
 
 /* Setup hue harmony tabs */ 
@@ -1147,6 +1148,14 @@ function recalculateSecondaryColor(primaryColor, hueDif, currentSecondaryColor) 
 }
 
 function updateContrastCheck() {
+    const foregroundColor = getComputedStyle(document.body).color; // Example fallback
+    const backgroundColor = getComputedStyle(document.body).backgroundColor;
+
+    console.log("Foreground color:", foregroundColor);
+    console.log("Background color:", backgroundColor);
+
+    const ratio = colorUtils.updateContrastStatus(foregroundColor, backgroundColor);
+    console.log("Contrast ratio:", ratio);
     const primaryColorHex = primaryColor.to('srgb').toString({format: "hex"});
     const secondaryColorHex = secondaryColor.to('srgb').toString({format: "hex"});
     const contrastStatus = colorUtils.updateContrastStatus(primaryColorHex, secondaryColorHex);
@@ -1272,13 +1281,38 @@ function generateShareableURL() {
 // Add event listener for the share button
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Attach event listener to share button
     const shareButton = document.getElementById('generate-shareable-url-button');
     if (shareButton) {
         shareButton.addEventListener("click", generateShareableURL);
     } else {
         console.error("Share button not found after DOM load.");
     }
+
+    // Initialize primary and secondary colors
+    try {
+        const initialPrimaryColor = new Color('lch', [50, 50, 0]); // Default primary color
+        const initialSecondaryColor = new Color('lch', [60, 40, 30]); // Default secondary color
+        
+        colorManager.setPrimaryColor(initialPrimaryColor);
+        colorManager.setSecondaryColor(initialSecondaryColor);
+
+        // Ensure both colors are valid before proceeding
+        if (!initialPrimaryColor || !initialPrimaryColor.lch) {
+            throw new Error("Primary color initialization failed.");
+        }
+        if (!initialSecondaryColor || !initialSecondaryColor.lch) {
+            throw new Error("Secondary color initialization failed.");
+        }
+
+        // Setup rows and UI
+        setupRows();
+        updateUIElements();
+    } catch (error) {
+        console.error("Error during initialization:", error);
+    }
 });
+
 
 
 
