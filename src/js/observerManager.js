@@ -14,18 +14,15 @@ export default class ObserverManager {
     removeObserver(observer) {
         this.observers = this.observers.filter(obs => obs !== observer);
     }
-    
 
     notifyObservers(data) {
-    console.log("Notifying observers with data:", data);
-    this.observers.forEach(observer => {
-        try {
-            observer.update(data.primaryColor, data.secondaryColor, data.tertiaryColor);
-        } catch (error) {
-            console.error("Error in observer update:", error, observer);
-        }
-    });
-}
-
-    
+        console.log("Notifying observers with data:", data);
+        this.observers.forEach(observer => {
+            try {
+                observer.update(data);
+            } catch (error) {
+                console.error("Error in observer update:", error, observer);
+            }
+        });
+    }
 }

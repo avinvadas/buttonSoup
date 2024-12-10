@@ -10,7 +10,8 @@ export const uiManager = {
     addSwatchInteractivity,
     showCopiedMessage,
     applyColorPaletteToCSS,
-    addColorTickerFunctionality
+    addColorTickerFunctionality,
+    copyToClipboard
 };
 
 /* Creating color swatches in the palettes */
@@ -134,7 +135,7 @@ export function createColorSwatches(colorScale, containerId, contrastRatios, con
 /* Copy-to-clipboard functionality to swatches: */
 
 /* copy icon (on swatch hover/focus) */
-function createCopyIcon() {
+export function createCopyIcon() {
     const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("width", "2rem");
     icon.setAttribute("height", "2rem");
@@ -147,7 +148,7 @@ function createCopyIcon() {
     return icon;
 }
 /* Check icon (on copy success) */
-function createCheckIcon() {
+export function createCheckIcon() {
     const checkIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     checkIcon.setAttribute("width", "2rem");
     checkIcon.setAttribute("height", "2rem");
@@ -198,7 +199,7 @@ function applyColorPaletteToCSS(harmonicRow) {
     });
 }
 
-function addColorTickerFunctionality(elementId) {
+export function addColorTickerFunctionality(elementId) {
     const element = document.getElementById(elementId);
     if (!element) {
         console.error(`Element with id ${elementId} not found`);

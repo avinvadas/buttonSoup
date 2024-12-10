@@ -4,11 +4,9 @@ It builds the UI, and coordinates the functionalities with the color calculation
 
 import ColorManager from './js/colorManager.js';
 import * as colorUtils from './js/colorUtils.js';
-import { updateContrastStatus } from './js/colorUtils.js';
 import { ScalesRow, HarmonicColorRow, TertiaryRow } from './js/colorPalette.js';
 import { uiManager } from './js/uiManager.js';
 import { copyTimeouts } from './js/uiManager.js';
-import { mapToGamut } from './js/colorUtils.js';
 
 // Basic parameters
 let primaryColor;
@@ -310,93 +308,122 @@ function appendIconToRow(rowLabelText, svgIcon) {
 }
 
 function createAndAddRow(rowInstance, label, containerIdPrefix, isNeutral = false) {
-    // Check if the row already exists
-    const existingRow = rows.find(row => row.label === label);
-    if (existingRow) {
-        console.warn(`Row with label "${label}" already exists. Skipping creation.`);
-        rowInstance.update(existingRow.row.sourceColor);
-        return;
-    }
-
-    // Check if the container already exists
-    const existingContainer = document.querySelector(`#${containerIdPrefix}`);
-    if (existingContainer) {
-        console.warn(`Container for ${containerIdPrefix} already exists. Skipping creation.`);
-        return;
-    }
-
-    // Add the row instance to the rows array and observe it
-    rows.push({ row: rowInstance, label });
-    colorManager.addObserver(rowInstance);
-
-    // Ensure the palettes section exists
-    const palettesSection = document.querySelector('.palettes-section');
-    if (!palettesSection) {
-        console.error('Palettes section not found');
-        return;
-    }
-
-    // Create row wrapper
-    const rowWrapper = document.createElement('div');
-    rowWrapper.className = 'row-wrapper';
-
-    // Add label and buttons container
-    const labelButtonContainer = document.createElement('div');
-    labelButtonContainer.className = 'label-button-container';
-
-    // Add label
-    if (label) {
-        const labelElement = document.createElement('h4');
-        labelElement.textContent = label;
-        labelElement.className = 'palette-label heading-04';
-        labelButtonContainer.appendChild(labelElement);
-    }
-
-    // Add chroma toggle for neutral palettes
-    if (isNeutral) {
-        const chromaToggle = rowInstance.createChromaToggle();
-        labelButtonContainer.appendChild(chromaToggle);
-    }
-
-    // Add "Copy as JSON" button
-    const copyJsonButton = document.createElement('button');
-    copyJsonButton.textContent = 'Copy as JSON';
-    copyJsonButton.className = 'copy-json-button';
-    copyJsonButton.addEventListener('click', () => {
-        const jsonPalette = rowInstance.getSwatchesAsJson();
-        copyToClipboard(jsonPalette, copyJsonButton);
-    });
-    labelButtonContainer.appendChild(copyJsonButton);
-
-    rowWrapper.appendChild(labelButtonContainer);
-
-    // Generate unique containerId and assign it to the row
-    const containerId = `${containerIdPrefix}-${Math.random().toString(36).substr(2, 9)}`;
-    rowInstance.containerId = containerId; // Assign here
-    console.log(`Assigned containerId: ${rowInstance.containerId} to ${label}`);
-
-    // Create the swatch container
-    const swatchContainer = document.createElement('div');
-    swatchContainer.id = containerId;
-    swatchContainer.className = 'color-swatch-container';
-    if (rowInstance instanceof TertiaryRow) {
-        swatchContainer.classList.add('tertiary-swatch-container');
-    }
-    rowWrapper.appendChild(swatchContainer);
-
-    // Append the row wrapper to the palettes section
-    palettesSection.appendChild(rowWrapper);
-
-    // Generate swatches for the row
     try {
-        rowInstance.createSwatches(containerId, label);
+        // Check if the row already exists by label
+        const existingRow = rows.find(row => row.label === label);
+        if (existingRow) {
+            console.warn(`Row with label "${label}" already exists. Updating existing row.`);
+            existingRow.row.update(rowInstance.sourceColor);
+            return;
+        }
+
+        // Generate unique containerId
+        const containerId = `${containerIdPrefix}-${Math.random().toString(36).substr(2, 9)}`;
+        rowInstance.containerId = containerId; // Assign containerId to the row
+        console.log(`Assigned containerId: ${containerId} to ${label}`);
+
+        // Ensure the palettes section exists
+        const palettesSection = document.querySelector('.palettes-section');
+        if (!palettesSection) {
+            console.error('Palettes section not found');
+            return;
+        }
+
+        // Add the row instance to the rows array and observe it
+        rows.push({ row: rowInstance, label });
+        colorManager.addObserver(rowInstance);
+
+        // Create row wrapper
+        const rowWrapper = document.createElement('div');
+        rowWrapper.className = 'row-wrapper';
+
+        // Add label and buttons container
+        const labelButtonContainer = document.createElement('div');
+        labelButtonContainer.className = 'label-button-container';
+
+        // Add label
+        if (label) {
+            const labelElement = document.createElement('h4');
+            labelElement.textContent = label;
+            labelElement.className = 'palette-label heading-04';
+            labelButtonContainer.appendChild(labelElement);
+        }
+
+        // Add chroma toggle for neutral palettes
+        if (isNeutral) {
+            try {
+                const chromaToggle = rowInstance.createChromaToggle();
+                labelButtonContainer.appendChild(chromaToggle);
+            } catch (error) {
+                console.error(`Failed to create chroma toggle for ${label}:`, error);
+            }
+        }
+
+        // Add "Copy as JSON" button
+        const copyJsonButton = document.createElement('button');
+        copyJsonButton.textContent = 'Copy as JSON';
+        copyJsonButton.className = 'copy-json-button';
+        copyJsonButton.addEventListener('click', () => {
+            try {
+                const jsonPalette = rowInstance.getSwatchesAsJson();
+                uiManager.copyToClipboard(jsonPalette, copyJsonButton);
+            } catch (error) {
+                console.error(`Failed to copy JSON for ${label}:`, error);
+            }
+        });
+        labelButtonContainer.appendChild(copyJsonButton);
+
+        // Create the swatch container
+        const swatchContainer = document.createElement('div');
+        swatchContainer.id = containerId;
+        swatchContainer.className = 'color-swatch-container';
+
+        // Explicit assignment for TertiaryRow
+        if (rowInstance instanceof TertiaryRow) {
+            console.log('TertiaryRow detected. Ensuring proper containerId assignment:', containerId);
+            rowInstance.containerId = containerId;
+        }
+
+        // Append labelButtonContainer and swatchContainer to rowWrapper
+        rowWrapper.appendChild(labelButtonContainer);
+        rowWrapper.appendChild(swatchContainer);
+
+        // Append the row wrapper to the palettes section
+        palettesSection.appendChild(rowWrapper);
+        console.log(`Row wrapper appended to palettes section for ${label}. ContainerId: ${containerId}`);
+
+        // Generate swatches for the row
+        try {
+            const foundSwatchContainer = document.getElementById(containerId);
+            if (!foundSwatchContainer) {
+                throw new Error(`Swatch container not found for containerId: ${containerId}`);
+            }
+            console.log(`Swatch container found:`, foundSwatchContainer);
+            rowInstance.createSwatches(containerId, label);
+        } catch (error) {
+            console.error(`Failed to create swatches for ${label}:`, error);
+        }
+
+        // Verify container creation
+        const createdContainer = document.getElementById(containerId);
+        if (!createdContainer) {
+            console.error(`Container for ${containerId} could not be created.`);
+        } else {
+            console.log(`Container successfully created for ${label}:`, createdContainer);
+        }
+
+        // Cleanup duplicate rows or containers if any
+        const allContainers = document.querySelectorAll(`#${containerId}`);
+        if (allContainers.length > 1) {
+            console.warn(`Duplicate containers found for ${containerId}. Cleaning up.`);
+            allContainers.forEach((container, index) => {
+                if (index > 0) container.remove(); // Keep the first, remove duplicates
+            });
+        }
     } catch (error) {
-        console.error(`Failed to create swatches for ${label}:`, error);
+        console.error(`Failed to create and add row for ${label}:`, error);
     }
 }
-
-
-
 
 function setupRows() {
     console.log('setupRows called');
@@ -426,7 +453,7 @@ function setupRows() {
         steps: 10,
         isNeutral: true,
         neutralChroma: 5,
-    }, 'Neutral Scales', true);
+    }, 'Neutral Scales');
     createAndAddRow(neutralScalesRow, 'Neutral Scales', 'scalesrow', true);
 
     console.log('Creating Harmony Rows');
@@ -456,40 +483,56 @@ function setupRows() {
         huePath: 'full-circle',
     }, 'Full circumference');
     createAndAddRow(harmonyFullCircRow, 'Full circumference', 'harmonyrow');
-/*
-    const paletteNarrowCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
-        steps: 6,
-        interpolation: 'linear',
-        lightnessEase: 'linear',
-        chromaEase: 'linear',
-        huePath: 'shorter',
-    }, 'Palette: narrower segment');
-    createAndAddRow(paletteNarrowCircRow, 'Palette: narrower segment', 'harmonyrow');
 
-    const paletteWideCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
-        steps: 6,
-        interpolation: 'linear',
-        lightnessEase: 'linear',
-        chromaEase: 'linear',
-        huePath: 'longer',
-    }, 'Palette: wider segment');
-    createAndAddRow(paletteWideCircRow, 'Palette: wider segment', 'harmonyrow');
-  */ 
-    const tertiaryRow = TertiaryRow.create(primaryColor, secondaryColor, tertiaryColor, {
-        steps: 5, // Number of colors to generate
-        interpolation: 'linear',
-        lightnessEase: 'linear',
-        chromaEase: 'linear',
-    }, 'Tertiary Row');
-    createAndAddRow(tertiaryRow, 'Tertiary Row', 'tertiaryrow');
+    // Add TertiaryRow conditionally
+    console.log('Creating Tertiary Row if conditions are met');
+    if (primaryColor && secondaryColor && primaryColor.isReady && secondaryColor.isReady) {
+        const tertiaryRow = TertiaryRow.create(primaryColor, secondaryColor, { steps: 10 }, 'Tertiary Row');
+        if (tertiaryRow) {
+            createAndAddRow(tertiaryRow, 'Tertiary Row', 'tertiaryrow');
+        }
+    } else {
+        console.warn('Tertiary Row creation skipped due to invalid primary or secondary color.');
+    }
 
-    appendIconToRow("Hue wider segment", iconLongRange);
-    appendIconToRow("Hue narrower segment", iconShortRange);
-    appendIconToRow("Full circumference", iconFullRange);
-    
+    colorManager.addObserver({
+        update: (data) => {
+            if (data.primaryColor && data.secondaryColor) {
+                console.log("Observer: TertiaryRow dependencies are ready.");
+                const tertiaryRowExists = rows.some(row => row.label === 'Tertiary Row');
+                if (!tertiaryRowExists) {
+                    console.log("Creating Tertiary Row from observer");
+                    const tertiaryRow = TertiaryRow.create(data.primaryColor, data.secondaryColor, { steps: 10 }, 'Tertiary Row');
+                    if (tertiaryRow) {
+                        createAndAddRow(tertiaryRow, 'Tertiary Row', 'tertiaryrow');
+                    }
+                }
+            }
+        }
+    });
+
+    // Add icons to rows
+    appendIconToRow('Hue wider segment', iconLongRange);
+    appendIconToRow('Hue narrower segment', iconShortRange);
+    appendIconToRow('Full circumference', iconFullRange);
 }
 
-
+function conditionallyCreateRow(condition, createFunction) {
+    if (condition()) {
+        console.log('Condition met. Creating row.');
+        createFunction();
+    } else {
+        console.warn('Condition not met. Adding observer to retry.');
+        colorManager.addObserver({
+            update: (data) => {
+                if (condition()) {
+                    console.log('Condition met after update. Creating row.');
+                    createFunction();
+                }
+            },
+        });
+    }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     appendIconToRow("Hue wider segment", iconLongRange);
@@ -607,7 +650,7 @@ function updatePrimaryColor(colorValue) {
 
         updateUIElements();
         updateAllScalesRows(primaryColor, secondaryColor);
-        updateContrastStatus(primaryColor, secondaryColor);
+        colorUtils.updateContrastStatus(primaryColor, secondaryColor);
 
     } catch (error) {
         console.error("Invalid color value:", error);
@@ -617,6 +660,7 @@ function updatePrimaryColor(colorValue) {
 
 // Updated function to update all UI elements
 function updateUIElements() {
+    
     // Validate primaryColor, secondaryColor, and tertiaryColor
     if (!primaryColor || !primaryColor.lch) {
         console.error('Invalid primaryColor in updateUIElements:', primaryColor);
@@ -672,7 +716,7 @@ function updateUIElements() {
     }
 
     // Update contrast status
-    updateContrastStatus(primaryColor, secondaryColor, tertiaryColor);
+    colorUtils.updateContrastStatus(primaryColor, secondaryColor, tertiaryColor);
 
     // Log warnings for zero chroma
     if (secondaryColor.lch.c === 0) {
@@ -1150,12 +1194,7 @@ function recalculateSecondaryColor(primaryColor, hueDif, currentSecondaryColor) 
 function updateContrastCheck() {
     const foregroundColor = getComputedStyle(document.body).color; // Example fallback
     const backgroundColor = getComputedStyle(document.body).backgroundColor;
-
-    console.log("Foreground color:", foregroundColor);
-    console.log("Background color:", backgroundColor);
-
     const ratio = colorUtils.updateContrastStatus(foregroundColor, backgroundColor);
-    console.log("Contrast ratio:", ratio);
     const primaryColorHex = primaryColor.to('srgb').toString({format: "hex"});
     const secondaryColorHex = secondaryColor.to('srgb').toString({format: "hex"});
     const contrastStatus = colorUtils.updateContrastStatus(primaryColorHex, secondaryColorHex);

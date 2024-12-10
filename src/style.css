@@ -763,7 +763,7 @@ font-weight: var(--font-weight-h4);
   position: relative;
   flex: 1;
   display: grid;
-  grid-template-columns: 2rem auto 2rem;
+  /*grid-template-columns: 2rem auto 2rem;*/
   grid-template-rows: 2rem auto 2rem;
   font-family: var(--typeface-body);
   font-size: var(--font-size-small);
@@ -773,7 +773,6 @@ font-weight: var(--font-weight-h4);
   min-height: 6rem;
   outline: none; 
 }
-
 
 .scale-swatch-container {
   min-height:12rem;
@@ -833,8 +832,6 @@ height:4rem;
     position:relative;
     background:blue;
 }
-
-
 
   
   .copied-message {

@@ -152,29 +152,29 @@ export function interpolateHueLonger(start, end, t, method = 'linear') {
 }
 
 // General interpolation methods
-function elastic(t, amplitude = 1, period = 0.3) {
+export function elastic(t, amplitude = 1, period = 0.3) {
     const s = period / (2 * Math.PI) * Math.asin(1 / amplitude);
     return amplitude * Math.pow(2, -10 * t) * Math.sin((t - s) * (2 * Math.PI) / period) + 1;
 }
 
-function elasticIn(t, amplitude = 1, period = 0.3) {
+export function elasticIn(t, amplitude = 1, period = 0.3) {
     if (t === 0) return 0;
     if (t === 1) return 1;
     const s = period / (2 * Math.PI) * Math.asin(1 / amplitude);
     return -(amplitude * Math.pow(2, 10 * (t - 1)) * Math.sin((t - 1 - s) * (2 * Math.PI) / period));
 }
 
-function elasticOut(t, amplitude = 1, period = 0.3) {
+export function elasticOut(t, amplitude = 1, period = 0.3) {
     if (t === 0) return 0;
     if (t === 1) return 1;
     return elastic(t, amplitude, period);
 }
 
-function sineWave(t) {
+export function sineWave(t) {
     return (Math.sin(2 * Math.PI * t - Math.PI / 2) + 1) / 2;
 }
 
-function cosineWave(t) {
+export function cosineWave(t) {
     return (Math.cos(2 * Math.PI * t) + 1) / 2;
 }
 
@@ -229,10 +229,30 @@ export function interpolate(start, end, t, method = 'linear', options = {}) {
 }
 // Check text-bg contrast
 export function getContrastTextColor(backgroundColor) {
-    const color = new Color(backgroundColor);
-    const luminance = color.luminance;
-    return luminance > 0.179 ? '#000000' : '#ffffff';
+
+    try {
+        const testColor = new Color('#ffffff');
+        
+    } catch (error) {
+        console.error('Error creating Color instance:', error);
+    }
+
+    
+    if (!backgroundColor || typeof backgroundColor !== 'string') {
+        console.error('getContrastTextColor: Invalid backgroundColor input', backgroundColor);
+        return '#000000'; // Fallback
+    }
+
+    try {
+        const color = new Color(backgroundColor); // Ensure `Color` is operational
+        const luminance = color.luminance;
+        return luminance > 0.179 ? '#000000' : '#ffffff';
+    } catch (error) {
+        console.error('getContrastTextColor: Error creating color object', error);
+        return '#000000'; // Fallback
+    }
 }
+
 
 // Calculate chroma based on hue difference
 export function calculateChroma(primaryChroma, hueDifference) {
@@ -242,13 +262,11 @@ export function calculateChroma(primaryChroma, hueDifference) {
 
 // Update contrast status
 export function updateContrastStatus(color1Hex, color2Hex) {
-    console.log("Calculating contrast between:", color1Hex, color2Hex);
 
     const color1 = new Color(color1Hex);
     const color2 = new Color(color2Hex);
 
     const contrastRatio = color1.contrast(color2, "WCAG21");
-    console.log(`Contrast ratio between ${color1Hex} and ${color2Hex}: ${contrastRatio.toFixed(2)}`);
 
     return {
         ratio: contrastRatio.toFixed(2),
@@ -296,7 +314,7 @@ export function mapToGamut(color) {
     return new Color('lch', [lch.l, lower, lch.h]).to('srgb');
 }
 
-function isInSRGBGamut(srgb) {
+export function isInSRGBGamut(srgb) {
     const [r, g, b] = srgb.coords;
     return r >= 0 && r <= 1 && g >= 0 && g <= 1 && b >= 0 && b <= 1;
 }
@@ -319,4 +337,11 @@ export function preserveChroma(color) {
     }
 
     return mapped;
+
+
+}
+
+// Custom validation function for Color objects
+export function isValidColor(color) {
+    return color && color.coords && color.coords.length === 3 && color.coords.every(coord => !isNaN(coord));
 }
