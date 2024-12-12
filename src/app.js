@@ -4,7 +4,7 @@ It builds the UI, and coordinates the functionalities with the color calculation
 
 import ColorManager from './js/colorManager.js';
 import * as colorUtils from './js/colorUtils.js';
-import { ScalesRow, HarmonicColorRow, TertiaryRow } from './js/colorPalette.js';
+import { ScalesRow, HarmonicColorRow, GeneralColorRow } from './js/colorPalette.js';
 import { uiManager } from './js/uiManager.js';
 import { copyTimeouts } from './js/uiManager.js';
 
@@ -377,11 +377,8 @@ function createAndAddRow(rowInstance, label, containerIdPrefix, isNeutral = fals
         const swatchContainer = document.createElement('div');
         swatchContainer.id = containerId;
         swatchContainer.className = 'color-swatch-container';
-
-        // Explicit assignment for TertiaryRow
-        if (rowInstance instanceof TertiaryRow) {
-            console.log('TertiaryRow detected. Ensuring proper containerId assignment:', containerId);
-            rowInstance.containerId = containerId;
+        if (rowInstance instanceof ScalesRow) {
+            swatchContainer.classList.add('scale-swatch-container');
         }
 
         // Append labelButtonContainer and swatchContainer to rowWrapper
@@ -457,88 +454,57 @@ function setupRows() {
     createAndAddRow(neutralScalesRow, 'Neutral Scales', 'scalesrow', true);
 
     console.log('Creating Harmony Rows');
-    const harmonyWideCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
-        steps: 6,
-        interpolation: 'linear',
-        lightnessEase: 'linear',
-        chromaEase: 'linear',
-        huePath: 'longer',
-    }, 'Hue wider segment');
-    createAndAddRow(harmonyWideCircRow, 'Hue wider segment', 'harmonyrow');
+const harmonyWideCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
+    steps: 6,
+    interpolation: 'linear',
+    lightnessEase: 'linear',
+    chromaEase: 'linear',
+    huePath: 'longer',
+}, 'Hue wider segment');
+createAndAddRow(harmonyWideCircRow, 'Hue wider segment', 'harmonyrow');
 
-    const harmonyNarrowCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
-        steps: 6,
-        interpolation: 'linear',
-        lightnessEase: 'linear',
-        chromaEase: 'linear',
-        huePath: 'shorter',
-    }, 'Hue narrower segment');
-    createAndAddRow(harmonyNarrowCircRow, 'Hue narrower segment', 'harmonyrow');
+const harmonyNarrowCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
+    steps: 6,
+    interpolation: 'linear',
+    lightnessEase: 'linear',
+    chromaEase: 'linear',
+    huePath: 'shorter',
+}, 'Hue narrower segment');
+createAndAddRow(harmonyNarrowCircRow, 'Hue narrower segment', 'harmonyrow');
 
-    const harmonyFullCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
-        steps: 6,
-        interpolation: 'linear',
-        lightnessEase: 'linear',
-        chromaEase: 'linear',
-        huePath: 'full-circle',
-    }, 'Full circumference');
-    createAndAddRow(harmonyFullCircRow, 'Full circumference', 'harmonyrow');
+const harmonyFullCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
+    steps: 6,
+    interpolation: 'linear',
+    lightnessEase: 'linear',
+    chromaEase: 'linear',
+    huePath: 'full-circle',
+}, 'Full circumference');
+createAndAddRow(harmonyFullCircRow, 'Full circumference', 'harmonyrow');
 
-    // Add TertiaryRow conditionally
-    console.log('Creating Tertiary Row if conditions are met');
-    if (primaryColor && secondaryColor && primaryColor.isReady && secondaryColor.isReady) {
-        const tertiaryRow = TertiaryRow.create(primaryColor, secondaryColor, { steps: 10 }, 'Tertiary Row');
-        if (tertiaryRow) {
-            createAndAddRow(tertiaryRow, 'Tertiary Row', 'tertiaryrow');
-        }
-    } else {
-        console.warn('Tertiary Row creation skipped due to invalid primary or secondary color.');
-    }
-
-    colorManager.addObserver({
-        update: (data) => {
-            if (data.primaryColor && data.secondaryColor) {
-                console.log("Observer: TertiaryRow dependencies are ready.");
-                const tertiaryRowExists = rows.some(row => row.label === 'Tertiary Row');
-                if (!tertiaryRowExists) {
-                    console.log("Creating Tertiary Row from observer");
-                    const tertiaryRow = TertiaryRow.create(data.primaryColor, data.secondaryColor, { steps: 10 }, 'Tertiary Row');
-                    if (tertiaryRow) {
-                        createAndAddRow(tertiaryRow, 'Tertiary Row', 'tertiaryrow');
-                    }
-                }
-            }
-        }
-    });
-
-    // Add icons to rows
-    appendIconToRow('Hue wider segment', iconLongRange);
-    appendIconToRow('Hue narrower segment', iconShortRange);
-    appendIconToRow('Full circumference', iconFullRange);
-}
-
-function conditionallyCreateRow(condition, createFunction) {
-    if (condition()) {
-        console.log('Condition met. Creating row.');
-        createFunction();
-    } else {
-        console.warn('Condition not met. Adding observer to retry.');
-        colorManager.addObserver({
-            update: (data) => {
-                if (condition()) {
-                    console.log('Condition met after update. Creating row.');
-                    createFunction();
-                }
-            },
-        });
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    appendIconToRow("Hue wider segment", iconLongRange);
-    appendIconToRow("Hue narrower segment", iconShortRange);
-    appendIconToRow("Full circumference", iconFullRange);
+console.log('Creating General Color Row with colors:', primaryColor, secondaryColor, tertiaryColor);
+const generalColorRow = new GeneralColorRow({
+    steps: 6,
+    interpolation: 'linear',
+    keyColors: [primaryColor, secondaryColor, tertiaryColor],
+    containerId: 'general-color-row-container'
 });
+generalColorRow.createSwatches('general-color-row', 'General Color Row');
+
+colorManager.addObserver({
+    update: (data) => {
+        if (data.primaryColor && data.secondaryColor && data.tertiaryColor) {
+            console.log("Observer: GeneralColorRow dependencies are ready.");
+            generalColorRow.updateColors([data.primaryColor, data.secondaryColor, data.tertiaryColor]);
+        }
+    }
+});
+
+// Add icons to rows
+appendIconToRow('Hue wider segment', iconLongRange);
+appendIconToRow('Hue narrower segment', iconShortRange);
+appendIconToRow('Full circumference', iconFullRange);
+}
+
 /** Color controls in the UI: */
 
 function setupColorHandlers() {
@@ -993,13 +959,6 @@ const secondaryColorObserver = {
 
 // Register the observer with ColorManager
 colorManager.addObserver(secondaryColorObserver);
-
-
-function updateSecondaryColorManual() {
-    updateSecondaryColor();
-    colorManager.setSecondaryColor(secondaryColor);
-    updateSecondaryColorDisplay();
-}
 
 function updateSecondaryColorDisplay() {
 
