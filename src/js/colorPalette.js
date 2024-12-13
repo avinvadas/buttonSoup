@@ -359,24 +359,24 @@ export class ScalesRow extends BaseColorRow {
     update(primaryColor, secondaryColor) {
         // Assign the correct source color
         this.sourceColor = this.isPrimaryBased ? primaryColor : secondaryColor;
-
+    
         if (!this.sourceColor || !this.sourceColor.lch) {
             console.error(`Invalid sourceColor in ScalesRow.update (${this.isPrimaryBased ? 'Primary' : 'Secondary'}):`, this.sourceColor);
             return;
         }
-
+    
         console.log(`Updating ScalesRow (${this.isPrimaryBased ? 'Primary' : 'Secondary'}):`, this.sourceColor);
-
+    
         setTimeout(() => {
             const srgbColors = this.colors.map(color => color.to('srgb'));
             createColorSwatches(srgbColors, this.containerId, this.contrastRatios, this.contrastMarkers);
             this.markPrimarySecondaryColors();
         }, 0);
-
+    
         // Update start and end points with the correct hue
         this.config.startPoint.h = this.sourceColor.lch.h;
         this.config.endPoint.h = this.sourceColor.lch.h;
-
+    
         // Regenerate the scale and refresh swatches
         this.generateScale();
         this.calculateContrastInfo();
@@ -750,8 +750,8 @@ export class GeneralColorRow extends BaseColorRow {
             ...config
         });
 
-        if (!Array.isArray(this.config.keyColors) || this.config.keyColors.length < 2) {
-            console.error('GeneralColorRow: keyColors must be an array with at least two colors');
+        if (!Array.isArray(this.config.keyColors) || this.config.keyColors.length < 3) {
+            console.error('GeneralColorRow: keyColors must be an array with at least three colors');
             return;
         }
 
@@ -763,30 +763,54 @@ export class GeneralColorRow extends BaseColorRow {
     }
 
     generateColors() {
-        const { steps, interpolation, keyColors } = this.config;
+        const { steps, interpolation } = this.config;
 
-        console.log('Generating colors with the following configuration:', { steps, interpolation, keyColors });
-
-        if (!Array.isArray(keyColors) || keyColors.length < 2) {
-            console.error('GeneralColorRow: keyColors must be an array with at least two colors');
+        if (!this.config.keyColors || this.config.keyColors.length < 3) {
+            console.error('GeneralColorRow: keyColors must be an array with at least three colors');
             return [];
         }
 
+        const [tertiaryColor, primaryColor, secondaryColor] = this.config.keyColors;
+
         const colors = [];
-        const numSegments = keyColors.length - 1;
-        const stepsPerSegment = Math.floor(steps / numSegments);
-        const remainderSteps = steps % numSegments;
+        const halfSteps = Math.floor((steps - 1) / 2);
 
-        for (let i = 0; i < numSegments; i++) {
-            const startColor = keyColors[i];
-            const endColor = keyColors[i + 1];
-            const segmentSteps = stepsPerSegment + (i < remainderSteps ? 1 : 0);
+        console.log('Steps:', steps);
+        console.log('Half Steps:', halfSteps);
 
-            for (let j = 0; j < segmentSteps; j++) {
-                const t = j / (segmentSteps - 1);
-                const interpolatedColor = colorUtils.interpolateColor(startColor, endColor, t, interpolation);
-                colors.push(interpolatedColor);
-            }
+        // Interpolate between tertiaryColor and primaryColor
+        for (let i = 0; i <= halfSteps; i++) {
+            const t = i / halfSteps;
+            const l = colorUtils.interpolate(tertiaryColor.lch.l, primaryColor.lch.l, t, interpolation);
+            const c = colorUtils.interpolate(tertiaryColor.lch.c, primaryColor.lch.c, t, interpolation);
+            const h = colorUtils.interpolate(tertiaryColor.lch.h, primaryColor.lch.h, t, interpolation);
+            const interpolatedColor = new colorUtils.Color('lch', [l, c, h]);
+            colors.push(interpolatedColor);
+        }
+
+        // Ensure primaryColor is in the middle for odd number of steps
+        if (steps % 2 !== 0) {
+            colors.push(primaryColor);
+        }
+
+        // Interpolate between primaryColor and secondaryColor
+        for (let i = 1; i <= halfSteps; i++) {
+            const t = i / halfSteps;
+            const l = colorUtils.interpolate(primaryColor.lch.l, secondaryColor.lch.l, t, interpolation);
+            const c = colorUtils.interpolate(primaryColor.lch.c, secondaryColor.lch.c, t, interpolation);
+            const h = colorUtils.interpolate(primaryColor.lch.h, secondaryColor.lch.h, t, interpolation);
+            const interpolatedColor = new colorUtils.Color('lch', [l, c, h]);
+            colors.push(interpolatedColor);
+        }
+
+        // If the number of steps is even, add one more color to match the steps
+        if (steps % 2 === 0) {
+            const t = 1;
+            const l = colorUtils.interpolate(primaryColor.lch.l, secondaryColor.lch.l, t, interpolation);
+            const c = colorUtils.interpolate(primaryColor.lch.c, secondaryColor.lch.c, t, interpolation);
+            const h = colorUtils.interpolate(primaryColor.lch.h, secondaryColor.lch.h, t, interpolation);
+            const interpolatedColor = new colorUtils.Color('lch', [l, c, h]);
+            colors.push(interpolatedColor);
         }
 
         console.log('Generated colors:', colors);
@@ -806,13 +830,46 @@ export class GeneralColorRow extends BaseColorRow {
         }).filter(color => color !== null);
     }
 
+    updateColors(keyColors) {
+        console.log('Updating colors with keyColors:', keyColors);
+        this.config.keyColors = keyColors;
+        this.colors = this.generateColors();
+        this.calculateContrastInfo();
+        this.updateSwatches();
+    }
+
+    update(primaryColor, secondaryColor, tertiaryColor) {
+        console.log('Updating GeneralColorRow with:', { primaryColor, secondaryColor, tertiaryColor });
+
+        if (!primaryColor || !primaryColor.lch) {
+            console.error('Invalid primaryColor in GeneralColorRow.update:', primaryColor);
+            return;
+        }
+        if (!secondaryColor || !secondaryColor.lch) {
+            console.error('Invalid secondaryColor in GeneralColorRow.update:', secondaryColor);
+            return;
+        }
+        if (!tertiaryColor || !tertiaryColor.lch) {
+            console.error('Invalid tertiaryColor in GeneralColorRow.update:', tertiaryColor);
+            return;
+        }
+
+        this.config.keyColors = [tertiaryColor, primaryColor, secondaryColor];
+        console.log('general row updated key colors:', this.config.keyColors )
+        this.colors = this.generateColors();
+        console.log('general row updated colors:', this.colors)
+        this.calculateContrastInfo();
+        console.log('generalColorRow updateSwatches called!');
+        this.updateSwatches();
+    }
+
     createSwatches(containerIdPrefix = 'general-color-row', label = '') {
-        // Prevent duplicate creation by checking if the container already exists
+        console.log('generalColorRow createSwatches() started');
         if (!this.containerId) {
             this.containerId = `${containerIdPrefix}-${Math.random().toString(36).substr(2, 9)}`;
         } else if (document.getElementById(this.containerId)) {
             console.warn(`Swatches already exist for ${this.containerId}. Skipping creation.`);
-            this.updateSwatches(); // Update swatches instead of creating new ones
+            this.updateSwatches();
             return;
         }
 
@@ -822,13 +879,11 @@ export class GeneralColorRow extends BaseColorRow {
             return;
         }
 
-        // Create swatches container
         const container = document.createElement('div');
         container.id = this.containerId;
         container.classList.add('color-swatch-container', 'general-color-swatch-container');
         palettesSection.appendChild(container);
 
-        // Create label and button container
         const labelButtonContainer = document.createElement('div');
         labelButtonContainer.className = 'label-button-container';
         const labelElement = document.createElement('span');
@@ -837,80 +892,225 @@ export class GeneralColorRow extends BaseColorRow {
         labelButtonContainer.appendChild(labelElement);
         container.appendChild(labelButtonContainer);
 
-        console.log(`Created swatches container with id: ${this.containerId}`);
-
-        // Generate and update swatches
         this.updateSwatches();
     }
 
     updateSwatches() {
-        if (!this.containerId || !this.colors) {
-            console.error(`Cannot update swatches: containerId or colors are missing`, this);
-            return;
-        }
-
         const container = document.getElementById(this.containerId);
         if (!container) {
-            console.warn('Container not found for marking swatches:', this.containerId);
+            console.error('Container not found for general color swatches');
             return;
         }
 
-        container.innerHTML = ''; // Clear existing swatches
+        container.innerHTML = '';
 
-        console.log('Updating swatches with colors:', this.colors);
+        const srgbColors = this.colors.map(color => color.to('srgb').toString({ format: 'hex' }));
+        createColorSwatches(srgbColors, this.containerId, this.contrastRatios);
+    }
+}
+/*
+export class GeneralColorRow extends BaseColorRow {
+    constructor(config = {}) {
+        super({
+            steps: 6,
+            interpolation: 'linear',
+            keyColors: [],
+            ...config
+        });
 
-        this.colors.forEach((color, index) => {
-            if (!color.to || typeof color.to !== 'function') {
-                console.error(`Invalid color object at index ${index}:`, color);
-                return;
+        if (!Array.isArray(this.config.keyColors) || this.config.keyColors.length < 2) {
+            console.error('GeneralColorRow: keyColors must be an array with at least two colors');
+            return;
+        }
+
+        this.colors = this.generateColors(); // Ensure this method initializes colors
+
+        if (!this.colors || this.colors.length === 0) {
+            console.error('colors array is not initialized in GeneralColorRow constructor');
+        }
+    }
+
+   generateColors() {
+    const { steps, interpolation } = this.config;
+
+    if (!this.config.keyColors || this.config.keyColors.length < 3) {
+        console.error('GeneralColorRow: keyColors must be an array with at least three colors');
+        return [];
+    }
+
+    const [secondaryColor, primaryColor, tertiaryColor] = this.config.keyColors;
+
+    const colors = [];
+    const numSegments = 2;
+    const stepsPerSegment = Math.floor(steps / numSegments);
+    const remainderSteps = steps % numSegments;
+
+    // Interpolate between secondaryColor and primaryColor
+    for (let i = 0; i < stepsPerSegment; i++) {
+        const t = i / (stepsPerSegment - 1);
+        const l = colorUtils.interpolate(secondaryColor.lch.l, primaryColor.lch.l, t, interpolation);
+        const c = colorUtils.interpolate(secondaryColor.lch.c, primaryColor.lch.c, t, interpolation);
+        const h = colorUtils.interpolate(secondaryColor.lch.h, primaryColor.lch.h, t, interpolation);
+        const interpolatedColor = new colorUtils.Color('lch', [l, c, h]);
+        colors.push(interpolatedColor);
+    }
+
+    // Interpolate between primaryColor and tertiaryColor
+    for (let i = 1; i <= stepsPerSegment + remainderSteps; i++) {
+        const t = i / (stepsPerSegment + remainderSteps);
+        const l = colorUtils.interpolate(primaryColor.lch.l, tertiaryColor.lch.l, t, interpolation);
+        const c = colorUtils.interpolate(primaryColor.lch.c, tertiaryColor.lch.c, t, interpolation);
+        const h = colorUtils.interpolate(primaryColor.lch.h, tertiaryColor.lch.h, t, interpolation);
+        const interpolatedColor = new colorUtils.Color('lch', [l, c, h]);
+        colors.push(interpolatedColor);
+    }
+
+    console.log('Generated colors:', colors);
+
+    // Ensure colors are valid color objects and converted to the desired format
+    return colors.map(color => {
+        try {
+            if (typeof color.to === 'function') {
+                return color.to('srgb');
+            } else {
+                throw new Error('Invalid color object');
             }
+        } catch (error) {
+            console.error('Invalid color object:', color, error);
+            return null;
+        }
+    }).filter(color => color !== null);
+}
 
+    updateColors(keyColors) {
+        console.log('Updating colors with keyColors:', keyColors);
+        this.config.keyColors = keyColors;
+        this.colors = this.generateColors();
+        this.calculateContrastInfo();
+        this.updateSwatches();
+    }
+
+    update(primaryColor, secondaryColor, tertiaryColor) {
+        console.log('Updating GeneralColorRow with:', { primaryColor, secondaryColor, tertiaryColor });
+
+        if (!primaryColor || !primaryColor.lch) {
+            console.error('Invalid primaryColor in GeneralColorRow.update:', primaryColor);
+            return;
+        }
+        if (!secondaryColor || !secondaryColor.lch) {
+            console.error('Invalid secondaryColor in GeneralColorRow.update:', secondaryColor);
+            return;
+        }
+        if (!tertiaryColor || !tertiaryColor.lch) {
+            console.error('Invalid tertiaryColor in GeneralColorRow.update:', tertiaryColor);
+            return;
+        }
+
+        this.config.keyColors = [primaryColor, secondaryColor, tertiaryColor];
+        console.log('general row updated key colors:', this.config.keyColors )
+        this.colors = this.generateColors();
+        console.log('general row updated colors:', this.colors)
+        this.calculateContrastInfo();
+        console.log('generalColorRow updateSwatches called!');
+        this.updateSwatches();
+    }
+
+     createSwatches(containerIdPrefix = 'general-color-row', label = '') {
+        console.log('generalColorRow createSwatches() started');
+        if (!this.containerId) {
+            this.containerId = `${containerIdPrefix}-${Math.random().toString(36).substr(2, 9)}`;
+        } else if (document.getElementById(this.containerId)) {
+            console.warn(`Swatches already exist for ${this.containerId}. Skipping creation.`);
+            this.updateSwatches();
+            return;
+        }
+    
+        const palettesSection = document.querySelector('.palettes-section');
+        if (!palettesSection) {
+            console.error('Palettes section not found');
+            return;
+        }
+    
+        const container = document.createElement('div');
+        container.id = this.containerId;
+        container.classList.add('color-swatch-container', 'general-color-swatch-container');
+        palettesSection.appendChild(container);
+    
+        const labelButtonContainer = document.createElement('div');
+        labelButtonContainer.className = 'label-button-container';
+        const labelElement = document.createElement('span');
+        labelElement.className = 'row-label';
+        labelElement.textContent = label;
+        labelButtonContainer.appendChild(labelElement);
+        container.appendChild(labelButtonContainer);
+        console.log('generalColorRow swatches created! calling updateSwatches');
+        this.updateSwatches();
+    }
+
+    updateSwatches() {
+        console.log('updating swatches of generalColorRow');
+        const container = document.getElementById(this.containerId);
+        if (!container) {
+            console.error('Container not found for general color swatches');
+            return;
+        }
+    
+        container.innerHTML = '';
+    
+        const srgbColors = this.colors.map(color => color.to('srgb').toString({ format: 'hex' }));
+        createColorSwatches(srgbColors, this.containerId, this.contrastRatios);
+    }
+
+    createColorSwatches(colors, containerId, contrastRatios) {
+        console.log(`createColorSwatches called with containerId: ${containerId}`);
+        const container = document.getElementById(containerId);
+        if (!container) {
+            console.error(`Container with id ${containerId} not found`);
+            return;
+        }
+    
+        colors.forEach((color, index) => {
             const swatch = document.createElement('div');
             swatch.className = 'color-swatch';
-            swatch.style.backgroundColor = color.to('srgb').toString({ format: 'hex' });
+            swatch.style.backgroundColor = color;
             swatch.setAttribute('tabindex', '0');
             swatch.setAttribute('role', 'button');
-            swatch.setAttribute('aria-label', `Copy color ${color.to('srgb').toString({ format: 'hex' })}`);
-            
-            // Add hexadecimal value as text
+            swatch.setAttribute('aria-label', `Copy color ${color}`);
+    
             const hexValueContainer = document.createElement('div');
             hexValueContainer.className = 'hex-value-container';
-            
+    
             const contrastRatio = document.createElement('span');
             contrastRatio.className = 'contrast-ratio';
-            contrastRatio.textContent = this.contrastRatios[index]?.toFixed(2) || 'N/A';
-            // Set text color based on background lightness
-            const lightness = color.lch.l;
+            contrastRatio.textContent = contrastRatios[index]?.toFixed(2) || 'N/A';
+            const lightness = colorUtils.Color(color).lch.l;
             contrastRatio.style.color = lightness > 50 ? 'black' : 'white';
             hexValueContainer.appendChild(contrastRatio);
-
+    
             const hexValue = document.createElement('span');
             hexValue.className = 'hex-value';
-            hexValue.textContent = color.to('srgb').toString({ format: 'hex' });
-            // Set text color based on background lightness
+            hexValue.textContent = color;
             hexValue.style.color = lightness > 50 ? 'black' : 'white';
             hexValueContainer.appendChild(hexValue);
-
+    
             swatch.appendChild(hexValueContainer);
-
-            // Add contrast markers
-            if (this.contrastMarkers && this.contrastMarkers[index]) {
+    
+            if (contrastRatios && contrastRatios[index]) {
                 const contrastMarkerContainer = document.createElement('div');
                 contrastMarkerContainer.className = 'swatch__MarkerContainer';
                 const contrastMarker = document.createElement('span');
                 contrastMarker.className = 'swatch__Marker';
-                contrastMarker.textContent = this.contrastMarkers[index];
-                contrastMarker.setAttribute('data-level', this.contrastMarkers[index]);
+                contrastMarker.textContent = contrastRatios[index];
+                contrastMarker.setAttribute('data-level', contrastRatios[index]);
                 contrastMarker.style.color = lightness > 50 ? 'black' : 'white';
                 contrastMarkerContainer.appendChild(contrastMarker);
                 swatch.appendChild(contrastMarkerContainer);
             }
-
-            // Add hover-click interactions with embedded SVGs
+    
             const copyIcon = uiManager.createCopyIcon();
             copyIcon.style.color = lightness > 50 ? 'black' : 'white';
             swatch.appendChild(copyIcon);
-
+    
             const checkIcon = uiManager.createCheckIcon();
             checkIcon.style.color = lightness > 50 ? 'black' : 'white';
             checkIcon.style.position = 'absolute';
@@ -918,7 +1118,7 @@ export class GeneralColorRow extends BaseColorRow {
             checkIcon.style.left = '50%';
             checkIcon.style.transform = 'translate(-50%, -50%)';
             swatch.appendChild(checkIcon);
-
+    
             swatch.addEventListener('mouseover', () => {
                 copyIcon.style.display = 'block';
             });
@@ -926,27 +1126,21 @@ export class GeneralColorRow extends BaseColorRow {
                 copyIcon.style.display = 'none';
             });
             swatch.addEventListener('click', () => {
-                navigator.clipboard.writeText(color.to('srgb').toString({ format: 'hex' }));
+                navigator.clipboard.writeText(color);
                 copyIcon.style.display = 'none';
                 checkIcon.style.display = 'block';
                 setTimeout(() => {
                     checkIcon.style.display = 'none';
                 }, 1500);
             });
-
-            // Add color ticker functionality
+    
+            console.log(`Adding color ticker functionality to swatch with color: ${color}`);
             uiManager.addColorTickerFunctionality(swatch);
-
+    
             container.appendChild(swatch);
         });
-
-        console.log('Updated swatches:', this.colors);
-    }
-
-    updateColors(keyColors) {
-        console.log('Updating colors with keyColors:', keyColors);
-        this.config.keyColors = keyColors;
-        this.colors = this.generateColors();
-        this.updateSwatches();
+    
+        console.log('Updated swatches:', colors);
     }
 }
+    */

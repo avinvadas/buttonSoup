@@ -66,6 +66,35 @@ export default class ColorManager {
         }
     }
 
+    updatePrimaryColor(colorValue) {
+        try {
+            const newPrimaryColor = new Color(colorValue).to('lch');
+            console.log('newPrimaryColor initialized:', newPrimaryColor);
+    
+            // Store last primary color values before updating
+            lastPrimaryChroma = primaryColor ? primaryColor.lch.c : newPrimaryColor.lch.c;
+            lastPrimaryLightness = primaryColor ? primaryColor.lch.l : newPrimaryColor.lch.l;
+    
+            primaryColor = newPrimaryColor;
+            console.log('primaryColor updated:', primaryColor);
+    
+            const newSecondaryColor = recalculateSecondaryColor(primaryColor, hueDif, secondaryColor);
+            secondaryColor = newSecondaryColor;
+            console.log('secondaryColor updated:', secondaryColor);
+    
+            colorManager.setPrimaryColor(primaryColor);
+            colorManager.setSecondaryColor(secondaryColor);
+    
+            updateUIElements();
+            updateAllScalesRows(primaryColor, secondaryColor);
+            colorUtils.updateContrastStatus(primaryColor, secondaryColor);
+    
+        } catch (error) {
+            console.error("Invalid color value:", error);
+        }
+        updateContrastCheck();
+    }
+
     updateSecondaryColor() {
         if (this.primaryColor) {
             // Example: Derive secondary color from primary

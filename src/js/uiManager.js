@@ -217,7 +217,7 @@ export function addColorTickerFunctionality(elementId) {
     const hexValue = document.createElement('span');
     hexValue.className = 'hex-value';
 
-    /* Cerate icons for copy to clipboard interaction */
+    /* Create icons for copy to clipboard interaction */
     const copyIcon = createCopyIcon();
     copyIcon.style.display = 'none';
     const checkIcon = createCheckIcon();
@@ -231,44 +231,29 @@ export function addColorTickerFunctionality(elementId) {
 
     /* Function displaying the hex value */
     function updateHexValueAndColor() {
-        const bgColor = getComputedStyle(element).backgroundColor; /*Get current color from bg */
+        const bgColor = getComputedStyle(element).backgroundColor; /* Get current color from bg */
         const hexColor = colorUtils.rgbToHex(bgColor); /* convert it to hex */
-        hexValue.textContent = hexColor; /* turn the hex into the hexValue content */
-        
-        /* Setting text color for contrast */
-        const textColor = colorUtils.getContrastTextColor(hexColor);
-        hexValue.style.color = textColor;
-        copyIcon.style.color = textColor;
+        hexValue.textContent = hexColor;
     }
 
+    // Initial update
     updateHexValueAndColor();
-    /* Set interaction behavior */
 
-    /* verify tabindex */
-    if (!element.hasAttribute('tabindex')) {
-        element.tabIndex = 0;
-    }
-    /* Set mouse and keyboard events */ 
-    element.addEventListener('mouseenter', () => {
+    // Add event listeners for hover and click interactions
+    element.addEventListener('mouseover', () => {
         copyIcon.style.display = 'block';
     });
-    element.addEventListener('mouseleave', () => {
+    element.addEventListener('mouseout', () => {
         copyIcon.style.display = 'none';
     });
-    element.addEventListener('focus', () => {
-        copyIcon.style.display = 'block';
-    });
-    element.addEventListener('blur', () => {
+    element.addEventListener('click', () => {
+        navigator.clipboard.writeText(hexValue.textContent);
         copyIcon.style.display = 'none';
+        checkIcon.style.display = 'block';
+        setTimeout(() => {
+            checkIcon.style.display = 'none';
+        }, 1500);
     });
-    
-    element.addEventListener('click', () => copyColor(hexValue.textContent, hexValue, copyIcon));
-    element.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            copyColor(hexValue.textContent, hexValue, copyIcon);
-        }
-    });
-
 }
 
 /* Create copyTimeouts object. Used in index.js */

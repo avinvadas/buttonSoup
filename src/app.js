@@ -454,55 +454,46 @@ function setupRows() {
     createAndAddRow(neutralScalesRow, 'Neutral Scales', 'scalesrow', true);
 
     console.log('Creating Harmony Rows');
-const harmonyWideCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
-    steps: 6,
-    interpolation: 'linear',
-    lightnessEase: 'linear',
-    chromaEase: 'linear',
-    huePath: 'longer',
-}, 'Hue wider segment');
-createAndAddRow(harmonyWideCircRow, 'Hue wider segment', 'harmonyrow');
+    const harmonyWideCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
+        steps: 6,
+        interpolation: 'linear',
+        lightnessEase: 'linear',
+        chromaEase: 'linear',
+        huePath: 'longer',
+    }, 'Hue wider segment');
+    createAndAddRow(harmonyWideCircRow, 'Analogous wide', 'harmonyrow');
 
-const harmonyNarrowCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
-    steps: 6,
-    interpolation: 'linear',
-    lightnessEase: 'linear',
-    chromaEase: 'linear',
-    huePath: 'shorter',
-}, 'Hue narrower segment');
-createAndAddRow(harmonyNarrowCircRow, 'Hue narrower segment', 'harmonyrow');
+    const harmonyNarrowCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
+        steps: 6,
+        interpolation: 'linear',
+        lightnessEase: 'linear',
+        chromaEase: 'linear',
+        huePath: 'shorter',
+    }, 'Hue narrower segment');
+    createAndAddRow(harmonyNarrowCircRow, 'Analogous narrow', 'harmonyrow');
 
-const harmonyFullCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
-    steps: 6,
-    interpolation: 'linear',
-    lightnessEase: 'linear',
-    chromaEase: 'linear',
-    huePath: 'full-circle',
-}, 'Full circumference');
-createAndAddRow(harmonyFullCircRow, 'Full circumference', 'harmonyrow');
+    const harmonyFullCircRow = HarmonicColorRow.create(primaryColor, secondaryColor, {
+        steps: 6,
+        interpolation: 'linear',
+        lightnessEase: 'linear',
+        chromaEase: 'linear',
+        huePath: 'full-circle',
+    }, 'Full circumference');
+    createAndAddRow(harmonyFullCircRow, 'Analogous Full circ.', 'harmonyrow');
 
-console.log('Creating General Color Row with colors:', primaryColor, secondaryColor, tertiaryColor);
-const generalColorRow = new GeneralColorRow({
-    steps: 6,
-    interpolation: 'linear',
-    keyColors: [primaryColor, secondaryColor, tertiaryColor],
-    containerId: 'general-color-row-container'
-});
-generalColorRow.createSwatches('general-color-row', 'General Color Row');
+    console.log('Creating General Color Row with colors:', primaryColor, secondaryColor, tertiaryColor);
+    const generalColorRow = new GeneralColorRow({
+        steps: 6,
+        interpolation: 'linear',
+        keyColors: [secondaryColor, primaryColor, tertiaryColor],
+        containerId: 'general-color-row-container'
+    });
+    createAndAddRow(generalColorRow, 'Split-complementary', 'general-color-row');
 
-colorManager.addObserver({
-    update: (data) => {
-        if (data.primaryColor && data.secondaryColor && data.tertiaryColor) {
-            console.log("Observer: GeneralColorRow dependencies are ready.");
-            generalColorRow.updateColors([data.primaryColor, data.secondaryColor, data.tertiaryColor]);
-        }
-    }
-});
-
-// Add icons to rows
-appendIconToRow('Hue wider segment', iconLongRange);
-appendIconToRow('Hue narrower segment', iconShortRange);
-appendIconToRow('Full circumference', iconFullRange);
+    // Add icons to rows
+    appendIconToRow('Analogous wide', iconLongRange);
+    appendIconToRow('Analogous narrow', iconShortRange);
+    appendIconToRow('Analogous Full circ.', iconFullRange);
 }
 
 /** Color controls in the UI: */
@@ -601,15 +592,18 @@ function updateColorPickerAppearance(colorValue) {
 function updatePrimaryColor(colorValue) {
     try {
         const newPrimaryColor = new Color(colorValue).to('lch');
-        
+        console.log('newPrimaryColor initialized:', newPrimaryColor);
+
         // Store last primary color values before updating
         lastPrimaryChroma = primaryColor ? primaryColor.lch.c : newPrimaryColor.lch.c;
         lastPrimaryLightness = primaryColor ? primaryColor.lch.l : newPrimaryColor.lch.l;
-        
+
         primaryColor = newPrimaryColor;
+        console.log('primaryColor updated:', primaryColor);
 
         const newSecondaryColor = recalculateSecondaryColor(primaryColor, hueDif, secondaryColor);
         secondaryColor = newSecondaryColor;
+        console.log('secondaryColor updated:', secondaryColor);
 
         colorManager.setPrimaryColor(primaryColor);
         colorManager.setSecondaryColor(secondaryColor);
@@ -626,7 +620,6 @@ function updatePrimaryColor(colorValue) {
 
 // Updated function to update all UI elements
 function updateUIElements() {
-    
     // Validate primaryColor, secondaryColor, and tertiaryColor
     if (!primaryColor || !primaryColor.lch) {
         console.error('Invalid primaryColor in updateUIElements:', primaryColor);
@@ -645,7 +638,6 @@ function updateUIElements() {
             (secondaryColor.lch.h + 120) % 360
         );
     }
-    
 
     // Update CSS variables
     document.documentElement.style.setProperty('--color-primary', primaryColor.to('srgb').toString({ format: "hex" }));
