@@ -16,7 +16,6 @@ export default class ObserverManager {
     }
 
     notifyObservers(data) {
-        console.log("Notifying observers with data:", data);
         this.observers.forEach(observer => {
             try {
                 observer.update(data);

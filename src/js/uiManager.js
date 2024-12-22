@@ -202,10 +202,9 @@ function applyColorPaletteToCSS(harmonicRow) {
 export function addColorTickerFunctionality(elementId) {
     const element = document.getElementById(elementId);
     if (!element) {
-        console.error(`Element with id ${elementId} not found`);
+        /*console.error(`Element with id ${elementId} not found`);*/
         return;
     }
-
     // Clear existing content
     element.innerHTML = '';
 
@@ -296,4 +295,45 @@ export function copyToClipboard(text, button) {
         })
         .catch(err => console.error('Failed to copy text to clipboard: ', err));
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const colorSecondary = document.getElementById('color-secondary');
+    const copyIcon = colorSecondary.querySelector('.copy-icon');
+    const checkIcon = colorSecondary.querySelector('.check-icon');
+
+    colorSecondary.addEventListener('mouseenter', function() {
+        copyIcon.style.display = 'block';
+    });
+
+    colorSecondary.addEventListener('mouseleave', function() {
+        if (checkIcon.style.display !== 'block') {
+            copyIcon.style.display = 'none';
+        }
+    });
+
+    colorSecondary.addEventListener('focus', function() {
+        copyIcon.style.display = 'block';
+    });
+
+    colorSecondary.addEventListener('blur', function() {
+        if (checkIcon.style.display !== 'block') {
+            copyIcon.style.display = 'none';
+        }
+    });
+
+    // Function to show checkIcon and hide copyIcon
+    function showCheckIcon() {
+        copyIcon.style.display = 'none';
+        checkIcon.style.display = 'block';
+        setTimeout(function() {
+            checkIcon.style.display = 'none';
+            if (colorSecondary.matches(':hover') || colorSecondary.matches(':focus')) {
+                copyIcon.style.display = 'block';
+            }
+        }, 2000); // Adjust the timeout duration as needed
+    }
+
+    // Example usage: Call showCheckIcon when needed
+    // showCheckIcon();
+});
 

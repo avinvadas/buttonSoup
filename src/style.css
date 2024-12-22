@@ -570,8 +570,7 @@ font-weight: var(--font-weight-h4);
   margin:0;
 }
 
-
-.copy-icon {
+.copy-icon, .check-icon {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -586,7 +585,9 @@ font-weight: var(--font-weight-h4);
 }
 
 .copy-icon .copy-path,
-.copy-icon .check-path {
+.copy-icon .check-path,
+.check-icon .copy-path,
+.check-icon .check-path {
   fill: currentColor;
 }
 
