@@ -12,6 +12,7 @@ import { copyTimeouts } from './js/uiManager.js';
 let primaryColor;
 let secondaryColor;
 let tertiaryColor;
+let quaternaryColor;
 
 let rows = [];
 let neutralColor;
@@ -32,7 +33,22 @@ let initCallCount = 0;
 const { Color } = colorUtils;
 const colorManager = new ColorManager();
 
-// Observer for tertiaryColor updates
+/* Set color observers */
+
+const secondaryColorObserver = {
+    update(data) {
+        const { secondaryColor } = data;
+        if (secondaryColor) {
+            const secondarySwatch = document.querySelector('#secondary-color .color-ticker');
+            if (secondarySwatch) {
+                const hexColor = secondaryColor.to('srgb').toString({ format: 'hex' });
+                secondarySwatch.style.backgroundColor = hexColor;
+                secondarySwatch.setAttribute('aria-label', `Secondary color: ${hexColor}`);
+            }
+        }
+    }
+};
+
 const tertiaryColorObserver = {
     update({ tertiaryColor: updatedTertiaryColor }) {
         if (updatedTertiaryColor) {
@@ -41,8 +57,20 @@ const tertiaryColorObserver = {
     }
 };
 
-// Register the observer with ColorManager
+const quaternaryColorObserver = {
+    update({ quaternaryColor: updatedQuaternaryColor }) {
+        if (updatedQuaternaryColor) {
+            quaternaryColor = updatedQuaternaryColor; // Update the global variable
+            updateUIElements(quaternaryColor, 'quaternary');
+            updateAllScalesRows();
+        }
+    }
+};
+
+
+colorManager.addObserver(secondaryColorObserver);
 colorManager.addObserver(tertiaryColorObserver);
+colorManager.addObserver(quaternaryColorObserver);
 
 
 const iconSvgCompLong = '<svg class="utility-icon" width="100%" height="100%" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill:currentColor;fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g><path d="M17.202,37.029C9.346,35.701 3.362,28.865 3.362,20.631C3.362,13.163 8.331,6.655 15.44,4.635C15.911,2.555 17.772,1 19.993,1C22.569,1 24.661,3.092 24.661,5.668C24.661,7.99 22.961,9.919 20.738,10.276L20.738,33.09C22.037,33.416 23,34.592 23,35.992C23,37.643 21.66,38.983 20.008,38.983C18.722,38.983 17.624,38.169 17.202,37.029ZM15.578,7.186C9.82,9.073 5.842,14.468 5.842,20.631C5.842,27.557 10.819,33.321 17.391,34.543C17.782,33.838 18.45,33.307 19.248,33.098L19.248,10.276C17.534,10.001 16.13,8.791 15.578,7.186ZM19.993,2.617C18.309,2.617 16.942,3.984 16.942,5.668C16.942,7.352 18.309,8.719 19.993,8.719C21.677,8.719 23.044,7.352 23.044,5.668C23.044,3.984 21.677,2.617 19.993,2.617Z"/><g><path d="M19.993,37.262L19.993,34.782C27.808,34.782 34.144,28.446 34.144,20.631C34.144,14.031 29.582,8.308 23.149,6.836L23.702,4.419C31.263,6.149 36.624,12.875 36.624,20.631C36.624,29.816 29.178,37.262 19.993,37.262Z" style="fill-opacity:0.33;"/></g></g></svg>';
@@ -169,10 +197,10 @@ function initiateColors() {
             case 120:
                 segCtrlValue = 'triad';
                 break;
-            case 60:
+            case 90:
                 segCtrlValue = 'quad';
                 break;
-            case 30:
+            case 45:
                 segCtrlValue = 'analogous';
                 break;
             default:
@@ -612,7 +640,7 @@ function updatePrimaryColor(colorValue) {
         colorManager.setSecondaryColor(secondaryColor);
 
         updateUIElements();
-        updateAllScalesRows(primaryColor, secondaryColor);
+        updateAllScalesRows(primaryColor, secondaryColor, tertiaryColor, quaternaryColor);
         colorUtils.updateContrastStatus(primaryColor, secondaryColor);
 
     } catch (error) {
@@ -716,10 +744,10 @@ function updateSecondaryColorControls() {
     updateContrastCheck();
 }
 
-function updateAllScalesRows(primaryColor, secondaryColor) {
+function updateAllScalesRows(primaryColor, secondaryColor, tertiaryColor, quaternaryColor) { 
     rows.forEach(item => {
         if (item.row instanceof ScalesRow) {
-            item.row.update(primaryColor, secondaryColor);
+            item.row.update(primaryColor, secondaryColor, tertiaryColor, quaternaryColor);
         }
     });
 }
@@ -878,7 +906,7 @@ function handleHueChange(event) {
 
     // Keep other functionalities intact
     updateUIElements();
-    updateAllScalesRows(primaryColor, secondaryColor);
+    updateAllScalesRows(primaryColor, secondaryColor, tertiaryColor, quaternaryColor);
 }
 
 
@@ -937,27 +965,9 @@ function updateSecondaryColor() {
     secondaryColor = newSecondaryColor;
     colorManager.setSecondaryColor(secondaryColor);
     updateUIElements();
-    updateAllScalesRows(primaryColor, secondaryColor);
+    updateAllScalesRows(primaryColor, secondaryColor, tertiaryColor, quaternaryColor);
     updateContrastCheck();
 }
-
-
-const secondaryColorObserver = {
-    update(data) {
-        const { secondaryColor } = data;
-        if (secondaryColor) {
-            const secondarySwatch = document.querySelector('#secondary-color .color-ticker');
-            if (secondarySwatch) {
-                const hexColor = secondaryColor.to('srgb').toString({ format: 'hex' });
-                secondarySwatch.style.backgroundColor = hexColor;
-                secondarySwatch.setAttribute('aria-label', `Secondary color: ${hexColor}`);
-            }
-        }
-    }
-};
-
-// Register the observer with ColorManager
-colorManager.addObserver(secondaryColorObserver);
 
 function updateSecondaryColorDisplay() {
 
@@ -1007,22 +1017,6 @@ function updateSecondaryColorDisplay() {
     }
 }
 
-function correlateSecondaryColor(primaryColor, hueDif) {
-    // Calculate correlated lightness (inverse of primary)
-    const correlatedLightness = 100 - primaryColor.lch.l;
-    
-    // Calculate correlated chroma (same as primary)
-    const correlatedChroma = primaryColor.lch.c;
-    
-    // Calculate new hue
-    const correlatedHue = (primaryColor.lch.h + hueDif) % 360;
-    
-    return {
-        l: correlatedLightness,
-        c: correlatedChroma,
-        h: correlatedHue
-    };
-}
 
 /* Capture key events on page for primary color value typing */
 function handleKeyDown(event) {
